@@ -17,8 +17,13 @@
 
 <p>
   <strong>Reorder in:</strong>
-  <%= @product.reorder_in %>
+  <%= "#{@product.reorder_in} days" %>
 </p>
+
+<p>
+  <strong>Top 5 Customers:</strong>
+</p>
+
 
 <%= link_to 'Edit', edit_product_path(@product) %> |
 <%= link_to 'Back', products_path %>
