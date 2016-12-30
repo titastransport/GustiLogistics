@@ -2,13 +2,11 @@
 
 require 'roo'
 
-def populate(inv, inventory)
+def populate(inv)
   inv.sheet(-1).each_with_index(id: 'Item ID', desc: 'Item Description', cur: 'Qty on Hand') do |hash, index| 
-    inventory[:ids] << hash[:id] if hash[:id].to_s != "" && index != 0
-    inventory[:descriptions] << hash[:desc] if hash[:id].to_s != "" && index != 0
-    inventory[:curs] << hash[:cur].to_i if hash[:id].to_s != "" && index != 0
-    inventory[:reorder_by] << 999
-    # calculate(inventory[:reorder_by])
+    if hash[:id].to_s != "" && index != 0
+      Product.create( item_id: hash[:id], description: hash[:description], current: hash[:cur], reorder_in: 999) 
+    end
   end
 end
 
@@ -24,22 +22,13 @@ def seed(inventory)
   end
 end
 
-def update(inv, inventory)
+if __FILE__ == $0
+
+  inv = Roo::Spreadsheet.open('inventory_2012.xlsx')
+  output(populate(inv))
+end
+
+#def update(inv, inventory)
   # find new products
   # update current quantities
-end
-
-if __FILE__ == $0
-  inv = Roo::Spreadsheet.open('inventory_2012.xlsx')
-
-  inventory = {
-    ids: [],
-    descriptions: [], 
-    curs: [],
-    reorder_by: []
-  }
-
-  populate(inv, inventory)
-  # output(inventory)
-
-end
+#end
