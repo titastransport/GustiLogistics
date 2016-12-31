@@ -16,12 +16,6 @@ def output(inventory)
   end
 end
 
-def seed(inventory)
-  0.upto(inventory[:ids].size - 1) do |i|
-    Product.create( item_id: inventory[:ids][i], description: inventory[:descriptions][i], current: inventory[:curs][i], reorder_in: inventory[:reorder_by][i])
-  end
-end
-
 if __FILE__ == $0
 
   inv = Roo::Spreadsheet.open('inventory_2012.xlsx')
