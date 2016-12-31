@@ -10,6 +10,12 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
+    @top_five = {}
+    purchases_with_product = Purchase.all.select { |p| p.product == @product.item_id }
+    purchases_with_product.max_by(5) { |p| p.quantity }.each do |c|
+      @top_five[c.customer] = c.quantity 
+    end
+    @top_five
   end
 
   # GET /products/new

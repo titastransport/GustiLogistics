@@ -22,6 +22,11 @@
 
 <p>
   <strong>Top 5 Customers:</strong>
+  <ol>
+    <% @top_five.each do |c, q| %>
+	  <li><%= "#{c}: #{q}" %></li>
+    <% end %>
+  </ol>
 </p>
 
 
