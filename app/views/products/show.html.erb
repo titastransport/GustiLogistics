@@ -21,12 +21,16 @@
 </p>
 
 <p>
-  <strong>Top 5 Customers:</strong>
+  <strong>Top 5 Customers (by units purchased):</strong>
   <ol>
     <% @top_five.each do |c, q| %>
 	  <li><%= "#{c}: #{q}" %></li>
     <% end %>
   </ol>
+</p>
+
+<p>
+  <%= pie_chart @top_five %>
 </p>
 
 
