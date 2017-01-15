@@ -1,6 +1,6 @@
 <h1>Product Import</h1>
 
-<h5>An Excel file can be uploaded to update products' statuses and purchases.</h5>
+<h5>An Excel file can be uploaded to update products' current quantities and activities.</h5>
 
 <p>
   For uploading a 'Unit Activity' file, create a Peachtree report with the following columns:
@@ -11,7 +11,7 @@
     <li>Units Sold</li>
     <li>Qty on Hand</li>
   </ol>
-  And the following products:
+  <strong>And only the following products:</strong>
   <ul>
     <% @products.each do |product| %>
       <li><%= product.item_id %> - <%= product.description %></li>
