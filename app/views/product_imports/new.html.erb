@@ -1,0 +1,42 @@
+<h1>Product Import</h1>
+
+<h5>An Excel file can be uploaded to update products' statuses and purchases.</h5>
+
+<p>
+  For uploading a 'Unit Activity' file, select the following columns:
+  <ol>
+    <li>Item ID</li>
+    <li>Item Description</li>
+    <li>Beg Qty</li>
+    <li>Units Sold</li>
+    <li>Qty on Hand</li>
+  </ol>
+</p>
+
+<p>
+For uploading an 'Items Sold to Customers' file, select only <strong>Wholesale Customers</strong> and the following columns:
+  <ol>
+    <li>Customer ID</li>
+    <li>Name</li>
+    <li>Item ID</li>
+    <li>Qty</li>
+  </ol>
+</p>
+
+<%= form_for @product_import do |f| %>
+  <% if @product_import.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@product_import.errors.count, "error") %> prohibited this import from completing:</h2>
+      <ul>
+        <% @product_import.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.file_field :file %>
+  </div>
+  <div class="buttons"><%= f.submit "Import" %></div>
+<% end %>

@@ -19,6 +19,6 @@ def output(inventory)
 end
 
 if __FILE__ == $0
-  inv = Roo::Spreadsheet.open('inventory_2012.xlsx')
+  inv = Roo::Spreadsheet.open('Unit_Activity_2015.xlsx')
   output(populate(inv))
 end
