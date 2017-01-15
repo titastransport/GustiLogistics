@@ -9,20 +9,3 @@ def populate(inv)
     end
   end
 end
-
-def output(inventory)
-  0.upto(inventory[:ids].size - 1) do |i|
-    puts "#{inventory[:ids][i]} #{inventory[:descriptions][i]} #{inventory[:curs][i]} #{inventory[:reorder_by][i]}"
-  end
-end
-
-if __FILE__ == $0
-
-  inv = Roo::Spreadsheet.open('inventory_2012.xlsx')
-  output(populate(inv))
-end
-
-#def update(inv, inventory)
-  # find new products
-  # update current quantities
-#end

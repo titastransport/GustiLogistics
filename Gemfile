@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'paperclip',	  '5.0.0'
 gem 'chartkick',      '2.2.1'
 gem 'bootstrap-sass', '3.3.6'
 gem 'autoprefixer-rails'
