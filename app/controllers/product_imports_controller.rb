@@ -1,6 +1,7 @@
 class ProductImportsController < ApplicationController
   def new
     @product_import = ProductImport.new
+    @products = Product.all
   end
 
   def create
