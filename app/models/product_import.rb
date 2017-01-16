@@ -19,18 +19,6 @@ class ProductImport < ApplicationRecord
     load_imported_products
   end
 
-  #def load_imported_products
-  #  spreadsheet = open_spreadsheet
-  #  products = spreadsheet.sheet(((0..6).to_a.sample)).each_with_index(id: 'Item ID', desc: 'Item Description', cur: 'Qty on Hand') do |row, index|
-  #    if row[:id].to_s != "" && index != 0
-  #      product = Product.find_by(item_id: row[:id]) || create_new_product(row)
-  #      product.current = row[:cur]
-  #      product
-  #    end
-  #  end
-  #  products
-  #end
-
   def load_imported_products
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
@@ -46,7 +34,7 @@ class ProductImport < ApplicationRecord
   end 
 
   def open_spreadsheet
-    Roo::Spreadsheet.open(file.original_filename) 
+    Roo::Spreadsheet.open(file.path) 
   end
 
   def create_new_product(row)
