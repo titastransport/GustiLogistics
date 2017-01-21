@@ -1,0 +1,13 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="container">
+    <%= link_to "GustiLogistics", root_path, id: "logo" %>
+	<nav>
+	  <ul class="nav navbar-nav navbar-right">
+	    <li><%= link_to "Home", root_path %></li>
+	<!-- < #if logged_in? > -->
+		  <li><a href="#">Customers</a></li>
+		  <li><a href="#">Log out</a></li>
+      </ul>
+	</nav>
+  </div>
+</header>
