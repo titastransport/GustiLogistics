@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'paperclip',	  '5.0.0'
+gem 'bcrypt',         '3.1.11'
 gem 'chartkick',      '2.2.1'
 gem 'bootstrap-sass', '3.3.6'
 gem 'autoprefixer-rails'
@@ -13,6 +13,7 @@ gem 'coffee-rails',   '4.2.1'
 gem 'jquery-rails',   '4.1.1'
 gem 'turbolinks',     '5.0.1'
 gem 'jbuilder',       '2.4.1'
+gem 'rails-controller-testing'
 
 group :development, :test do
   gem 'sqlite3', '1.3.12'
