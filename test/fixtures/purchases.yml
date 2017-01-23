@@ -1,11 +1,1 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  customer: MyString
-  product: MyString
-  quantity: 1
-
-two:
-  customer: MyString
-  product: MyString
-  quantity: 1
+# empty

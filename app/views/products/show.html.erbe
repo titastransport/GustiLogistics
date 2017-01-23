@@ -9,7 +9,7 @@
 
 <p>
   <strong>Description:</strong>
-  <%= @product.item_description %>
+  <%= @product.item_item_description %>
 </p>
 
 <p>

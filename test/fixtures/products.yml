@@ -1,13 +1,5 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  item_id: MyString
-  description: MyString
-  current: 1
-  reorder_in: 1
-
-two:
-  item_id: MyString
-  description: MyString
+pianogrillo:
+  item_id: "MyString"
+  item_description: "MyString"
   current: 1
   reorder_in: 1

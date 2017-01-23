@@ -1,0 +1,14 @@
+require 'test_helper'
+
+class ReorderTest < ActiveSupport::TestCase
+
+  def setup
+    @product = products(:pianogrillo)
+    @reorder = @product.reorders.build(@product.item_id, @product.description)
+  end
+
+  test "should be valid" do
+    assert @reorder.valid?
+  end
+
+end

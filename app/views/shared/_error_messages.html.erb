@@ -1,7 +1,9 @@
 <% if !flash.empty? %>
   <div id="error_explanation">
     <ul>
-      <li><%= flash.each { |msg| msg.key } %></li>
+      <% flash.each do |key, value| %>
+        <li><%= content_tag(:div, value, class: "flash #{key}") %>
+      <% end %>
     </ul>
   </div>
 <% end %>
