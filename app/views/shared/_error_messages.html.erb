@@ -1,7 +1,7 @@
-<% if !flash[:error].nil? %>
+<% if !flash.empty? %>
   <div id="error_explanation">
     <ul>
-      <li><%= flash[:error] %></li>
+      <li><%= flash.each { |msg| msg.key } %></li>
     </ul>
   </div>
 <% end %>

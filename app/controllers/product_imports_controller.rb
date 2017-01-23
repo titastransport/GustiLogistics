@@ -1,4 +1,6 @@
 class ProductImportsController < ApplicationController
+  before_action :logged_in_user
+
   def new
     @product_import = ProductImport.new
     @products = Product.all
