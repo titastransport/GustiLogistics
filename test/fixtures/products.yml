@@ -1,5 +1,5 @@
 pianogrillo:
-  item_id: "MyString"
-  item_description: "MyString"
+  item_id: "item_id"
+  item_description: "item_description" 
   current: 1
   reorder_in: 1
