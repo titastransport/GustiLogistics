@@ -1,2 +1,19 @@
-<h1>Reorders#index</h1>
-<p>Calendar will go here with reorders listed on calendar dates</p>
+<h1>Reorder Dates</h1>
+
+<div id="reorders">
+  <h2 id="month">
+    <%= link_to "<", date: @date.prev_month %>
+    <%= @date.strftime("%B %Y") %>
+    <%= link_to ">", date: @date.next_month %>
+  </h2>
+  <%= calendar @date do |date| %>
+    <%= date.day %>
+    <% if @reorders_by_date[date] %>
+      <ul>
+        <% @reorders_by_date[date].each do |reorder| %>
+          <li><%= link_to reorder.description, product_path(reorder.product_id) %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>
