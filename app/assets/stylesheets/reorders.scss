@@ -22,9 +22,31 @@
   td {
     background: #FFF;
     color: #777;
-    height: 80px;
+    height: 100px;
     vertical-align: top;
     font-size: 16px;
+    width: 14.2857142857143%;
+    position: relative;
+    .content {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      ul {
+        margin: 0;
+        margin-right: 15px;
+        vertical-align: top;
+        li {
+          font-size: 1vmin;
+          line-height: 1.1;
+        }
+      }
+    }
+    :after {
+      display: block;
+      margin-top: 100%;
+    }
   }
 
   .notmonth, .notmonth a { color: #CCC; }

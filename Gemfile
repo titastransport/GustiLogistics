@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'simple_calendar',		'~> 2.0'
 gem 'bcrypt',		   		'3.1.11'
 gem 'chartkick',       		'2.2.1'
 gem 'bootstrap-sass',  		'3.3.6'
