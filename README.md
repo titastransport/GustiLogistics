@@ -5,3 +5,5 @@ Rails App that enables my former company [Gustiamo](https://www.gustiamo.com) to
 * Makes particular use of the following JS and Ruby libraries:
   * [JS Highcharts](https://github.com/highcharts) for Data Visualization of top customers and sales.
   * [Roo](https://github.com/roo-rb/roo) for parsing Excel spreadsheets downloaded from Inventory Management system.
+
+![alt text](GustiLogisticsCalendar.png "Calendar Prototype")
