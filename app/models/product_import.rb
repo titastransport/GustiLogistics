@@ -38,7 +38,7 @@ class ProductImport < ApplicationRecord
   end
 
   def create_new_product(row)
-    Product.create(item_id: row['Item ID'], item_description: row['Item Description'], current: row['Beg Qty'], reorder_in: 999) 
+    Product.create(gusti_id: row['Item ID'], description: row['Item Description'], current: row['Beg Qty'], reorder_in: 999) 
   end
 
 end
