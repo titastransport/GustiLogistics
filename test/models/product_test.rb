@@ -3,7 +3,7 @@ require 'test_helper'
 class ProductTest < ActiveSupport::TestCase
 
   def setup
-    @product = Product.new(item_id: "CAF01001", item_description: "S/E coffee beans", current: 42)
+    @product = Product.new(gusti_id: "CAF01001", description: "S/E coffee beans", current: 42)
   end
 
   test "associated reorders should be destroyed" do

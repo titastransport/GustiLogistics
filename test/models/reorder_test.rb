@@ -4,7 +4,7 @@ class ReorderTest < ActiveSupport::TestCase
 
   def setup
     @product = products(:pianogrillo)
-    @reorder = @product.reorders.build(date: Time.now, quantity: 100, description: @product.item_description)
+    @reorder = @product.reorders.build(date: Time.now, quantity: 100, description: @product.description)
   end
 
   test "should be valid" do
