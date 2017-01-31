@@ -1,9 +1,9 @@
-<h1>Product Import</h1>
+<h1>Activity Import</h1>
 
 <h5>An Excel file can be uploaded to update products' current quantities and activities.</h5>
 
 <p>
-  For uploading a 'Unit Activity' file, create a Peachtree report with the following columns:
+  For uploading a 'Unit Activity Report' file, create a Peachtree report with the following columns:
   <ol>
     <li>Item ID</li>
     <li>Item Description</li>
@@ -11,10 +11,14 @@
     <li>Units Sold</li>
     <li>Qty on Hand</li>
   </ol>
-  <strong>And only the following products:</strong>
+  <p>
+  <strong>And save it in the following format "UAR_Month_Year.xlsx", i.e., "UAR_July_2015.xlsx"</strong>
+   
+  </p>
+  <strong>And the following products:</strong>
   <ul>
     <% @products.each do |product| %>
-      <li><%= product.item_id %> - <%= product.item_description %></li>
+      <li><%= product.gusti_id %> - <%= product.description %></li>
     <% end %>
   </ul>
 </p>
