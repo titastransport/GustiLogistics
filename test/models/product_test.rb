@@ -8,7 +8,7 @@ class ProductTest < ActiveSupport::TestCase
 
   test "associated reorders should be destroyed" do
     @product.save
-    @product.reorders.create!(date: Time.now, quantity: 100, description: "S/E coffee beans")
+    @product.reorders.create!(date: Time.now, quantity: 100, product_id: @product.id)
     assert_difference 'Reorder.count', -1 do
       @product.destroy
     end

@@ -1,5 +1,13 @@
 pianogrillo:
-  gusti_id: "gusti_id"
-  description: "description" 
+  id: 1
+  gusti_id: "pg"
+  description: "pg description" 
+  current: 1
+  reorder_in: 1
+
+faell spaghetti:
+  id: 2
+  gusti_id: "faell_id"
+  description: "faella description" 
   current: 1
   reorder_in: 1
