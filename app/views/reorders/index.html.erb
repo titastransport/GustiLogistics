@@ -1,5 +1,4 @@
 <h1>Reorder Dates</h1>
-
 <div id="reorders">
   <h2 id="month">
     <%= link_to "<", date: @date.prev_month %>
@@ -11,7 +10,7 @@
     <% if @reorders_by_date[date] %>
       <ul>
         <% @reorders_by_date[date].each do |reorder| %>
-          <li><%= link_to reorder.description, product_path(reorder.product_id) %></li>
+          <li><%= link_to product_description(reorder), product_path(reorder.product_id) %></li>
         <% end %>
       </ul>
     <% end %>
