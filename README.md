@@ -10,5 +10,5 @@ Here's an example of one of the main features of the application, the Calendar p
 
 ![alt text](GustiLogisticsCalendar.png "Calendar Prototype")
 
-And here's an example of an individual Product analysis page. It lists and displays top 20 customers for a given product, which helps guide ordering. I owe the pie chart to the Javascrip
+And here's an example of an individual Product analysis page. It lists and displays top 20 customers for a given product, which helps guide ordering.
 ![alt text](ProductAnalysisPage.png "Product Analysis")
