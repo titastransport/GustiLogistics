@@ -1,39 +1,42 @@
-<div class="container">
+<div class="container" id='product-header'>
 
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Item:</strong>
-  <%= @product.item_id %>
-</p>
-
-<p>
-  <strong>Description:</strong>
-  <%= @product.item_description %>
-</p>
-
-<p>
-  <strong>Current:</strong>
-  <%= @product.current %>
-</p>
-
-<p>
-  <strong>Reorder in:</strong>
-  <%= "#{@product.reorder_in} days" %>
-</p>
-
-<p>
-  <strong>Top 5 Customers (by units purchased):</strong>
-  <ol>
-    <% @top_five.each do |c, q| %>
-	  <li><%= "#{c}: #{q}" %></li>
-    <% end %>
-  </ol>
-</p>
+  <p id="notice"><%= notice %></p>
+  <p>
+    <strong>Item:</strong>
+    <%= @product.gusti_id %>
+  </p>
+  <p>
+    <strong>Description:</strong>
+    <%= @product.description %>
+  </p>
+  <p>
+    <strong>Current:</strong>
+    <%= @product.current %>
+  </p>
+  <p>
+    <strong>Reorder in:</strong>
+    <%= "#{@product.reorder_in} days" %>
+  </p>
 </div>
 
+  <table id='toptable'>
+    <caption><strong><u>Top 20 Customers (by percentage of top 20)</u></strong></caption>
+    <tr>
+      <th>Rank</th>
+      <th>Customer</th>
+      <th>Units Purchased</th>
+    </tr>
+    <% @top_twenty.each_with_index do |(customer, quantity), rank| %>
+    <tr>
+      <td><%= rank + 1 %></td>
+	    <td><%= customer %></td>
+      <td><%= quantity %></td>
+    </tr>
+    <% end %>
+  </table>
+
 <p>
-  <%= pie_chart @top_five %>
+  <%= pie_chart @top_twenty %>
 </p>
 
 

@@ -94,6 +94,25 @@ table {
   border-collapse: separate;
 }
 
+/* Products Show Page */
+
+#toptable {
+  th {
+    text-align: left;
+  }
+  th, td {
+    padding: 0px;
+  }
+}
+
+#product-header {
+  padding: 0;
+  p {
+    text-align: left;
+    margin: 10px 0 10px 0;
+  }
+}
+
 /* miscellaneous */
 
 .debug_dump {

@@ -1,4 +1,5 @@
 class ProductsController < ApplicationController
+  include ProductsHelper
   before_action :set_product, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user 
 
@@ -7,12 +8,15 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @top_five = {}
-    purchases_with_product = Purchase.all.select { |p| p.item_id == @product.item_id }
-    purchases_with_product.max_by(5) { |p| p.quantity }.each do |c|
-      @top_five[c.customer] = c.quantity 
+    @top_twenty = {}
+    purchases_with_product = Purchase.all.select do |purchase| 
+      purchase.item_id == @product.gusti_id
     end
-    @top_five
+    purchases_with_product.max_by(20) { |p| p.quantity }.each do |c|
+      @top_twenty[c.customer] = c.quantity 
+    end
+    @total = @top_twenty.values.reduce(&:+) 
+    #@top_five
   end
 
   def new
@@ -27,11 +31,9 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        format.html { redirect_to @product, notice: 'Product was successfully created.' }
-        format.json { render :show, status: :created, location: @product }
+        redirect_to @product, notice: 'Product was successfully created.'
       else
-        format.html { render :new }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
+        render :new
       end
     end
   end
