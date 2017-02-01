@@ -35,7 +35,7 @@ class UnitActivityReport
   end
 
   def row_params
-    gusti_id: 'Item ID', description: 'Item Description', sold: 'Units Sold', current: 'Qty on Hand')
+    { gusti_id: 'Item ID', description: 'Item Description', sold: 'Units Sold', current: 'Qty on Hand')}
   end
 
   def create_activity(product_in_row, row)
