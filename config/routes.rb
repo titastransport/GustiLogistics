@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   delete '/logout',     to: 'sessions#destroy'
   get    '/calendar',   to: 'reorders#index'
 
-  resources :product_imports
+  resources :activity_imports, only: [:new, :create]
   resources :products do 
     collection { post :import }
   end

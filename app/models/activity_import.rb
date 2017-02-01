@@ -1,4 +1,4 @@
-class ProductImport < ApplicationRecord
+class ActivityImport < ApplicationRecord
   attr_accessor :file
 
   def save
@@ -6,7 +6,7 @@ class ProductImport < ApplicationRecord
      imported_products.each(&:save!)
      true
     else
-      imported_prodcuts.each_with_index do |product, index|
+      imported_products.each_with_index do |product, index|
         product.errors.full_messages.each do |message|
           errors.add :base, "Row #{index + 2}: #{message}"
         end
@@ -25,8 +25,8 @@ class ProductImport < ApplicationRecord
     imported_products = (2..spreadsheet.last_row).map do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       if row['Item ID'].to_s != ''
-        product = Product.find_by(item_id: row["Item ID"]) || create_new_product(row)
-        product.current = row['Qty on Hand']
+        product = Product.find_by(gusti_id: row['Item ID']) || create_new_product(row)
+        product.current = row['Qty on Hand'].to_i
         product
       end
     end
@@ -38,7 +38,7 @@ class ProductImport < ApplicationRecord
   end
 
   def create_new_product(row)
-    Product.create(gusti_id: row['Item ID'], description: row['Item Description'], current: row['Beg Qty'], reorder_in: 999) 
+    Product.create(gusti_id: row['Item ID'], description: row['Item Description'], current: row['Qty on Hand'], reorder_in: 999) 
   end
 
 end

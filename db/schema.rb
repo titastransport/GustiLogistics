@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170131040523) do
+ActiveRecord::Schema.define(version: 20170131234822) do
 
   create_table "activities", force: :cascade do |t|
     t.date     "date"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20170131040523) do
     t.index ["product_id"], name: "index_activities_on_product_id"
   end
 
-  create_table "product_imports", force: :cascade do |t|
+  create_table "activity_imports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

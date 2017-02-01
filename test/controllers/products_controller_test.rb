@@ -22,7 +22,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
       post products_url, params: { product: { current: @product.current, description: @product.description, gusti_id: @product.gusti_id, reorder_in: @product.reorder_in } }
     end
 
-    assert_redirected_to product_url(Product.last)
+    assert_redirected_to product_url(Product.find(3))
   end
 
   test "should show product" do

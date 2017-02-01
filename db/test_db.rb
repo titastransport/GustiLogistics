@@ -26,16 +26,22 @@ def not_empty_row?(cell)
 end
 
 PATH_TO_DIR = "seeds/unitactivityreportfaella2016/"
+
+
+
 Dir.foreach(PATH_TO_DIR) do |file|
   next if file.start_with? '.'
-  file_name = File.basename("#{PATH_TO_DIR}#{file}")
-  file_month = file_name.match(MATCH_MONTH).to_s
-  year = file_name.match(MATCH_YEAR).to_s
-  date = DateTime.parse("1/#{file_month}/#{year}")
-  open_excel = Roo::Spreadsheet.open("#{PATH_TO_DIR}/#{file}")
-  open_excel.each_with_index(gusti_id: 'Item ID') do |hash, index|
-    p hash[:gusti_id]
+  #file_month = file_name.match(MATCH_MONTH).to_s
+  #year = file_name.match(MATCH_YEAR).to_s
+  #date = DateTime.parse("1/#{file_month}/#{year}")
+  spreadsheet = Roo::Spreadsheet.open("#{PATH_TO_DIR}/#{file}")
+  header = spreadsheet.row(1)
+  imported_products = (2..spreadsheet.last_row).map do |i|
+    row = Hash[[header, spreadsheet.row(i)].transpose]
+    if row['Item ID'].to_s != ''
+      row['Qty on Hand'].to_i
+    end
   end
+  p imported_products.compact
 end
-
 
