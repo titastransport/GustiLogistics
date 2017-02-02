@@ -1,13 +1,20 @@
 pianogrillo:
   id: 1
-  gusti_id: "pg"
+  gusti_id: "OLI1000"
   description: "pg description" 
   current: 1
   reorder_in: 1
 
-faell spaghetti:
+faellaspaghetti:
   id: 2
   gusti_id: "faell_id"
+  description: "faella description" 
+  current: 1
+  reorder_in: 1
+
+faellaspaghettoni:
+  id: 3
+  gusti_id: "faella_id"
   description: "faella description" 
   current: 1
   reorder_in: 1

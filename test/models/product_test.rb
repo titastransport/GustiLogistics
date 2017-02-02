@@ -13,4 +13,12 @@ class ProductTest < ActiveSupport::TestCase
       @product.destroy
     end
   end
+
+  test "gusti_id should be unique" do
+    duplicate_product = @product.dup
+    duplicate_product.gusti_id.downcase
+    @product.save
+    assert_not duplicate_product.valid?
+  end
+
 end
