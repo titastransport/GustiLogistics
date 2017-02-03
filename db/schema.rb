@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170203025410) do
+ActiveRecord::Schema.define(version: 20170203055825) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "sold"
@@ -23,6 +23,25 @@ ActiveRecord::Schema.define(version: 20170203025410) do
   end
 
   create_table "activity_imports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "customer_purchase_orders", force: :cascade do |t|
+    t.string   "item_id"
+    t.integer  "quantity"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.date     "date"
+    t.integer  "product_id"
+    t.integer  "customer_id"
+    t.index ["customer_id", "date"], name: "index_customer_purchase_orders_on_customer_id_and_date", unique: true
+    t.index ["customer_id"], name: "index_customer_purchase_orders_on_customer_id"
+    t.index ["product_id"], name: "index_customer_purchase_orders_on_product_id"
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -42,14 +61,6 @@ ActiveRecord::Schema.define(version: 20170203025410) do
     t.decimal  "growth_factor"
     t.string   "producer"
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true
-  end
-
-  create_table "purchases", force: :cascade do |t|
-    t.string   "customer"
-    t.string   "item_id"
-    t.integer  "quantity"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "reorders", force: :cascade do |t|

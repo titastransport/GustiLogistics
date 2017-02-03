@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'activerecord-reset-pk-sequence'
 gem 'bcrypt',		   		'3.1.11'
 gem 'seedbank'
 gem 'chartkick',       		'2.2.1'

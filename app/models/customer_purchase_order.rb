@@ -1,0 +1,2 @@
+class CustomerPurchaseOrder < ApplicationRecord
+end
