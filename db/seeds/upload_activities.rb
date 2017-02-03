@@ -44,11 +44,11 @@ class UnitActivityReport
   end
 
   def valid_row?(index, row)
-    index != 0 && not_empty_row?(row[:gusti_id])
+    index != 0 && not_empty_row?(row)
   end
 
-  def not_empty_row?(cell)
-    cell.to_s != "" 
+  def not_empty_row?(row)
+    row[:gusti_id].to_s != "" && !row[:sold].nil?  
   end
 
   def current_product(row)

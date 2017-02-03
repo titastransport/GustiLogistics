@@ -24,10 +24,8 @@ class ActivityTest < ActiveSupport::TestCase
   end
 
   test "product should have one activity per month" do
-    duplicate_activity = @activity.dup
-    duplicate_activity.save
+    @activity.save
+    duplicate_activity = Activity.new(sold: @activity.sold, date: @activity.date, product_id: @activity.product_id)
     assert_not duplicate_activity.valid?
-    duplicate_activity.product_id = 20
-    assert duplicate_activity.valid?
   end
 end

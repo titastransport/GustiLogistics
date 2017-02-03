@@ -25,7 +25,7 @@ def not_empty_row?(cell)
   cell.to_s != ""
 end
 
-PATH_TO_DIR = "seeds/unitactivityreportfaella2016/"
+PATH_TO_DIR = "#{Rails.root}/db//seeds/unitactivityreportfaella2016/"
 
 
 
@@ -39,9 +39,8 @@ Dir.foreach(PATH_TO_DIR) do |file|
   imported_products = (2..spreadsheet.last_row).map do |i|
     row = Hash[[header, spreadsheet.row(i)].transpose]
     if row['Item ID'].to_s != ''
-      row['Qty on Hand'].to_i
+      row['Sold'].to_i
     end
   end
-  p imported_products.compact
 end
 
