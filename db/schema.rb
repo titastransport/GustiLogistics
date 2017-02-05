@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205035419) do
+ActiveRecord::Schema.define(version: 20170205171222) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "sold"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20170205035419) do
     t.integer "customer_id"
     t.index ["customer_id", "date", "product_id"], name: "my_index", unique: true
     t.index ["customer_id"], name: "index_customer_purchase_orders_on_customer_id"
+    t.index ["date", "product_id"], name: "index_customer_purchase_orders_on_date_and_product_id"
     t.index ["product_id"], name: "index_customer_purchase_orders_on_product_id"
   end
 
