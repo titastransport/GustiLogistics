@@ -47,6 +47,9 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     builder (3.2.2)
+    bullet (5.5.0)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     byebug (9.0.0)
     chartkick (2.2.1)
     coffee-rails (4.2.1)
@@ -158,6 +161,7 @@ GEM
       thread_safe (~> 0.1)
     uglifier (3.0.0)
       execjs (>= 0.3.0, < 3)
+    uniform_notifier (1.10.0)
     web-console (3.1.1)
       activemodel (>= 4.2)
       debug_inspector
@@ -174,6 +178,7 @@ DEPENDENCIES
   autoprefixer-rails
   bcrypt (= 3.1.11)
   bootstrap-sass (= 3.3.6)
+  bullet
   byebug (= 9.0.0)
   chartkick (= 2.2.1)
   coffee-rails (= 4.2.1)
@@ -194,6 +199,9 @@ DEPENDENCIES
   tzinfo-data
   uglifier (= 3.0.0)
   web-console (= 3.1.1)
+
+RUBY VERSION
+   ruby 2.4.0p0
 
 BUNDLED WITH
    1.13.7

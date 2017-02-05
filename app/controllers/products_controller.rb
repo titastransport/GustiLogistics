@@ -7,34 +7,8 @@ class ProductsController < ApplicationController
     @products = Product.all.select { |p| p.producer == "Faella" }
   end
 
-  def get_month_name(num)
-    Date::MONTHNAMES[num]
-  end
-
-  def last_n_months(most_recent_month, n) 
-    months = []
-    most_recent_month.downto(most_recent_month - (n - 1)) do |m|
-      m += 12 if m <= 0
-      months << m
-    end
-    months
-  end
-
   def show
-    @top_twenty = Hash.new(0)
-    most_recent_month = CustomerPurchaseOrder.first.date.month     
-    # using 6 months for now, because seems like best guess for predicting, if I
-    # had to choose only one
-    months_to_query = last_n_months(most_recent_month, 6)
-    CustomerPurchaseOrder.all.select do |purchase| 
-      months_to_query.include? purchase.date.month 
-   # purchases_with_product = CustomerPurchaseOrder.all.select do |purchase| 
-   #   purchase.product.gusti_id == @product.gusti_id
-   # end
-   # purchases_with_product.max_by(20) { |p| p.quantity }.each do |c|
-   #   @top_twenty[c.customer.name] += c.quantity 
-   # end
-   # @total = @top_twenty.values.reduce(&:+) 
+    @top_twenty = find_top_twenty_customers  
   end
 
   def new
