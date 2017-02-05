@@ -1,6 +1,4 @@
-<div class="container" id='product-header'>
-
-  <p id="notice"><%= notice %></p>
+<div class="container center" id='product-header'>
   <p>
     <strong>Item:</strong>
     <%= @product.gusti_id %>
@@ -20,7 +18,7 @@
 </div>
 
   <table id='toptable'>
-    <caption><strong><u>Top 20 Customers</u></strong></caption>
+    <h2><strong><u>Top 20 Customers in Last 6 Months</u></strong></h2>
     <tr>
       <th>Rank</th>
       <th>Customer</th>
@@ -35,9 +33,11 @@
     <% end %>
   </table>
 
-<p>
-  <%= pie_chart @top_twenty %>
-</p>
+<div class="container">
+  <p>
+    <%= pie_chart @top_twenty %>
+  </p>
+</div>
 
 
 <%= link_to 'Edit', edit_product_path(@product) %> |

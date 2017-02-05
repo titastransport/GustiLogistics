@@ -14,31 +14,28 @@ class ItemsSoldToCustomers
     current_customer = nil
     file.each_with_index(row_params) do |row, index|
       current_customer = nil if all_empty_row?(row)
-      if valid_row?(index, row) && faella_product?(row[:gusti_id])
+      if valid_row?(index, row)
         current_customer = find_current_customer(row) if current_customer.nil? 
-        create_purchase(current_customer, row)
+        potential_purchase = \
+          current_customer.customer_purchase_orders.new(purchase_attributes(row)) 
+        potential_purchase.save if potential_purchase.valid?
       end
     end
   end
 
-  # Starting with only Faella product so must exclude others despite 2015 upload
-  # of all..
-  def faella_product?(gusti_id)
-    Product.find_by(gusti_id: gusti_id).producer == "Faella"
-  end
-
-  def create_purchase(current_customer, row)
-    quantity, date, product_id = row[:purchase_quantity], create_datetime, find_current_product(row).id 
-    current_customer.customer_purchase_orders.create!(quantity: quantity, date: date, \
-                                                     product_id: product_id) 
+  def purchase_attributes(row)
+    { quantity: row[:purchase_quantity], date: create_datetime,\
+      product_id: find_current_product(row).id }
   end
 
   def find_current_product(row)
-    Product.find_by(gusti_id: row[:gusti_id]) || (Product.create!(gusti_id: row[:gusti_id], current: 0))
+    Product.find_or_create_by(gusti_id: row[:gusti_id]) do |product|
+      product.current = 0
+    end
   end
 
   def find_current_customer(row)
-    Customer.find_by(name: row[:customer_name]) || Customer.create!(name: row[:customer_name])
+    Customer.find_or_create_by(name: row[:customer_name])
   end
 
   def all_empty_row?(row)
