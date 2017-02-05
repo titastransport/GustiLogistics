@@ -3,12 +3,12 @@ require_relative '../seed_helper'
 
 class UnitActivityReport
   include Dateable
-  attr_reader :file, :file_name, :month, :year
+  attr_reader :file, :file_name#, :month, :year
 
   def initialize(file)
     @file_name = File.basename(file, File.extname(file))
     @file = Roo::Spreadsheet.open(file)
-    @month, @year = parse_file_name
+    #@month, @year = parse_file_name
   end
 
   def upload_uar

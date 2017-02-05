@@ -4,19 +4,18 @@ class ProductsController < ApplicationController
   before_action :logged_in_user 
 
   def index
-    @products = Product.all
+    @products = Product.all.select { |p| p.producer == "Faella" }
   end
 
   def show
-    @top_twenty = {}
-    purchases_with_product = Purchase.all.select do |purchase| 
-      purchase.item_id == @product.gusti_id
+    @top_twenty = Hash.new(0)
+    purchases_with_product = CustomerPurchaseOrder.all.select do |purchase| 
+      purchase.product.gusti_id == @product.gusti_id
     end
     purchases_with_product.max_by(20) { |p| p.quantity }.each do |c|
-      @top_twenty[c.customer] = c.quantity 
+      @top_twenty[c.customer.name] += c.quantity 
     end
     @total = @top_twenty.values.reduce(&:+) 
-    #@top_five
   end
 
   def new

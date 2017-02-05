@@ -3,6 +3,7 @@ class Product < ApplicationRecord
   default_scope { order(:gusti_id) }
   has_many :reorders, dependent: :destroy
   has_many :activities, dependent: :destroy
+  has_many :customer_purchase_orders
   validates :gusti_id, presence: true,
                        uniqueness: { case_sensitive: false } 
   validates :current, presence: true
