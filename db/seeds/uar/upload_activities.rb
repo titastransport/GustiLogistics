@@ -1,35 +1,14 @@
 require 'roo'
-require 'date'
+require_relative '../seed_helper'
 
 class UnitActivityReport
-  MATCH_MONTH = /[a-zA-Z]{3,10}/
-  MATCH_YEAR = /\d{4}/
-  NOT_ALL_CAPS = /[^A-Z]/
-  FIRST_OF_MONTH = 1
+  include Dateable
   attr_reader :file, :file_name, :month, :year
 
   def initialize(file)
     @file_name = File.basename(file, File.extname(file))
     @file = Roo::Spreadsheet.open(file)
     @month, @year = parse_file_name
-  end
-
-  def parse_file_name
-    # File must be seperate by _ and contain maximum UAR, month, and year..
-    parts = file_name.split(/_/).select { |el| el =~ NOT_ALL_CAPS }
-    [get_month(parts), get_year(parts)]
-  end
-
-  def get_month(arr)
-    arr.select { |el| el =~ MATCH_MONTH }.first
-  end
-  
-  def get_year(arr)
-    arr.select { |el| el =~ MATCH_YEAR }.first
-  end
-
-  def create_datetime
-    DateTime.parse("#{FIRST_OF_MONTH}/#{month}/#{year}")
   end
 
   def upload_uar
@@ -67,5 +46,4 @@ class UnitActivityReport
   def create_new_product(row)
     Product.create!(gusti_id: row[:gusti_id], description: row[:description], current: row[:current]) 
   end
-
 end
