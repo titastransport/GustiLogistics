@@ -2,30 +2,39 @@ require 'roo'
 require 'date'
 
 class UnitActivityReport
-  MATCH_MONTH = /(?<=_)\w+(?=_)/
-  MATCH_YEAR = /(?<=_)\d{4}/
+  MATCH_MONTH = /[a-zA-Z]{3,10}/
+  MATCH_YEAR = /\d{4}/
+  NOT_ALL_CAPS = /[^A-Z]/
   FIRST_OF_MONTH = 1
-  attr_reader :file, :file_name
+  attr_reader :file, :file_name, :month, :year
 
   def initialize(file)
-    @file_name = File.basename(file)
+    @file_name = File.basename(file, File.extname(file))
     @file = Roo::Spreadsheet.open(file)
+    @month, @year = parse_file_name
   end
 
-  def get_month
-    file_name.match(MATCH_MONTH).to_s
+  def parse_file_name
+    # File must be seperate by _ and contain maximum UAR, month, and year..
+    parts = file_name.split(/_/).select { |el| el =~ NOT_ALL_CAPS }
+    [get_month(parts), get_year(parts)]
+  end
+
+  def get_month(arr)
+    arr.select { |el| el =~ MATCH_MONTH }.first
   end
   
-  def get_year
-    file_name.match(MATCH_YEAR).to_s
+  def get_year(arr)
+    arr.select { |el| el =~ MATCH_YEAR }.first
   end
 
   def create_datetime
-    DateTime.parse("#{FIRST_OF_MONTH}/#{get_month}/#{get_year}")
+    DateTime.parse("#{FIRST_OF_MONTH}/#{month}/#{year}")
   end
 
   def upload_uar
     file.each_with_index(row_params) do |row, index| 
+      # Non valid activities are not uploaded/created
       if valid_row?(index, row) 
         product_in_row = current_product(row)
         create_activity(product_in_row, row)
