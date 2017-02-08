@@ -1,14 +1,14 @@
 class ProductsController < ApplicationController
   include ProductsHelper
   before_action :set_product, only: [:show, :edit, :update, :destroy]
-  before_action :logged_in_user 
+  before_action :logged_in_user
 
   def index
     @products = Product.all.select { |p| p.producer == "Faella" }
   end
 
   def show
-    @top_twenty = find_top_twenty_customers  
+    @top_twenty = find_top_twenty_customers
   end
 
   def new
@@ -39,11 +39,6 @@ class ProductsController < ApplicationController
   def destroy
     @product.destroy
     redirect_to products_url, notice: 'Product was successfully destroyed.'
-  end
-
-  def import
-    Product.import(params[:file])
-    redirect_to root_url, notice: "Products imported."
   end
 
   private
