@@ -1,8 +1,11 @@
-<% if !flash.empty? %>
+<% if object.errors.any? %>
   <div id="error_explanation">
+    <div class="alert alert-danger">
+      The form contains <%= pluralize(object.errors.count, "error") %>.
+    </div>
     <ul>
-      <% flash.each do |key, value| %>
-        <li><%= content_tag(:div, value, class: "flash #{key}") %>
+      <% object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
       <% end %>
     </ul>
   </div>

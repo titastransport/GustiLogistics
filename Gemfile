@@ -1,12 +1,10 @@
-ruby "2.4.0" 
-
 source 'https://rubygems.org'
 
 gem 'activerecord-reset-pk-sequence'
 gem 'bcrypt',		   		'3.1.11'
 gem 'seedbank'
 gem 'chartkick',       		'2.2.1'
-gem 'bootstrap-sass',  		'3.3.6'
+gem 'bootstrap-sass',			'~> 3.3.6'
 gem 'autoprefixer-rails'
 gem 'roo',					'2.6.0'
 gem 'rails',          		'5.0.1'

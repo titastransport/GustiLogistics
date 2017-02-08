@@ -1,10 +1,9 @@
 class ActivityImportsController < ApplicationController
   before_action :logged_in_user
-  before_action :valid_file?, only: :create
+  before_action :check_file, only: :create
 
   def new
     @activity_import = ActivityImport.new
-    @products = Product.all
   end
 
   def create
@@ -17,12 +16,16 @@ class ActivityImportsController < ApplicationController
     end
   end
 
-  def valid_file?
-    file = import_params[:file]
-    extname = File.extname(file.original_filename)
+  def check_file
+    if params[:activity_import].nil?
+      redirect_to new_activity_import_path, alert: "File missing for upload."
+      return
+    end
+
+    filename = import_params[:file].original_filename
+    extname = File.extname(filename)
     unless extname == ".xlsx"
-      flash[:error] = "File not present."
-      redirect_to new_activity_import_path
+      redirect_to new_activity_import_path, alert: "Incorrect file type. Please upload a .xlsx file"
     end
   end
 

@@ -1,4 +1,5 @@
 class ActivityImport < ApplicationRecord
+  validates :file, presence: true
   attr_accessor :file
 
   #def initialize(attributes = {})

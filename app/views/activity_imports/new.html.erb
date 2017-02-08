@@ -18,14 +18,14 @@ For uploading a 'Unit Activity Report' file, create a Peachtree report for any <
 
 <p>
 
-<%= form_for @activity_import do |f| %>
+<%= form_for(@activity_import) do |f| %>
   <% if @activity_import.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@activity_import.errors.count, "error") %> prohibited this import from completing:</h2>
       <ul>
-        <% @activity_import.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
+      <% @activity_import.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
       </ul>
     </div>
   <% end %>
@@ -34,6 +34,7 @@ For uploading a 'Unit Activity Report' file, create a Peachtree report for any <
     <%= f.file_field :file %>
   </div>
   <div class="buttons"><%= f.submit "Import" %></div>
+
 <% end %>
 
 <%= link_to 'Click to go to Home Page', root_url %>
