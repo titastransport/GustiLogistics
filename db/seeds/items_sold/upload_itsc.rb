@@ -15,9 +15,9 @@ class ItemsSoldToCustomers
     file.each_with_index(row_params) do |row, index|
       current_customer = nil if all_empty_row?(row)
       if valid_row?(index, row)
-        current_customer = find_current_customer(row) if current_customer.nil? 
+        current_customer = find_current_customer(row) if current_customer.nil?
         potential_purchase = \
-          current_customer.customer_purchase_orders.new(purchase_attributes(row)) 
+          current_customer.customer_purchase_orders.new(purchase_attributes(row))
         potential_purchase.save if potential_purchase.valid?
       end
     end

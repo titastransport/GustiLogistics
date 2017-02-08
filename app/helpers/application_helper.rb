@@ -1,5 +1,4 @@
 module ApplicationHelper
-
   def full_title(page_title = '')
     base_title = "GustiLogistics"
     if page_title.empty?
@@ -17,5 +16,4 @@ module ApplicationHelper
     when "alert alert-alert"    then :alert
     end
   end
-
 end

@@ -11,7 +11,6 @@ class ActivityImportsController < ApplicationController
     if @activity_import.save
       redirect_to root_url, notice: "Imported Unit Activity Report successfully."
     else
-      @products = Product.all
       render :new
     end
   end
@@ -25,7 +24,8 @@ class ActivityImportsController < ApplicationController
     filename = import_params[:file].original_filename
     extname = File.extname(filename)
     unless extname == ".xlsx"
-      redirect_to new_activity_import_path, alert: "Incorrect file type. Please upload a .xlsx file"
+      redirect_to new_activity_import_path,\
+        alert: "Incorrect file type. Please upload a .xlsx file"
     end
   end
 
