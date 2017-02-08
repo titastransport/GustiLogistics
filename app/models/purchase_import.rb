@@ -1,16 +1,28 @@
+require "dateable"
+
 class PurchaseImport < ApplicationRecord
+  include ActiveModel::Model
+  include Dateable
+
+  validates :file, presence: true
   attr_accessor :file
 
+  def filename
+    File.basename(file.original_filename, File.extname(file.original_filename))
+  end
+
   def save
-    if imported_purchases.map(&:valid?).all?
-     imported_purchases.each(&:save!)
+    purchases = imported_purchases
+    if purchases.map(&:valid?).all?
+     purchases.each(&:save!)
      true
     else
-      imported_purchases.each_with_index do |purchase, index|
+      purchases.each_with_index do |purchase, index|
         purchase.errors.full_messages.each do |message|
-          errors.add :base, "Row #{index + 2}: #{message}"
+          self.errors.add :base, "Row #{index + 2}: #{message}"
         end
       end
+      byebug
       false
     end
   end
@@ -22,22 +34,46 @@ class PurchaseImport < ApplicationRecord
   def load_imported_purchases
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
+    current_customer = nil
     imported_purchases = (2..spreadsheet.last_row).map do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
+      current_customer = nil if all_empty_row?(row)
+      if not_empty_row?(row)
+        current_customer = find_current_customer(row) if current_customer.nil?
+        current_customer.customer_purchase_orders.build(purchase_attributes(row))
+      end
     end
     imported_purchases.compact
-  end 
-
-  def customer
-    Customer.find_by()
-  end
-
-  def create_new_purchase(row)
-    Customer.purchases.create(gusti_id: row['Item ID'], current: row['Qty on Hand'], reorder_in: 999) 
   end
 
   def open_spreadsheet
-    Roo::Spreadsheet.open(file.path) 
+    Roo::Spreadsheet.open(file.path)
   end
 
+  def create_purchase(product, row)
+    customer.customer_purchase_orders.build(sold: row['Units Sold'], date: create_datetime)
+  end
+
+  def purchase_attributes(row)
+    { quantity: row['Qty'], date: create_datetime, product_id: find_current_product(row).id }
+  end
+
+  def all_empty_row?(row)
+    row.values.all? { |cell| cell.to_s == "" }
+  end
+
+  def not_empty_row?(row)
+    row.values.all? { |cell| cell.to_s != "" }
+  end
+
+  def find_current_customer(row)
+    Customer.find_or_create_by(name: row['Name'])
+  end
+
+  # If not found, gets created and initialized without a current value..
+  def find_current_product(row)
+    Product.find_or_create_by(gusti_id: row['Item ID']) do |product|
+      product.current = 0
+    end
+  end
 end

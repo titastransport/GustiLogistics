@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get    '/activity_imports', to: redirect('activity_imports/new')
 
   resources :activity_imports, only: [:new, :create]
+  resources :purchase_imports, only: [:new, :create]
   resources :products do
     collection { post :import }
   end
