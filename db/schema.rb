@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170208223241) do
+ActiveRecord::Schema.define(version: 20170209005333) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "sold"
@@ -50,15 +50,17 @@ ActiveRecord::Schema.define(version: 20170208223241) do
     t.string   "description"
     t.integer  "current"
     t.integer  "reorder_in"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.integer  "lead_time"
     t.integer  "travel_time"
     t.integer  "cover_time"
-    t.date     "cant_ship"
-    t.date     "cant_produce"
-    t.decimal  "growth_factor"
+    t.string   "growth_factor"
     t.string   "producer"
+    t.date     "cant_travel_start"
+    t.date     "cant_travel_end"
+    t.date     "cant_produce_end"
+    t.date     "cant_produce_start"
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true
   end
 
