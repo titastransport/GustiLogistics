@@ -4,7 +4,7 @@ gem 'activerecord-reset-pk-sequence'
 gem 'bcrypt',		   		'3.1.11'
 gem 'seedbank'
 gem 'chartkick',       		'2.2.1'
-gem 'bootstrap-sass',  		'3.3.6'
+gem 'bootstrap-sass',			'~> 3.3.6'
 gem 'autoprefixer-rails'
 gem 'roo',					'2.6.0'
 gem 'rails',          		'5.0.1'
@@ -23,6 +23,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'bullet'
   gem 'web-console',           '3.1.1'
   gem 'listen',                '3.0.8'
   gem 'spring',                '1.7.2'

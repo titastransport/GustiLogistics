@@ -1,0 +1,36 @@
+<h1>Items Sold to Customers Import</h1>
+
+<h5>An Excel file can be uploaded to update products' current quantities and create new activities.</h5>
+
+<p>
+For uploading a 'Unit purchase Report' file, create a Peachtree report for any <strong><em>month</strong></em> with the following columns included:
+  <ol>
+    <li>Name</li>
+    <li>Item ID</li>
+    <li>Qty</li>
+  </ol>
+  <p>
+  And save it in the following <strong>format: "ISTC_Month_Year.xlsx", i.e., "ISTC_July_2015.xlsx"</strong>
+  </p>
+</p>
+
+<%= form_for(@purchase_import) do |f| %>
+  <% if @purchase_import.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@purchase_import.errors.count, "error") %> prohibited this import from completing:</h2>
+      <ul>
+      <% @purchase_import.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.file_field :file %>
+  </div>
+  <div class="buttons"><%= f.submit "Import" %></div>
+
+<% end %>
+
+<%= link_to 'Click to go to Home Page', root_url %>

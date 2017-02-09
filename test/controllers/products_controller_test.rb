@@ -18,11 +18,6 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should show product" do
-    get product_url(@product)
-    assert_response :success
-  end
-
   test "should get edit" do
     get edit_product_url(@product)
     assert_response :success

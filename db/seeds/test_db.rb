@@ -1,8 +1,7 @@
-require 'date'
+require_relative 'dateable'
 require 'roo'
+include Dateable
 
-MATCH_MONTH = /(?<=_)\w+(?=_)/ 
-MATCH_YEAR = /(?<=_)\d{4}/
 month = {
             January:    1,
             February:   2, 
@@ -31,9 +30,7 @@ PATH_TO_DIR = "#{Rails.root}/db//seeds/unitactivityreportfaella2016/"
 
 Dir.foreach(PATH_TO_DIR) do |file|
   next if file.start_with? '.'
-  #file_month = file_name.match(MATCH_MONTH).to_s
-  #year = file_name.match(MATCH_YEAR).to_s
-  #date = DateTime.parse("1/#{file_month}/#{year}")
+  
   spreadsheet = Roo::Spreadsheet.open("#{PATH_TO_DIR}/#{file}")
   header = spreadsheet.row(1)
   imported_products = (2..spreadsheet.last_row).map do |i|
@@ -43,4 +40,3 @@ Dir.foreach(PATH_TO_DIR) do |file|
     end
   end
 end
-

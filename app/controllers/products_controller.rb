@@ -1,22 +1,19 @@
 class ProductsController < ApplicationController
   include ProductsHelper
   before_action :set_product, only: [:show, :edit, :update, :destroy]
-  before_action :logged_in_user 
+  before_action :logged_in_user
 
   def index
-    @products = Product.all
+    @products = Product.select { |p| p.producer == "Faella" }
+    @reorders = Hash.new
+    @products.each do |product|
+      @product = product
+      @reorders[@product] = naive_reorder_in
+    end
   end
 
   def show
-    @top_twenty = {}
-    purchases_with_product = Purchase.all.select do |purchase| 
-      purchase.item_id == @product.gusti_id
-    end
-    purchases_with_product.max_by(20) { |p| p.quantity }.each do |c|
-      @top_twenty[c.customer] = c.quantity 
-    end
-    @total = @top_twenty.values.reduce(&:+) 
-    #@top_five
+    @top_twenty = find_top_twenty_customers
   end
 
   def new
@@ -47,11 +44,6 @@ class ProductsController < ApplicationController
   def destroy
     @product.destroy
     redirect_to products_url, notice: 'Product was successfully destroyed.'
-  end
-
-  def import
-    Product.import(params[:file])
-    redirect_to root_url, notice: "Products imported."
   end
 
   private

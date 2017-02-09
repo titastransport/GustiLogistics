@@ -10,8 +10,6 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170203055825) do
-
   create_table "activities", force: :cascade do |t|
     t.integer  "sold"
     t.date     "date"
@@ -35,8 +33,9 @@ ActiveRecord::Schema.define(version: 20170203055825) do
     t.date     "date"
     t.integer  "product_id"
     t.integer  "customer_id"
-    t.index ["customer_id", "date"], name: "index_customer_purchase_orders_on_customer_id_and_date", unique: true
+    t.index ["customer_id", "date", "product_id"], name: "my_index", unique: true
     t.index ["customer_id"], name: "index_customer_purchase_orders_on_customer_id"
+    t.index ["date", "product_id"], name: "index_customer_purchase_orders_on_date_and_product_id"
     t.index ["product_id"], name: "index_customer_purchase_orders_on_product_id"
   end
 
@@ -44,6 +43,7 @@ ActiveRecord::Schema.define(version: 20170203055825) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_customers_on_name", unique: true
   end
 
   create_table "products", force: :cascade do |t|
@@ -51,16 +51,23 @@ ActiveRecord::Schema.define(version: 20170203055825) do
     t.string   "description"
     t.integer  "current"
     t.integer  "reorder_in"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.integer  "lead_time"
     t.integer  "travel_time"
     t.integer  "cover_time"
-    t.date     "cant_ship"
-    t.date     "cant_produce"
-    t.decimal  "growth_factor"
+    t.string   "growth_factor"
     t.string   "producer"
+    t.date     "cant_travel_start"
+    t.date     "cant_travel_end"
+    t.date     "cant_produce_end"
+    t.date     "cant_produce_start"
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true
+  end
+
+  create_table "purchase_imports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "reorders", force: :cascade do |t|

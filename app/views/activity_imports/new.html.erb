@@ -1,9 +1,9 @@
-<h1>Activity Import</h1>
+<h1>Unit Activity Report Import</h1>
 
-<h5>An Excel file can be uploaded to update products' current quantities and activities.</h5>
+<h5>An Excel file can be uploaded to update products' current quantities and create new activities.</h5>
 
 <p>
-  For uploading a 'Unit Activity Report' file, create a Peachtree report with the following columns:
+For uploading a 'Unit Activity Report' file, create a Peachtree report for any <strong><em>month</strong></em> with the following columns included:
   <ol>
     <li>Item ID</li>
     <li>Item Description</li>
@@ -12,27 +12,18 @@
     <li>Qty on Hand</li>
   </ol>
   <p>
-  <strong>And save it in the following format "UAR_Month_Year.xlsx", i.e., "UAR_July_2015.xlsx"</strong>
-   
+  And save it in the following <strong>format: "UAR_Month_Year.xlsx", i.e., "UAR_July_2015.xlsx"</strong>
   </p>
-  <strong>And the following products:</strong>
-  <ul>
-    <% @products.each do |product| %>
-      <li><%= product.gusti_id %> - <%= product.description %></li>
-    <% end %>
-  </ul>
 </p>
 
-<p>
-
-<%= form_for @activity_import do |f| %>
+<%= form_for(@activity_import) do |f| %>
   <% if @activity_import.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@activity_import.errors.count, "error") %> prohibited this import from completing:</h2>
       <ul>
-        <% @activity_import.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
+      <% @activity_import.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
       </ul>
     </div>
   <% end %>
@@ -41,6 +32,7 @@
     <%= f.file_field :file %>
   </div>
   <div class="buttons"><%= f.submit "Import" %></div>
+
 <% end %>
 
 <%= link_to 'Click to go to Home Page', root_url %>
