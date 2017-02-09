@@ -1,4 +1,4 @@
-require_relative 'seed_helper'
+require_relative '../seed_helper'
 require_relative 'upload_activities'
 
 # Upload all unit activity Falle for 2016
