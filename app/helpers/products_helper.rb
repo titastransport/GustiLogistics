@@ -66,11 +66,11 @@ module ProductsHelper
   end
 
   def reorder_date
-    @product.reorder_in + Date.today
+    Date.today + @product.reorder_in
   end
 
   def reorder_quantity
-    (monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i
+    (monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i - @product.current
   end
 
   # Finds top twenty customers
