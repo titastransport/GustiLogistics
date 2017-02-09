@@ -4,7 +4,12 @@ class ProductsController < ApplicationController
   before_action :logged_in_user
 
   def index
-    @products = Product.all.select { |p| p.producer == "Faella" }
+    @products = Product.select { |p| p.producer == "Faella" }
+    @reorders = Hash.new
+    @products.each do |product|
+      @product = product
+      @reorders[@product] = naive_reorder_in
+    end
   end
 
   def show
