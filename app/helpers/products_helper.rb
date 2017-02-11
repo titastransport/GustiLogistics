@@ -26,11 +26,15 @@ module ProductsHelper
   # to go into database only once
 
   ## works
-  def matching_records(associated_model)
+  def matching_records(associated_model, months_back)
     # set this local variable to avoid entering database each time
     most_recent = most_recent_date
     associated_model.select do |record|
-      in_last_twelve_months?(most_recent, record) && current_product?(record)
+      if months_back == 12
+        in_last_twelve_months?(most_recent, record) && current_product?(record)
+      elsif months_back == 6
+        in_last_six_months?(most_recent, record) && current_product?(record)
+      end
     end
   end
 
@@ -49,51 +53,61 @@ module ProductsHelper
   end
 
   # Splits the last year in orders into the first six and last six 
-  def partition_matching_records
+  def partition_matching_yearly_records(associated_model)
     most_recent = most_recent_date
-    matching_records(CustomerPurchaseOrder).partition do |purchase|
+    matching_records(associated_model, 12).partition do |purchase|
       in_last_six_months?(most_recent, purchase)
     end
   end
 
   # Sums up total purchases for the current product for each customer
   # 6 months choosen for default for now
-  def customer_purchases_totals
-    previous_six_months = Hash.new(0)
-    six_to_twelve_months = Hash.new(0)
+  def wholesale_customer_totals
+    halves = {}
 
-    first_six, last_six = partition_matching_records
+    first_half = Hash.new(0)
+    last_half = Hash.new(0)
+
+    first_six, last_six = partition_matching_yearly_records(CustomerPurchaseOrder)
 
     first_six.each do |purchase|
       #if matching_purchase.date.month
-      previous_six_months[purchase.customer.name] += purchase.quantity
+      first_half[purchase.customer.name] += purchase.quantity
     end
 
     last_six.each do |purchase|
       #if matching_purchase.date.month
-      six_to_twelve_months[purchase.customer.name] += purchase.quantity
+      last_half[purchase.customer.name] += purchase.quantity
     end
 
-  #  [previous_six_months, six_to_twelve_months]
-    previous_six_months
+    halves[:first_half] = first_half 
+    halves[:last_half] = last_half 
+    halves
   end
 
   # Sum up total number of units sold for a given product over a specified
   # timespan
   def total_units_sold
-    matching_records(Activity).reduce(0) { |sum, activity| sum += activity.sold }
+    halves_totals = {}
+
+    first_six, last_six = partition_matching_records(Activity)
+    
+    halves[first_half] = first_six.reduce(0) { |sum, activity| sum += activity.sold }
+    halves[last_half] = last_six.reduce(0) { |sum, activity| sum += activity.sold }
+   
+    halves_totals
   end
 
   # Average sales in the last N months
   # may also store this one day
-  def historical_monthly_product_sales
-    total_units_sold / TWELVE_MONTHS_BACK
+  def yearly_historical_monthly_product_sales
+    total_units_sold.reduce(0) { |sum, half| sum += half } / TWELVE_MONTHS_BACK
   end
 
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def waiting_sales
-    (@product.lead_time + @product.travel_time) * (historical_monthly_product_sales * @product.growth_factor.to_f)
+    (@product.lead_time + @product.travel_time) * (yearly_historical_monthly_product_sales * @product.growth_factor.to_f)
   end
 
   # Does not account for cant_travel and cant_produce times
@@ -113,18 +127,35 @@ module ProductsHelper
   end
 
   # Finds top n customers
-  def find_top_customers(n)
-    customer_purchases_totals.max_by(n) { |_, quantity| quantity }
+  def find_top_customers(num_customers)
+    halves = {}
+
+    first_half = customer_purchases_total[:first_half].max_by(num_customers) { |_, quantity| quantity }.to_h
+    second_half = customer_purchases_total[:second_half].max_by(num_customers) { |_, quantity| quantity }.to_h
+
+    halves[:first_half] = first_half 
+    halves[:last_half] = last_half 
+    halves
   end
 
-  def product_wholesale_total
-    all_wholesales = find_top_customers(@product.customer_purchase_orders.size)
-    all_wholesales.reduce(0) do |sum, (customer, quantity)| 
+  def total_wholesale_units_sold(months_back)
+  # all orders, need to get more precise
+    wholesale_orders = @product.customer_purchase_orders
+    all_wholesales = find_top_customers(wholesale_orders.size)
+
+    first_half_total = all_wholesales[:first_half].reduce(0) do |sum, (customer, quantity)| 
       sum += quantity
     end
+
+    second_half_total = all_wholesales[:second_half].reduce(0) do |sum, (customer, quantity)| 
+      sum += quantity
+    end
+    {first_half_total: first_half_total, second_half_total: second_half_total}
   end
 
-  def product_retail_total
-    total_units_sold - product_wholesale_total
+  def total_retail_units_sold
+    first_half_total = total_units_sold[:first_half] - total_wholesale_units_sold[:first_half]
+    second_half_total = total_units_sold[:second_half] - total_wholesale_units_sold[:second_half]
+    {first_half_total: first_half_total, second_half_total: second_half_total}
   end
 end

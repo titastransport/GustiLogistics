@@ -28,7 +28,7 @@
     <th>Customer</th>
     <th>Units Purchased</th>
   </tr>
-  <% @top_twenty.each_with_index do |(customer, quantity), rank| %>
+  <% @top_twenty_first_half.each_with_index do |(customer, quantity), rank| %>
   <tr>
     <td><%= rank + 1 %></td>
       <td><%= customer %></td>

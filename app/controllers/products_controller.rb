@@ -13,7 +13,15 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @top_twenty = find_top_customers(20)
+    tops = find_top_customers(20)
+    @top_twenty_first_half = tops[:first_half]
+    @top_twenty_second_half = tops[:second_half]
+
+    retails = total_retail_units_sold
+    @top_twenty_first_half[:Retail] = retails[:first_half]
+    @top_twenty_second_half[:Retail] = retails[:second_half]
+
+    # sort
   end
 
   def new
