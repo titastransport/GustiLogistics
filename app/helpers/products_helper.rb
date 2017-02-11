@@ -52,7 +52,7 @@ module ProductsHelper
   def second_half_top_customers
     # start date - 5 months leads to query of last 6 months
     final_date = most_recent_date - 6.months
-    start_date = final_date - 11.months
+    start_date = final_date - 5.months
 
     find_top_customers(start_date, final_date)
   end

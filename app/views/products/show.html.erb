@@ -1,4 +1,4 @@
-<div class="container center" id='product-header'>
+<div class="center-justified" id="product-header">
   <p>
     <strong>Item:</strong>
     <%= @product.gusti_id %>
@@ -21,28 +21,50 @@
   </p>
 </div>
 
-<table id='toptable'>
-  <h2><strong><u>Top 20 Customers in Last 6 Months</u></strong></h2>
-  <tr>
-    <th>Rank</th>
-    <th>Customer</th>
-    <th>Units Purchased</th>
-  </tr>
-  <% @first_half_top_customers.each_with_index do |(customer, quantity), rank| %>
-  <tr>
-    <td><%= rank + 1 %></td>
-      <td><%= customer %></td>
-    <td><%= quantity %></td>
-  </tr>
-  <% end %>
-</table>
-
-<div class="container">
-  <p>
-    <%= pie_chart @first_half_top_customers %>
-  </p>
+<div id="row1">
+  <div id="column1">
+    <table id='toptable'>
+      <h2><strong><u>Top Customers in Last 6 Months</u></strong></h2>
+      <tr>
+        <th>Rank</th>
+        <th>Customer</th>
+        <th>Units Purchased</th>
+      </tr>
+      <% @first_half_top_customers.each_with_index do |(customer, quantity), rank| %>
+      <tr>
+        <td><%= rank + 1 %></td>
+          <td><%= customer %></td>
+        <td><%= quantity %></td>
+      </tr>
+      <% end %>
+    </table>
+    <div class="pie">
+      <%= pie_chart @second_half_top_customers %>
+    </div>
+  </div>
+  <div id="column2">
+    <table id='toptable'>
+      <h2><strong><u>Top Customers in Previous 6 Months</u></strong></h2>
+      <tr>
+        <th>Rank</th>
+        <th>Customer</th>
+        <th>Units Purchased</th>
+      </tr>
+      <% @second_half_top_customers.each_with_index do |(customer, quantity), rank| %>
+      <tr>
+        <td><%= rank + 1 %></td>
+          <td><%= customer %></td>
+        <td><%= quantity %></td>
+      </tr>
+      <% end %>
+    </table>
+    <div class="pie">
+      <%= pie_chart @first_half_top_customers %>
+    </div>
+  </div>
 </div>
 
-
-<%= link_to 'Edit', edit_product_path(@product) %> |
-<%= link_to 'Home', products_path %>
+<div class="bottom-links">
+  <%= link_to 'Edit', edit_product_path(@product) %> |
+  <%= link_to 'Home', products_path %>
+</div>

@@ -110,11 +110,17 @@ table {
   }
 }
 
+#header-tags {
+  font-size: 20px
+}
+
 #product-header {
   padding: 0;
   p {
     text-align: left;
-    margin: 10px 0 10px 0;
+    margin: auto;
+    padding: 5px;
+    width: 17em;
   }
 }
 
@@ -158,4 +164,26 @@ input {
 
 .container {
   width: 100%;
+}
+
+#row1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  #column1 {
+  display: flex;
+  flex-direction: column;
+  outline: 1px solid black;
+  padding: 20px;
+  }
+  #column2 {
+  display: flex;
+  flex-direction: column;
+  outline: 1px solid black;
+  padding: 20px;
+  }
+}
+
+.bottom-links {
+  padding-top: 5px;
 }

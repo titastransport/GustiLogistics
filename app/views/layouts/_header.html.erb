@@ -2,10 +2,10 @@
   <div class="container">
     <%= link_to "GustiLogistics", root_path, id: "logo" %>
 	  <nav>
-	    <ul class="nav navbar-nav navbar-right">
+	    <ul class="nav navbar-nav navbar-right" id="header-tags">
         <% if logged_in? %>
           <li><%= link_to "Calendar", '/calendar' %></a></li>
-          <li><%= link_to "Products", products_path %></li>
+          <li><%= link_to "Products List", products_path %></li>
         </ul>
         <% else %>
 	        <li><%= link_to "Home", root_path %></li>
