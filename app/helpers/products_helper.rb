@@ -96,6 +96,39 @@ module ProductsHelper
     @product.lead_time + @product.travel_time
   end
 
+  def cant_ship_interval
+  # lead_time will be stored as integer or string so using to_f will work
+    # regardless
+    lead_time_days = @product.lead_time.to_f * DAYS_IN_MONTH
+
+    # can't order when within a month of cant ship start
+    cant_ship_start = @product.cant_travel_start.yday - lead_time_days
+    # in contrast, can order when within a month of a cant ship start
+    cant_ship_end = @product.cant_travel_end.yday - lead_time_days
+
+    (cant_ship_start..cant_ship_end)
+  end
+
+  def months_in_interval(interval)
+    interval.end.month - interval.first.month
+  end
+
+  def producer_cant_ship_block?
+    cant_ship_interval.include?(reorder_date.yday)
+  end
+
+  # In yday format, which basically means integers
+  def cant_produce_interval
+    cant_produce_start = @product.cant_produce_start.yday
+    cant_produce_end = @product.cant_produce_end.yday
+
+    (cant_produce_start..cant_produce_end)
+  end
+  
+  def producer_cant_produce_interval?
+    cant_produce_interval.include?(reorder_date.yday)
+  end
+
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def waiting_sales
@@ -106,8 +139,6 @@ module ProductsHelper
     @product.growth_factor.to_f
   end
 
-  # Does not account for cant_travel and cant_produce times
-  # works because I take waiting time sales out
   # happens essentially when product inventory at 2 months
   def naive_reorder_in
     inventory_adjusted_for_wait = @product.current - waiting_sales
@@ -116,11 +147,37 @@ module ProductsHelper
     growth)) * DAYS_IN_MONTH).round(1)
   end
 
-  def reorder_date
+  def update_reorder_date
     Date.today + @product.reorder_in
   end
 
-  def reorder_quantity
+  def proper_reorder_in
+    if producer_cant_ship_block? && producer_cant_produce_interval?
+      sooner = [cant_ship_interval.first, cant_produce_interval.first].min
+      if Date.today.yday <= sooner
+        sooner - Date.today.yday
+      else
+        last_block = [cant_ship_interval.end, cant_produce_interval.end].max
+        last_block - Date.today.yday
+      end
+    elsif producer_cant_ship_block? 
+      if Date.today <= cant_produce_interval.first
+        cant_produce_interval.first - Date.today
+      else 
+        cant_produce_interval.end - Date.today
+      end
+    elsif producer_cant_ship_block? 
+      if Date.today <= cant_ship_interval.first
+        cant_ship_interval.first - Date.today
+      else 
+        cant_ship_interval.end - Date.today
+      end
+    else
+      naive_reorder_in
+    end
+  end
+  
+  def naive_reorder_quantity
     ((average_monthly_sales * growth * @product.cover_time).to_i)
   end
 
