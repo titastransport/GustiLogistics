@@ -123,4 +123,17 @@ module ProductsHelper
   def reorder_quantity
     ((average_monthly_sales * growth * @product.cover_time).to_i)
   end
+
+  # temporary check if previous product setup while I fill out products
+  def setup?(product)
+    !product.reorder_in.nil?
+  end
+
+  def previous_product
+    Product.where(["gusti_id < ?", @product.gusti_id]).last
+  end
+
+  def next_product
+    Product.where(["gusti_id > ?", @product.gusti_id]).first
+  end
 end

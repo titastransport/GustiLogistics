@@ -21,7 +21,7 @@
   </p>
 </div>
 
-<div id="row1">
+<div id="top-customers-row">
   <div id="column1">
     <table id='toptable'>
       <h2><strong><u>Top Customers in Last 6 Months</u></strong></h2>
@@ -64,7 +64,19 @@
   </div>
 </div>
 
-<div class="bottom-links">
-  <%= link_to 'Edit', edit_product_path(@product) %> |
-  <%= link_to 'Home', products_path %>
+<div id="product-show-bottom-row">
+  <div id="column1">
+    <%= link_to 'Edit', edit_product_path(@product) %> |
+    <%= link_to 'Home', products_path %>
+  </div>
+  <div class="product-navigators" id="column2">
+    <% if previous_product && setup?(previous_product) %>
+      <%= link_to 'Previous Product', product_path(previous_product.id) %> |
+    <% end %>
+    <% if next_product && setup?(next_product) %>
+      <%= link_to 'Next Product', product_path(next_product.id) %>
+    <% end %>
+  </div>
 </div>
+
+

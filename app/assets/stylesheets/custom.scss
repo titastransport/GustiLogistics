@@ -122,6 +122,9 @@ table {
     padding: 5px;
     width: 17em;
   }
+  :last-child {
+    margin-bottom: 12px;
+  }
 }
 
 /* miscellaneous */
@@ -166,7 +169,7 @@ input {
   width: 100%;
 }
 
-#row1 {
+#top-customers-row {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -184,6 +187,16 @@ input {
   }
 }
 
-.bottom-links {
-  padding-top: 5px;
+#product-show-bottom-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  #column1 {
+  display: flex;
+  flex-direction: row;
+  }
+  #column2 {
+  display: flex;
+  flex-direction: row;
+  }
 }
