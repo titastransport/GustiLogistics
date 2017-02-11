@@ -97,6 +97,8 @@ module ProductsHelper
   end
 
   # Does not account for cant_travel and cant_produce times
+  # works because I take waiting time sales out
+  # happens essentially when product inventory at 2 months
   def naive_reorder_in
     (((@product.current - waiting_sales) / (historical_monthly_product_sales *
     @product.growth_factor.to_f)) * DAYS_IN_MONTH).round(1)
@@ -107,7 +109,7 @@ module ProductsHelper
   end
 
   def reorder_quantity
-    ((historical_monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i) - @product.current
+    ((historical_monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i)
   end
 
   # Finds top n customers
