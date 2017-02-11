@@ -39,13 +39,13 @@ module ProductsHelper
   end
 
   def in_last_twelve_months?(most_recent, record) 
-    record.date > most_recent - 11.months 
+    record.date > most_recent - 12.months 
     #most_recent.downto((most_recent - 12.months)).include?(record.date)
   end
   
   def in_last_six_months?(most_recent, record) 
-   # record.date > most_recent - 6.months 
-    most_recent.downto((most_recent - 5.months)).include?(record.date)
+    record.date > most_recent - 6.months 
+   # most_recent.downto((most_recent - 6.months)).include?(record.date)
   end
 
   # Splits the last year in orders into the first six and last six 
@@ -86,20 +86,20 @@ module ProductsHelper
 
   # Average sales in the last N months
   # may also store this one day
-  def monthly_product_sales
+  def historical_monthly_product_sales
     total_units_sold / TWELVE_MONTHS_BACK
   end
 
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def waiting_sales
-    (@product.lead_time + @product.travel_time) * monthly_product_sales
+    (@product.lead_time + @product.travel_time) * (historical_monthly_product_sales * @product.growth_factor.to_f)
   end
 
   # Does not account for cant_travel and cant_produce times
   def naive_reorder_in
-    (((@product.current - waiting_sales) / \
-     (monthly_product_sales * @product.growth_factor.to_f)) * DAYS_IN_MONTH).round(1)
+    (((@product.current - waiting_sales) / (historical_monthly_product_sales *
+    @product.growth_factor.to_f)) * DAYS_IN_MONTH).round(1)
   end
 
   def reorder_date
@@ -107,7 +107,7 @@ module ProductsHelper
   end
 
   def reorder_quantity
-    (monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i - @product.current
+    ((historical_monthly_product_sales * @product.growth_factor.to_f * @product.cover_time).to_i) - @product.current
   end
 
   # Finds top n customers

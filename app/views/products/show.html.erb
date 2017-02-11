@@ -15,29 +15,27 @@
     <strong>Reorder in:</strong>
     <%= "#{@product.reorder_in} days" %>
   </p>
-
   <p>
     <strong>Reorder Quantity:</strong>
     <%= "#{reorder_quantity} units" %>
   </p>
-
 </div>
 
-  <table id='toptable'>
-    <h2><strong><u>Top 20 Customers in Last 6 Months</u></strong></h2>
-    <tr>
-      <th>Rank</th>
-      <th>Customer</th>
-      <th>Units Purchased</th>
-    </tr>
-    <% @top_twenty.each_with_index do |(customer, quantity), rank| %>
-    <tr>
-      <td><%= rank + 1 %></td>
-	    <td><%= customer %></td>
-      <td><%= quantity %></td>
-    </tr>
-    <% end %>
-  </table>
+<table id='toptable'>
+  <h2><strong><u>Top 20 Customers in Last 6 Months</u></strong></h2>
+  <tr>
+    <th>Rank</th>
+    <th>Customer</th>
+    <th>Units Purchased</th>
+  </tr>
+  <% @top_twenty.each_with_index do |(customer, quantity), rank| %>
+  <tr>
+    <td><%= rank + 1 %></td>
+      <td><%= customer %></td>
+    <td><%= quantity %></td>
+  </tr>
+  <% end %>
+</table>
 
 <div class="container">
   <p>
