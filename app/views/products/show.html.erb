@@ -28,7 +28,7 @@
     <th>Customer</th>
     <th>Units Purchased</th>
   </tr>
-  <% @top_twenty_first_half.each_with_index do |(customer, quantity), rank| %>
+  <% @first_half_top_customers.each_with_index do |(customer, quantity), rank| %>
   <tr>
     <td><%= rank + 1 %></td>
       <td><%= customer %></td>
@@ -39,7 +39,7 @@
 
 <div class="container">
   <p>
-    <%= pie_chart @top_twenty %>
+    <%= pie_chart @first_half_top_customers %>
   </p>
 </div>
 
