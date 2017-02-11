@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @top_twenty = find_top_twenty_customers
+    @top_twenty = find_top_customers(20)
   end
 
   def new
