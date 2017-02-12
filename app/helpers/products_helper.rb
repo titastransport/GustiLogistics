@@ -7,12 +7,12 @@ module ProductsHelper
     ((quantity.to_f / total) * 100).to_i + 1
   end
 
-  def get_month_name(num)
-    Date::MONTHNAMES[num]
+  def most_recent_activity_date
+    Activity.first.date
   end
 
-  def most_recent_date
-    Activity.first.date
+  def most_recent_purchase_date
+    CustomerPurchaseOrder.first.date
   end
 
   # Finds all records from an associated model between dates with current
@@ -32,9 +32,24 @@ module ProductsHelper
     totals
   end
 
+  def first_half_average_sales
+    final_date = most_recent_activity_date
+    start_date = final_date - 5.months
+
+    average_monthly_sales(start_date, final_date)
+  end
+
+  def second_half_average_sales
+    final_date = most_recent_activity_date - 6.months
+    start_date = final_date - 5.months
+
+    average_monthly_sales(start_date, final_date)
+  end
+
+
   def first_half_top_customers
     # start date - 5 months leads to query of last 6 months
-    final_date = most_recent_date
+    final_date = most_recent_purchase_date
     start_date = final_date - 5.months
 
     find_top_customers(start_date, final_date)
@@ -42,7 +57,7 @@ module ProductsHelper
 
   def second_half_top_customers
     # start date - 5 months leads to query of last 6 months
-    final_date = most_recent_date - 6.months
+    final_date = most_recent_purchase_date - 6.months
     start_date = final_date - 5.months
 
     top_customers = find_top_customers(start_date, final_date)
@@ -76,11 +91,10 @@ module ProductsHelper
 
   # Average sales in the last N months
   # may also store this one day
-  def average_monthly_sales
-    final_date = most_recent_date
-    start_date = final_date - 11.months
+  def average_monthly_sales(start_date, final_date)
+    duration = months_in_interval((start_date..final_date))
 
-    total_units_sold(start_date, final_date) / TWELVE_MONTHS
+    total_units_sold(start_date, final_date) / duration
   end
 
   def normal_order_wait_time
@@ -124,10 +138,19 @@ module ProductsHelper
     cant_produce_interval.include?(@product.next_reorder_date.yday)
   end
 
+  def forecasting_average_sales 
+    # last 12 months used for now
+    final_date = most_recent_activity_date
+    start_date = final_date - 11.months 
+    
+    average_monthly_sales(start_date, final_date)
+  end
+
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def naive_waiting_sales
-    normal_order_wait_time * average_monthly_sales * growth
+    
+    normal_order_wait_time * forecasting_average_sales * growth
   end
 
   def growth
@@ -138,7 +161,7 @@ module ProductsHelper
   def naive_reorder_in
     inventory_adjusted_for_wait = @product.current - naive_waiting_sales
 
-    ((inventory_adjusted_for_wait / (average_monthly_sales *
+    ((inventory_adjusted_for_wait / (forecasting_average_sales *
                                      growth)) * DAYS_IN_MONTH).round(1)
   end
 
@@ -211,7 +234,7 @@ module ProductsHelper
   end
 
   def full_order
-    (average_monthly_sales * growth * @product.cover_time).to_i
+    (forecasting_average_sales * growth * @product.cover_time).to_i
   end
 
   # temporary check if previous product setup while I fill out products

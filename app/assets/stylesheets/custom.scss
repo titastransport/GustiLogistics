@@ -173,17 +173,20 @@ input {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  #column1 {
+  #last-six {
   display: flex;
   flex-direction: column;
   outline: 1px solid black;
   padding: 20px;
   }
-  #column2 {
+  #previous-six {
   display: flex;
   flex-direction: column;
   outline: 1px solid black;
   padding: 20px;
+  }
+  p {
+	margin: 0; 
   }
 }
 
