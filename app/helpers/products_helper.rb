@@ -107,7 +107,7 @@ module ProductsHelper
   end
 
   def producer_cant_ship_block?
-    cant_ship_interval.include?(reorder_date.yday)
+    cant_ship_interval.include?(@product.next_reorder_date.yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -121,7 +121,7 @@ module ProductsHelper
   end
 
   def producer_cant_produce_interval?
-    cant_produce_interval.include?(reorder_date.yday)
+    cant_produce_interval.include?(@product.next_reorder_date.yday)
   end
 
   # Sales that occur in waiting period from time of order to receiving the order
@@ -142,8 +142,8 @@ module ProductsHelper
                                      growth)) * DAYS_IN_MONTH).round(1)
   end
 
-  def reorder_date
-    Date.today + @product.reorder_in
+  def update_reorder_date
+    Date.today + proper_reorder_in 
   end
 
   def sooner_cant_order_block
