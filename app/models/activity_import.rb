@@ -30,18 +30,45 @@ class ActivityImport < ApplicationRecord
     load_imported_activities
   end
 
+  def find_matching_activities(product)
+    matching_activities = product.activities.select do |activity|
+      month_number = activity.date.month
+      Date::MONTHNAMES[month_number] == parse_file_name[:month]
+    end
+    matching_activities
+  end
+
+  def activity_exists_for_month?(product)
+    !find_matching_activities(product).empty?
+  end
+
+  def update_activity_sold(product, row)
+    existing_activity = find_matching_activities(product).first 
+    existing_activity.sold = row['Units Sold']
+    existing_activity.save!
+    existing_activity
+  end
+
+  def update_product(current_product, row)
+    current_product.current = row['Qty on Hand']
+    current_product.update_reorder_in
+    current_product.update_next_reorder_date
+  end
+
   def load_imported_activities
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
     imported_activities = (2..spreadsheet.last_row).map do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       if not_empty_row?(row)
-        product = current_product(row) || create_new_product(row)
+        product = current_product(row)
         if product.valid?
-          product.current = row['Qty on Hand'].to_i
-          product.update_reorder_in
-          product.update_next_reorder_date
-          create_activity(product, row)
+          update_product(product, row)
+          if activity_exists_for_month?(product)
+            update_activity_sold(product, row)
+          else
+            create_activity(product, row)
+          end
         end
       end
     end
@@ -65,6 +92,6 @@ class ActivityImport < ApplicationRecord
   end
 
   def create_new_product(row)
-    new_product = Product.new(gusti_id: row['Item ID'], description: row['Item Description'], current: row['Qty on Hand'], reorder_in: 999)
+    Product.new(gusti_id: row['Item ID'], description: row['Item Description'], current: row['Qty on Hand'], reorder_in: 999)
   end
 end

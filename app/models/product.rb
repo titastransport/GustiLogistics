@@ -159,7 +159,7 @@ class Product < ApplicationRecord
   end
 
   def normal_order_wait_time
-    self.product.lead_time + self.product.travel_time
+    self.lead_time + self.travel_time
   end
 
   def lead_time_days
