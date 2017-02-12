@@ -17,7 +17,7 @@
   </p>
   <p>
     <strong>Reorder Quantity:</strong>
-    <%= "#{reorder_quantity} units" %>
+    <%= "#{@product.reorder_quantity} units" %>
   </p>
 </div>
 
@@ -25,7 +25,7 @@
   <div id="last-six">
     <table id='toptable'>
       <h2><strong><u>In the Last 6 Months</u></strong></h2>
-	  <p><strong>Average monthly sales</strong>: <%= first_half_average_sales %></p>
+	  <p><strong>Average monthly sales</strong>: <%= @product.first_half_average_sales %></p>
 	  <h3>Top Customers</h3>
       <tr>
         <th>Rank</th>
@@ -47,7 +47,7 @@
   <div id="previous-six">
     <table id='toptable'>
       <h2><strong><u>In the Previous 6 Months</u></strong></h2>
-	  <p><strong>Average monthly sales</strong>: <%= second_half_average_sales %></p>
+	  <p><strong>Average monthly sales</strong>: <%= @product.second_half_average_sales %></p>
 	  <h3>Top Customers</h3>
       <tr>
         <th>Rank</th>
@@ -74,11 +74,11 @@
     <%= link_to 'Home', products_path %>
   </div>
   <div class="product-navigators" id="column2">
-    <% if previous_product && setup?(previous_product) %>
-      <%= link_to 'Previous Product', product_path(previous_product.id) %> |
+    <% if @product.previous_product && @product.previous_product.setup? %>
+      <%= link_to 'Previous Product', product_path(@product.previous_product.id) %> |
     <% end %>
-    <% if next_product && setup?(next_product) %>
-      <%= link_to 'Next Product', product_path(next_product.id) %>
+    <% if @product.next_product && @product.next_product.setup? %>
+      <%= link_to 'Next Product', product_path(@product.next_product.id) %>
     <% end %>
   </div>
 </div>

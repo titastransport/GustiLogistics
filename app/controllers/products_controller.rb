@@ -7,13 +7,13 @@ class ProductsController < ApplicationController
     @reorders = Hash.new
     @products.each do |product|
       @product = product
-      @reorders[@product] = @product.naive_reorder_in
+      @reorders[@product] = @product.reorder_in
     end
   end
 
   def show
-    @first_half_top_customers = first_half_top_customers
-    @second_half_top_customers = second_half_top_customers
+    @first_half_top_customers = @product.first_half_top_customers
+    @second_half_top_customers = @product.second_half_top_customers
   end
 
   def new
