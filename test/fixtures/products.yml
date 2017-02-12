@@ -5,14 +5,23 @@ pianogrillo:
   current: 1
   reorder_in: 1
 
-faellaspaghetti:
+faella_spaghetti:
   id: 2
-  gusti_id: "faell_id"
+  gusti_id: "PAS12003"
   description: "faella description" 
-  current: 1
+  current: 100
   reorder_in: 1
+  lead_time: 1
+  travel_time: 1
+  cover_time: 4
+  growth: "1.2"
+  producer: "Faella",
+  cant_travel_start: Date.new(2017, 5, 15)
+  cant_travel_end: Date.new(2017, 9, 30)
+  cant_produce_end: Date.new(2017, 9, 15)
+  cant_produce_start: Date.new(2017, 8, 1)
 
-faellaspaghettoni:
+faella_bucatini:
   id: 3
   gusti_id: "faella_id"
   description: "faella description" 
