@@ -7,10 +7,10 @@
   </h2>
   <%= calendar @date do |date| %>
     <%= date.day %>
-    <% if @reorders_by_date[date] %>
+    <% if @products_by_reorder_date[date] %>
       <ul>
-        <% @reorders_by_date[date].each do |reorder| %>
-          <li><%= link_to product_description(reorder), product_path(reorder.product_id) %></li>
+        <% @products_by_reorder_date[date].each do |product| %>
+          <li><%= link_to product.description, product_path(product.id) %></li>
         <% end %>
       </ul>
     <% end %>

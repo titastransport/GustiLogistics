@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170209005333) do
+ActiveRecord::Schema.define(version: 20170212031130) do
 
   create_table "activities", force: :cascade do |t|
     t.integer  "sold"
@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 20170209005333) do
     t.date     "cant_travel_end"
     t.date     "cant_produce_end"
     t.date     "cant_produce_start"
+    t.date     "next_reorder_date"
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true
   end
 
