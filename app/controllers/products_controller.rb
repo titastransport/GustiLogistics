@@ -1,5 +1,4 @@
 class ProductsController < ApplicationController
-  include ProductsHelper
   before_action :set_product, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user
 
@@ -8,7 +7,7 @@ class ProductsController < ApplicationController
     @reorders = Hash.new
     @products.each do |product|
       @product = product
-      @reorders[@product] = naive_reorder_in
+      @reorders[@product] = @product.naive_reorder_in
     end
   end
 

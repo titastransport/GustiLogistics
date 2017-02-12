@@ -17,9 +17,9 @@ module ProductsHelper
 
   # Finds all records from an associated model between dates with current
   # product id
-  def matching_records(associated_model, start_date, final_date)
-    associated_model.where(date: start_date..final_date, product_id: @product.id)
-  end
+  #def matching_records(associated_model, start_date, final_date)
+  #  associated_model.where(date: start_date..final_date, product_id: @product.id)
+  #end
 
   # Sums up number of purchases for a given customer in hash
   def wholesale_customer_totals(purchases)
@@ -97,46 +97,46 @@ module ProductsHelper
     total_units_sold(start_date, final_date) / duration
   end
 
-  def normal_order_wait_time
-    @product.lead_time + @product.travel_time
-  end
+  #def normal_order_wait_time
+  #  @product.lead_time + @product.travel_time
+  #end
 
-  def lead_time_days
-    # lead_time will be stored as integer or string so using to_f will work
-    lead_time_days = @product.lead_time.to_f * DAYS_IN_MONTH
-  end
+ # def lead_time_days
+ #   # lead_time will be stored as integer or string so using to_f will work
+ #   lead_time_days = @product.lead_time.to_f * DAYS_IN_MONTH
+ # end
 
   def months_in_interval(interval)
     interval.end.month - interval.first.month
   end
 
-  def cant_ship_interval
-    # can't order when within a month of cant travel start
-    cant_ship_start = @product.cant_travel_start.yday - lead_time_days
-    # in contrast, can order when within a month of a cant travel start
-    cant_ship_end = @product.cant_travel_end.yday - lead_time_days
+ # def cant_ship_interval
+ #   # can't order when within a month of cant travel start
+ #   cant_ship_start = @product.cant_travel_start.yday - lead_time_days
+ #   # in contrast, can order when within a month of a cant travel start
+ #   cant_ship_end = @product.cant_travel_end.yday - lead_time_days
 
-    # returns range of integers as dates are reprsented by their yday
-    (cant_ship_start..cant_ship_end)
-  end
+ #   # returns range of integers as dates are reprsented by their yday
+ #   (cant_ship_start..cant_ship_end)
+ # end
 
-  def producer_cant_ship_block?
-    cant_ship_interval.include?(@product.next_reorder_date.yday)
-  end
+ # def producer_cant_ship_block?
+ #   cant_ship_interval.include?(@product.next_reorder_date.yday)
+ # end
 
-  # In yday format, or integer representation of day in 365 days of year
-  def cant_produce_interval
-    cant_produce_start = @product.cant_produce_start.yday - lead_time_days 
-    # don't subtract lead time here like in cant_ship because production
-    # affected here but not in cant ship
-    cant_produce_end = @product.cant_produce_end.yday
+ # # In yday format, or integer representation of day in 365 days of year
+ # def cant_produce_interval
+ #   cant_produce_start = @product.cant_produce_start.yday - lead_time_days 
+ #   # don't subtract lead time here like in cant_ship because production
+ #   # affected here but not in cant ship
+ #   cant_produce_end = @product.cant_produce_end.yday
 
-    (cant_produce_start..cant_produce_end)
-  end
+ #   (cant_produce_start..cant_produce_end)
+ # end
 
-  def producer_cant_produce_interval?
-    cant_produce_interval.include?(@product.next_reorder_date.yday)
-  end
+  #def producer_cant_produce_interval?
+  #  cant_produce_interval.include?(@product.next_reorder_date.yday)
+  #end
 
   def forecasting_average_sales 
     # last 12 months used for now
@@ -153,21 +153,21 @@ module ProductsHelper
     normal_order_wait_time * forecasting_average_sales * growth
   end
 
-  def growth
-    @product.growth_factor.to_f
-  end
+  #def growth
+  #  @product.growth_factor.to_f
+  #end
 
-  # happens essentially when product inventory at 2 months
-  def naive_reorder_in
-    inventory_adjusted_for_wait = @product.current - naive_waiting_sales
+  ## happens essentially when product inventory at 2 months
+  #def naive_reorder_in
+  #  inventory_adjusted_for_wait = @product.current - naive_waiting_sales
 
-    ((inventory_adjusted_for_wait / (forecasting_average_sales *
-                                     growth)) * DAYS_IN_MONTH).round(1)
-  end
+  #  ((inventory_adjusted_for_wait / (forecasting_average_sales *
+  #                                   growth)) * DAYS_IN_MONTH).round(1)
+  #end
 
-  def update_reorder_date
-    Date.today + proper_reorder_in 
-  end
+  #def update_reorder_date
+  #  Date.today + @product.reorder_in 
+  #end
 
   def sooner_cant_order_block
     [cant_ship_interval.first, cant_produce_interval.first].min

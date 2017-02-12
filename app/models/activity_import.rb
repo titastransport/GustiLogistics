@@ -39,6 +39,8 @@ class ActivityImport < ApplicationRecord
         product = current_product(row) || create_new_product(row)
         if product.valid?
           product.current = row['Qty on Hand'].to_i
+          product.update_reorder_in
+          product.update_next_reorder_date
           create_activity(product, row)
         end
       end
