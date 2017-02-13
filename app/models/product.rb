@@ -271,5 +271,14 @@ class Product < ApplicationRecord
   def next_product
     Product.where(["gusti_id > ?", self.gusti_id]).first
   end
+
+  def display_reorder_date
+    if self.next_reorder_date < Date.today
+      "Overdue!"
+    else
+      self.next_reorder_date
+    end
+  end
+
 end
 
