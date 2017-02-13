@@ -30,10 +30,13 @@ class ActivityImport < ApplicationRecord
     load_imported_activities
   end
 
+  def same_date?(activity)
+    activity.date == create_datetime
+  end
+
   def find_matching_activities(product)
     matching_activities = product.activities.select do |activity|
-      month_number = activity.date.month
-      Date::MONTHNAMES[month_number] == parse_file_name[:month]
+      same_date?(activity)
     end
     matching_activities
   end

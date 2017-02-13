@@ -35,9 +35,8 @@ class PurchaseImport < ApplicationRecord
     row['Customer ID'].upcase.start_with?('AAA')
   end
 
-  def same_month?(purchase)
-    month_number = purchase.date.month
-    Date::MONTHNAMES[month_number] == parse_file_name[:month]
+  def same_date?(purchase)
+    purchase.date == create_datetime
   end
 
   def same_product?(purchase, row)
@@ -46,7 +45,7 @@ class PurchaseImport < ApplicationRecord
 
   def find_matching_purchases(customer, row)
     matching_purchases = customer.customer_purchase_orders.select do |purchase|
-      same_month?(purchase) && same_product?(purchase, row)
+      same_date?(purchase) && same_product?(purchase, row)
     end 
     matching_purchases
   end 
