@@ -35,6 +35,38 @@ class PurchaseImport < ApplicationRecord
     row['Customer ID'].upcase.start_with?('AAA')
   end
 
+  def same_month?(purchase)
+    month_number = purchase.date.month
+    Date::MONTHNAMES[month_number] == parse_file_name[:month]
+  end
+
+  def same_product?(purchase, row)
+    purchase_gusti = purchase.product.gusti_id
+  end
+
+  def find_matching_purchases(customer, row)
+    matching_purchases = customer.customer_purchase_orders.select do |purchase|
+      same_month?(purchase) && same_product?(purchase, row)
+    end 
+    matching_purchases
+  end 
+
+  def purchase_exists_for_month?(customer, row)
+    !find_matching_purchases(customer, row).empty?
+  end 
+
+  def update_purchase_quantity(customer, row)
+    existing_purchase = find_matching_purchases(customer, row).first 
+    existing_purchase.quantity = row['Qty']
+    existing_purchase.save!
+    existing_purchase
+  end 
+
+  # Helper till we figure we which products to add
+  def product_exists?(row)
+    !(Product.where(gusti_id: row['Item ID'].upcase).empty?)
+  end
+
   def load_imported_purchases
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
@@ -42,13 +74,16 @@ class PurchaseImport < ApplicationRecord
     imported_purchases = (2..spreadsheet.last_row).map do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       current_customer = nil if all_empty_row?(row)
-      if not_empty_row?(row)
-        break if !wholesale_customer?(row)      
+      if not_empty_row?(row) && product_exists?(row)
+        next if !wholesale_customer?(row)      
         current_customer = find_or_create_current_customer(row) if current_customer.nil?
-        current_customer.customer_purchase_orders.build(purchase_attributes(row))
+        if purchase_exists_for_month?(current_customer, row)
+          update_purchase_quantity(current_customer, row)
+        else
+          current_customer.customer_purchase_orders.build(purchase_attributes(row))
+        end
       end
     end
-    byebug
     imported_purchases.compact
   end
 

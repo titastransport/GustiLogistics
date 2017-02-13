@@ -76,11 +76,11 @@ class Product < ApplicationRecord
   end
 
   def most_recent_activity_date
-    self.activities.first.date
+    Activity.first.date
   end
 
   def most_recent_purchase_date
-    self.customer_purchase_orders.first.date
+    CustomerPurchaseOrder.first.date
   end
 
   # Sums up number of purchases for a given customer in hash

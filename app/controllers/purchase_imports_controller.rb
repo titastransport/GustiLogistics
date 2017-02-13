@@ -9,7 +9,7 @@ class PurchaseImportsController < ApplicationController
   def create
     @purchase_import = PurchaseImport.new(import_params)
     if @purchase_import.save
-      redirect_to root_url, notice: "Imported Unit purchase Report successfully."
+      redirect_to root_url, notice: "Imported Items Sold to Customers Report successfully."
     else
       render :new
     end
