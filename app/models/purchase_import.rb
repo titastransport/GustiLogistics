@@ -40,7 +40,7 @@ class PurchaseImport < ApplicationRecord
   end
 
   def same_product?(purchase, row)
-    purchase_gusti = purchase.product.gusti_id
+    purchase_gusti == purchase.product.gusti_id
   end
 
   def find_matching_purchases(customer, row)
