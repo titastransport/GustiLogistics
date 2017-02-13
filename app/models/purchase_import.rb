@@ -31,6 +31,10 @@ class PurchaseImport < ApplicationRecord
     load_imported_purchases
   end
 
+  def wholesale_customer?(row)
+    row['Customer ID'].upcase.start_with?('AAA')
+  end
+
   def load_imported_purchases
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
@@ -39,10 +43,12 @@ class PurchaseImport < ApplicationRecord
       row = Hash[[header, spreadsheet.row(i)].transpose]
       current_customer = nil if all_empty_row?(row)
       if not_empty_row?(row)
-        current_customer = find_current_customer(row) if current_customer.nil?
+        break if !wholesale_customer?(row)      
+        current_customer = find_or_create_current_customer(row) if current_customer.nil?
         current_customer.customer_purchase_orders.build(purchase_attributes(row))
       end
     end
+    byebug
     imported_purchases.compact
   end
 
@@ -66,7 +72,7 @@ class PurchaseImport < ApplicationRecord
     row.values.all? { |cell| cell.to_s != "" }
   end
 
-  def find_current_customer(row)
+  def find_or_create_current_customer(row)
     Customer.find_or_create_by(name: row['Name'])
   end
 
