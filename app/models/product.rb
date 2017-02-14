@@ -256,9 +256,9 @@ class Product < ApplicationRecord
     #elsif producer_cant_ship_block? 
     #  calculate_block_reorder_quantity(cant_ship_interval)
     #else
-    full_order - expected_quantity_on_date(self.next_reorder_date +
-    normal_order_wait_time.months)
-   # end
+    shipment_arrives_date = self.next_reorder_date +
+    normal_order_wait_time.months
+    full_order - expected_quantity_on_date(shipment_arrives_date)
   end
 
   def expected_quantity_on_date(date_of_year)
