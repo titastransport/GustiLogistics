@@ -97,9 +97,9 @@ table {
   #product-index-description {
     padding-right: 50px;
   }
-  td, div, ul, li {
+  td, ul {
     a, a:visited, a:hover, a:active {
-      color: inherit;
+      color: #000;
     }
   }
 }
@@ -237,5 +237,3 @@ footer {
 	  }
   }
 }
-
-
