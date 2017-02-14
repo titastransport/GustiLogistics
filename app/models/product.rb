@@ -11,6 +11,14 @@ class Product < ApplicationRecord
                        uniqueness: { case_sensitive: false } 
   validates :current, presence: true
 
+  def most_recent_activity_date
+    Activity.first.date
+  end
+
+  def most_recent_purchase_date
+    CustomerPurchaseOrder.first.date
+  end
+
   def update_current(new_quantity)
     update_attribute(:current, new_quantity)
   end
@@ -71,7 +79,6 @@ class Product < ApplicationRecord
     # Sums up number of purchases for a given customer in hash
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
-
     purchases.each do |purchase|
       totals[purchase.customer.name] += purchase.quantity
     end
@@ -100,7 +107,6 @@ class Product < ApplicationRecord
     # start date - 5 months leads to query of last 6 months
     final_date = most_recent_purchase_date
     start_date = final_date - 5.months
-
     find_top_customers(start_date, final_date)
   end
 
@@ -142,8 +148,6 @@ class Product < ApplicationRecord
   def average_monthly_sales(start_date, final_date)
     duration = months_in_interval(final_date, start_date)
 
-    byebug
-
     total_units_sold(start_date, final_date) / duration
   end
 
@@ -157,7 +161,9 @@ class Product < ApplicationRecord
   end
 
   def months_in_interval(final_date, start_date)
-    (final_date.year * 12 + final_date.month) - (start_date.year * 12 + start_date.month)
+    (final_date.year * 12 + final_date.month) - (start_date.year * 12 +
+    start_date.month) + 1
+
   end
 
   def forecasting_average_sales 
@@ -250,13 +256,15 @@ class Product < ApplicationRecord
     #elsif producer_cant_ship_block? 
     #  calculate_block_reorder_quantity(cant_ship_interval)
     #else
-    full_order = expected_quantity_on_date(self.next_reorder_date)
+    full_order - expected_quantity_on_date(self.next_reorder_date +
+    normal_order_wait_time.months)
    # end
   end
 
   def expected_quantity_on_date(date_of_year)
     # need to raise error if date before 
     days_till = date_of_year.yday - current_day_of_year 
+    byebug
     return self.current if days_till <= 0
 
     expected_sales_till_date = forecasting_average_sales * (days_till / DAYS_IN_MONTH)

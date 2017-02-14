@@ -31,11 +31,4 @@ module Dateable
     Date.today.yday
   end
 
-  def most_recent_activity_date
-    Activity.first.date
-  end
-
-  def most_recent_purchase_date
-    CustomerPurchaseOrder.first.date
-  end
 end
