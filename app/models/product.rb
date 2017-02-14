@@ -245,7 +245,6 @@ class Product < ApplicationRecord
     return self.current if days_till <= 0
 
     expected_sales_till_date = daily_sales * days_till
-    byebug
     expected_quantity = self.current - expected_sales_till_date  
 
     expected_quantity <= 0 ? 0 : expected_quantity 
