@@ -26,4 +26,16 @@ module Dateable
     month, year = parse_file_name[:month], parse_file_name[:year]
     DateTime.parse("#{1}/#{month}/#{year}")
   end
+
+  def current_day_of_year
+    Date.today.yday
+  end
+
+  def most_recent_activity_date
+    Activity.first.date
+  end
+
+  def most_recent_purchase_date
+    CustomerPurchaseOrder.first.date
+  end
 end

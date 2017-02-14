@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   include ProductsHelper
+  include Dateable
 
   before_save { gusti_id.upcase! }
   default_scope { order(:gusti_id) }
@@ -15,11 +16,15 @@ class Product < ApplicationRecord
   end
 
   def update_reorder_in
-    update_attribute(:reorder_in, proper_reorder_in)
+    update_attribute(:reorder_in, actual_reorder_in)
   end
 
   def update_next_reorder_date
-    update_attribute(:next_reorder_date, update_reorder_date)
+    update_attribute(:next_reorder_date, actual_reorder_date)
+  end
+
+  def normal_order_wait_time
+    self.lead_time + self.travel_time
   end
 
   def cant_ship_interval
@@ -37,7 +42,7 @@ class Product < ApplicationRecord
   end
 
   def producer_cant_ship_block?
-    cant_ship_interval.include?(naive_reorder_date.yday)
+    cant_ship_interval.include?(naive_reorder_date)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -51,7 +56,7 @@ class Product < ApplicationRecord
   end
 
   def producer_cant_produce_interval?
-    cant_produce_interval.include?(naive_reorder_date.yday)
+    cant_produce_interval.include?(naive_reorder_date)
   end
 
   def lead_time_days
@@ -63,31 +68,7 @@ class Product < ApplicationRecord
     self.growth_factor.to_f
   end
 
-  # happens essentially when product inventory at 2 months
-  def naive_reorder_in
-    inventory_adjusted_for_wait = self.current - naive_waiting_sales
-
-    ((inventory_adjusted_for_wait / (forecasting_average_sales *
-                                     growth)) * DAYS_IN_MONTH).round(1)
-  end
-
-  def update_reorder_date
-    Date.today + self.reorder_in 
-  end
-
-  def normal_order_wait_time
-    self.lead_time + self.travel_time
-  end
-
-  def most_recent_activity_date
-    Activity.first.date
-  end
-
-  def most_recent_purchase_date
-    CustomerPurchaseOrder.first.date
-  end
-
-  # Sums up number of purchases for a given customer in hash
+    # Sums up number of purchases for a given customer in hash
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
 
@@ -98,6 +79,8 @@ class Product < ApplicationRecord
     totals
   end
 
+  # To remove hard coding in future for average sales over any monthly range, or
+  # time for that matter
   def first_half_average_sales
     final_date = most_recent_activity_date
     start_date = final_date - 5.months
@@ -199,64 +182,84 @@ class Product < ApplicationRecord
     [cant_ship_interval.end, cant_produce_interval.end].max
   end
 
-  def current_day_of_year
-    Date.today.yday
+  def calculate_both_block_reorder_in
+    if current_day_of_year <= first_cant_order_day
+      first_cant_order_day - current_day_of_year 
+    else
+      last_cant_order_day - current_day_of_year
+    end
   end
 
-  def proper_reorder_in
+  def calculate_block_reorder_in(interval)
+    if current_day_of_year <= interval.first
+      interval.first - current_day_of_year 
+    else 
+      interval.end - current_day_of_year
+    end
+  end
+
+# happens essentially when product inventory at 2 months
+  def naive_reorder_in
+    inventory_adjusted_for_wait = self.current - naive_waiting_sales
+
+    ((inventory_adjusted_for_wait / (forecasting_average_sales *
+                                     growth)) * DAYS_IN_MONTH).round(1)
+  end
+
+  def naive_reorder_date
+    Date.today + naive_reorder_in
+  end
+
+  def actual_reorder_date
+    Date.today + actual_reorder_in 
+  end
+
+  def actual_reorder_in
     if producer_cant_ship_block? && producer_cant_produce_interval?
-      if current_day_of_year <= first_cant_order_day
-        first_cant_order_day - current_day_of_year 
-      else
-        last_cant_order_day - current_day_of_year
-      end
+      calculate_both_block_reorder_in
     elsif producer_cant_produce_interval? 
-      if current_day_of_year <= cant_produce_interval.first
-        cant_produce_interval.first - current_day_of_year 
-      else 
-        cant_produce_interval.end - current_day_of_year
-      end
-    elsif producer_cant_ship_block?
-      if current_day_of_year <= cant_ship_interval.first
-        cant_ship_interval.first - current_day_of_year 
-      else 
-        cant_ship_interval.end - current_day_of_year
-      end
+      calculate_block_reorder_in(cant_produce_interval)
+    elsif producer_cant_ship_block? 
+      calculate_block_reorder_in(cant_ship_interval)
     else
       naive_reorder_in
     end
   end
 
+  #def calculate_both_block_reorder_quantity
+  #  if current_day_of_year <= first_cant_order_day
+  #    full_order - expected_quantity_on_date(first_cant_order_day)
+  #  else
+  #    full_order
+  #  end
+  #end
+
+  #def calculate_block_reorder_quantity(interval)
+  #  if current_day_of_year <= cant_produce_interval.first
+  #    full_order - expected_quantity_on_date(cant_produce_interval.first)
+  #  else 
+  #    full_order
+  #  end
+  #end
+
   def reorder_quantity
-    if producer_cant_ship_block? && producer_cant_produce_interval?
-      if current_day_of_year <= first_cant_order_day
-        full_order - expected_quantity_on_date(first_cant_order_day)
-      else
-        full_order
-      end
-    elsif producer_cant_produce_interval? 
-      if current_day_of_year <= cant_produce_interval.first
-        full_order - expected_quantity_on_date(cant_produce_interval.first)
-      else 
-        full_order
-      end
-    elsif producer_cant_ship_block? 
-      if current_day_of_year <= cant_ship_interval.first
-        full_order - expected_quantity_on_date(cant_ship_interval.first)
-      else 
-        full_order
-      end
-    else
-      full_order
-    end
+    #if producer_cant_ship_block? && producer_cant_produce_interval?
+    #  calculate_both_block_reorder_quantity
+    #elsif producer_cant_produce_interval? 
+    #  calculate_block_reorder_quantity(cant_produce_interval)
+    #elsif producer_cant_ship_block? 
+    #  calculate_block_reorder_quantity(cant_ship_interval)
+    #else
+    full_order = expected_quantity_on_date(self.next_reorder_date)
+   # end
   end
 
   def expected_quantity_on_date(date_of_year)
     # need to raise error if date before 
-    days_till = date_of_year - current_day_of_year 
+    days_till = date_of_year.yday - current_day_of_year 
     return self.current if days_till <= 0
 
-    expected_sales_till_date = forecasting_average_sales * days_till
+    expected_sales_till_date = forecasting_average_sales * (days_till / DAYS_IN_MONTH)
     expected_quantity = self.current - expected_sales_till_date  
 
     expected_quantity <= 0 ? 0 : expected_quantity 
@@ -285,6 +288,5 @@ class Product < ApplicationRecord
       self.next_reorder_date
     end
   end
-
 end
 
