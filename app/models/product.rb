@@ -249,21 +249,14 @@ class Product < ApplicationRecord
   #end
 
   def reorder_quantity
-    #if producer_cant_ship_block? && producer_cant_produce_interval?
-    #  calculate_both_block_reorder_quantity
-    #elsif producer_cant_produce_interval? 
-    #  calculate_block_reorder_quantity(cant_produce_interval)
-    #elsif producer_cant_ship_block? 
-    #  calculate_block_reorder_quantity(cant_ship_interval)
-    #else
     shipment_arrives_date = self.next_reorder_date +
     normal_order_wait_time.months
     (full_order - expected_quantity_on_date(shipment_arrives_date)).to_i
   end
 
-  def expected_quantity_on_date(date_of_year)
+  def expected_quantity_on_date(date_of_arrival)
     # need to raise error if date before 
-    days_till = date_of_year.yday - current_day_of_year  
+    days_till = date_of_arrival.yday - self.next_reorder_date.yday  
     daily_sales = forecasting_average_sales.to_f / DAYS_IN_MONTH
     return self.current if days_till <= 0
 
