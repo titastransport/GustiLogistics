@@ -32,8 +32,12 @@ class Product < ApplicationRecord
     (cant_ship_start..cant_ship_end)
   end
 
+  def naive_reorder_date
+    Date.today + naive_reorder_in
+  end
+
   def producer_cant_ship_block?
-    cant_ship_interval.include?(self.next_reorder_date.yday)
+    cant_ship_interval.include?(naive_reorder_date.yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -47,7 +51,7 @@ class Product < ApplicationRecord
   end
 
   def producer_cant_produce_interval?
-    cant_produce_interval.include?(self.next_reorder_date.yday)
+    cant_produce_interval.include?(naive_reorder_date.yday)
   end
 
   def lead_time_days
@@ -155,6 +159,8 @@ class Product < ApplicationRecord
   def average_monthly_sales(start_date, final_date)
     duration = months_in_interval(final_date, start_date)
 
+    byebug
+
     total_units_sold(start_date, final_date) / duration
   end
 
@@ -175,7 +181,7 @@ class Product < ApplicationRecord
     # last 12 months used for now
     final_date = most_recent_activity_date
     start_date = final_date - 11.months 
-    
+
     average_monthly_sales(start_date, final_date)
   end
 
@@ -210,7 +216,7 @@ class Product < ApplicationRecord
       else 
         cant_produce_interval.end - current_day_of_year
       end
-    elsif producer_cant_ship_block? 
+    elsif producer_cant_ship_block?
       if current_day_of_year <= cant_ship_interval.first
         cant_ship_interval.first - current_day_of_year 
       else 
