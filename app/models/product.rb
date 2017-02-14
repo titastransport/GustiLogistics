@@ -258,7 +258,7 @@ class Product < ApplicationRecord
     #else
     shipment_arrives_date = self.next_reorder_date +
     normal_order_wait_time.months
-    full_order - expected_quantity_on_date(shipment_arrives_date)
+    (full_order - expected_quantity_on_date(shipment_arrives_date)).to_i
   end
 
   def expected_quantity_on_date(date_of_year)
