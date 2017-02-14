@@ -241,7 +241,7 @@ class Product < ApplicationRecord
   def expected_quantity_on_date(date_of_arrival)
     # need to raise error if date before 
     days_till = date_of_arrival.yday - Date.today.yday  
-    daily_sales = forecasting_average_sales.to_f / DAYS_IN_MONTH
+    daily_sales = (forecasting_average_sales.to_f * growth) / DAYS_IN_MONTH
     return self.current if days_till <= 0
 
     expected_sales_till_date = daily_sales * days_till
