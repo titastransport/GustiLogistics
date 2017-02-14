@@ -18,7 +18,7 @@ And here's an example of an individual Product analysis page. It lists and displ
 ![alt text](ProductShowPage.png "Product Analysis")
 
 All products will be listed along with current quantities and reorder by status.
-![alt text](ProductxIndexPage.png "Products List")
+![alt text](ProductsIndexPage.png "Products List")
 
 Finally, users will update their database of purchase sales and raw unit
 activities via an Import model that takes an excel spreadsheet. 
