@@ -86,17 +86,22 @@ th {
 }
 
 table {
-    th {
-      text-align: center;
+  th {
+    text-align: center;
+  }
+  border-spacing: 10px;
+  border-collapse: separate;
+  #products-index-body {
+    text-align: left; 
+  }
+  #product-index-description {
+    padding-right: 50px;
+  }
+  td {
+    a, a:visited, a:hover, a:active {
+      color: inherit;
     }
-    border-spacing: 10px;
-    border-collapse: separate;
-    #products-index-body {
-      text-align: left; 
-    }
-    #product-index-description {
-      padding-right: 50px;
-    }
+  }
 }
 
 /* Products Show Page */
@@ -233,6 +238,4 @@ footer {
   }
 }
 
-a, a:visited, a:hover, a:active {
-  color: inherit;
-}
+
