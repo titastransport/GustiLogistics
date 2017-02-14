@@ -99,7 +99,14 @@ table {
   }
   td, ul {
     a {
-      color: #000;
+      text-decoration: none;
+      color: black;
+    }
+    a:link, a:visited {
+      color: black;
+    }
+    a:hover {
+    color: white;
     }
   }
 }
