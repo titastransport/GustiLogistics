@@ -6,4 +6,8 @@ class CustomerPurchaseOrder < ApplicationRecord
   validates :product_id, presence: true
   validates :customer_id, presence: true
   validates :date, presence: true, uniqueness: { scope: [:customer_id, :product_id] }
+
+  def self.most_recent_purchase_date
+    CustomerPurchaseOrder.first.date
+  end
 end

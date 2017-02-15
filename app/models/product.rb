@@ -12,14 +12,6 @@ class Product < ApplicationRecord
                        uniqueness: { case_sensitive: false } 
   validates :current, presence: true
 
-  def most_recent_activity_date
-    Activity.first.date
-  end
-
-  def most_recent_purchase_date
-    CustomerPurchaseOrder.first.date
-  end
-
   def update_current(new_quantity)
     update_attribute(:current, new_quantity)
   end
