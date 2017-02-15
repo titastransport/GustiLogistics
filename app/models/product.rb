@@ -82,14 +82,14 @@ class Product < ApplicationRecord
   # To remove hard coding in future for average sales over any monthly range, or
   # time for that matter
   def first_half_average_sales
-    final_date = most_recent_activity_date
+    final_date = Activity.most_recent_activity_date
     start_date = final_date - 5.months
 
     average_monthly_sales(start_date, final_date)
   end
 
   def second_half_average_sales
-    final_date = most_recent_activity_date - 6.months
+    final_date = Activity.most_recent_activity_date - 6.months
     start_date = final_date - 5.months
 
     average_monthly_sales(start_date, final_date)
@@ -98,14 +98,14 @@ class Product < ApplicationRecord
 
   def first_half_top_customers
     # start date - 5 months leads to query of last 6 months
-    final_date = most_recent_purchase_date
+    final_date = CustomerPurchaseOrder.most_recent_purchase_date
     start_date = final_date - 5.months
     find_top_customers(start_date, final_date)
   end
 
   def second_half_top_customers
     # start date - 5 months leads to query of last 6 months
-    final_date = most_recent_purchase_date - 6.months
+    final_date = CustomerPurchaseOrder.most_recent_purchase_date - 6.months
     start_date = final_date - 5.months
 
     find_top_customers(start_date, final_date)
@@ -161,7 +161,7 @@ class Product < ApplicationRecord
 
   def forecasting_average_sales 
     # last 12 months used for now
-    final_date = most_recent_activity_date
+    final_date = Activity.most_recent_activity_date
     start_date = final_date - 11.months 
 
     average_monthly_sales(start_date, final_date)
