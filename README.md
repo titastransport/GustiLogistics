@@ -12,15 +12,15 @@ The app requires authentication to view the most interesting aforementioned part
 Here's an example of one of the main features of the application, the Calendar page. It displays what products should be reordered and when. 
 Seeing them visually on a Calendar helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
-![alt text](GustiLogisticsCalendar.png "Calendar Prototype")
+![alt text](/sample_images/GustiLogisticsCalendar.png "Calendar Prototype")
 
 And here's an example of an individual Product analysis page. It lists and displays top B2B customers and total B2C sales for a given product. Currently, sales are broken into the last the 6 months, and the previous 6 months before that as requested by the client. One of my goals in the next few weeks is to enable dynamic querying for any given month range.
-![alt text](ProductShowPage.png "Product Analysis")
+![alt text](/sample_images/ProductShowPage.png "Product Analysis")
 
 All products will be listed along with current quantities and reorder by status.
-![alt text](ProductsIndexPage.png "Products List")
+![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
 Finally, users will update their database of purchase sales and raw unit
 activities via an Import model that takes an excel spreadsheet. 
 The uploaded sheet is available as an argument in ``params``, which is then parsed via the Roo gem and writen to the database as necessary.
-![alt text](FileUploader.png "File Uploader")
+![alt text](/sample_images/FileUploader.png "File Uploader")
