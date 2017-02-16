@@ -35,6 +35,9 @@ class ProductsController < ApplicationController
 
   def update
     if @product.update(product_params)
+      # Assuming Current, Growth_Factor, or Cover has been changed
+      @product.update_reorder_in
+      @product.update_next_reorder_date
       redirect_to @product, notice: 'Product was successfully updated.'
     else
       render :edit
@@ -53,7 +56,7 @@ class ProductsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:gusti_id, :description, :current,\
-                                      :reorder_in, :cover_time, :growth_factor)
+      params.require(:product).permit(:description, :current,\
+                                      :cover_time, :growth_factor)
     end
 end
