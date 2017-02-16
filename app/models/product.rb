@@ -38,12 +38,8 @@ class Product < ApplicationRecord
     (cant_ship_start..cant_ship_end)
   end
 
-  def naive_reorder_date
-    Date.today + naive_reorder_in
-  end
-
-  def producer_cant_ship_block?
-    cant_ship_interval.include?(naive_reorder_date)
+  def producer_cant_ship_interval?(reorder_date)
+    cant_ship_interval.include?(reorder_date)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -56,8 +52,135 @@ class Product < ApplicationRecord
     (cant_produce_start..cant_produce_end)
   end
 
-  def producer_cant_produce_interval?
-    cant_produce_interval.include?(naive_reorder_date)
+  def producer_cant_produce_interval?(reorder_date)
+    cant_produce_interval.include?(reorder_date)
+  end
+
+  def first_cant_order_day
+    [cant_ship_interval.first, cant_produce_interval.first].min
+  end
+
+  def last_cant_order_day
+    [cant_ship_interval.end, cant_produce_interval.end].max
+  end
+
+  def calculate_both_block_reorder_in
+    if current_day_of_year <= first_cant_order_day
+      first_cant_order_day - current_day_of_year 
+    else
+      last_cant_order_day - current_day_of_year
+    end
+  end
+
+  def calculate_block_reorder_in(interval)
+    if current_day_of_year <= interval.first
+      interval.first - current_day_of_year 
+    else 
+      interval.end - current_day_of_year
+    end
+  end
+
+# happens essentially when product inventory at 2 months
+  def naive_reorder_in
+    inventory_adjusted_for_wait = self.current - naive_waiting_sales
+
+    ((inventory_adjusted_for_wait / (forecasting_average_sales *
+                                     growth)) * DAYS_IN_MONTH).round(1)
+  end
+
+  def naive_reorder_date
+    Date.today + naive_reorder_in
+  end
+
+  def actual_reorder_date
+    Date.today + actual_reorder_in 
+  end
+
+  def double_block?(naive_order_date)
+    producer_cant_ship_interval?(naive_reorder_date) &&\
+      producer_cant_produce_interval?(naive_reorder_date)
+  end
+
+  def actual_reorder_in
+    if double_block?       
+      calculate_both_block_reorder_in
+    elsif producer_cant_produce_interval?(naive_reorder_date) 
+      calculate_block_reorder_in(cant_produce_interval)
+    elsif producer_cant_ship_interval?(naive_reorder_date)
+      calculate_block_reorder_in(cant_ship_interval)
+    else
+      naive_reorder_in
+    end
+  end
+
+  def difference_in_days(yday2, yday1)
+    yday2 - yday1
+  end
+
+  def daily_sales
+    (forecasting_average_sales.to_f * growth) / DAYS_IN_MONTH
+  end
+
+  def naive_quantity
+    shipment_arrives_date = self.next_reorder_date + normal_order_wait_time.months
+    (full_order - expected_quantity_on_date(shipment_arrives_date))
+  end
+
+  def reorder_quantity
+    (naive_quantity + (daily_sales * growth * gap_days)).to_i
+  end
+
+  def gap_days
+    reorder_after_next_date = (self.next_reorder_date + self.cover_time.months).yday
+
+    if double_block?(reorder_after_next_date)
+      difference_in_days(last_cant_order_day, reorder_after_next_date)
+    elsif producer_cant_produce_interval?(reorder_after_next_date) 
+      difference_in_days(cant_produce_interval.end, reorder_after_next_date)
+    elsif producer_cant_ship_interval?(reorder_after_next_date) 
+      difference_in_days(cant_ship_interval.end, reorder_after_next_date)
+    else
+      0
+    end 
+  end
+
+  def expected_quantity_on_date(date_of_arrival)
+    # need to raise error if date before 
+    days_till = date_of_arrival.yday - Date.today.yday  
+    return self.current if days_till <= 0
+
+    expected_sales_till_date = daily_sales * days_till
+    expected_quantity = self.current - expected_sales_till_date  
+
+    expected_quantity <= 0 ? 0 : expected_quantity 
+  end
+
+  def full_order
+    (forecasting_average_sales * growth * self.cover_time).to_i
+  end
+
+  def order(cover_months)
+
+  end
+
+  def setup?
+    !self.reorder_in.nil?
+  end
+
+  def previous_product
+    Product.where(["gusti_id < ?", self.gusti_id]).last
+  end
+
+  def next_product
+    Product.where(["gusti_id > ?", self.gusti_id]).first
+  end
+
+  def display_reorder_date
+    if self.next_reorder_date < Date.today
+      "Overdue!"
+    else
+      self.next_reorder_date
+    end
   end
 
   def lead_time_days
@@ -173,98 +296,5 @@ class Product < ApplicationRecord
     normal_order_wait_time * forecasting_average_sales * growth
   end
 
-  def first_cant_order_day
-    [cant_ship_interval.first, cant_produce_interval.first].min
-  end
 
-  def last_cant_order_day
-    [cant_ship_interval.end, cant_produce_interval.end].max
-  end
-
-  def calculate_both_block_reorder_in
-    if current_day_of_year <= first_cant_order_day
-      first_cant_order_day - current_day_of_year 
-    else
-      last_cant_order_day - current_day_of_year
-    end
-  end
-
-  def calculate_block_reorder_in(interval)
-    if current_day_of_year <= interval.first
-      interval.first - current_day_of_year 
-    else 
-      interval.end - current_day_of_year
-    end
-  end
-
-# happens essentially when product inventory at 2 months
-  def naive_reorder_in
-    inventory_adjusted_for_wait = self.current - naive_waiting_sales
-
-    ((inventory_adjusted_for_wait / (forecasting_average_sales *
-                                     growth)) * DAYS_IN_MONTH).round(1)
-  end
-
-  def naive_reorder_date
-    Date.today + naive_reorder_in
-  end
-
-  def actual_reorder_date
-    Date.today + actual_reorder_in 
-  end
-
-  def actual_reorder_in
-    if producer_cant_ship_block? && producer_cant_produce_interval?
-      calculate_both_block_reorder_in
-    elsif producer_cant_produce_interval? 
-      calculate_block_reorder_in(cant_produce_interval)
-    elsif producer_cant_ship_block? 
-      calculate_block_reorder_in(cant_ship_interval)
-    else
-      naive_reorder_in
-    end
-  end
-
-  def reorder_quantity
-    shipment_arrives_date = self.next_reorder_date +
-    normal_order_wait_time.months
-    (full_order - expected_quantity_on_date(shipment_arrives_date)).to_i
-  end
-
-  def expected_quantity_on_date(date_of_arrival)
-    # need to raise error if date before 
-    days_till = date_of_arrival.yday - Date.today.yday  
-    daily_sales = (forecasting_average_sales.to_f * growth) / DAYS_IN_MONTH
-    return self.current if days_till <= 0
-
-    expected_sales_till_date = daily_sales * days_till
-    expected_quantity = self.current - expected_sales_till_date  
-
-    expected_quantity <= 0 ? 0 : expected_quantity 
-  end
-
-  def full_order
-    (forecasting_average_sales * growth * self.cover_time).to_i
-  end
-
-  def setup?
-    !self.reorder_in.nil?
-  end
-
-  def previous_product
-    Product.where(["gusti_id < ?", self.gusti_id]).last
-  end
-
-  def next_product
-    Product.where(["gusti_id > ?", self.gusti_id]).first
-  end
-
-  def display_reorder_date
-    if self.next_reorder_date < Date.today
-      "Overdue!"
-    else
-      self.next_reorder_date
-    end
-  end
 end
-
