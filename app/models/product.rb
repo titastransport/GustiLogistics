@@ -123,7 +123,8 @@ class Product < ApplicationRecord
 
   def naive_quantity
     shipment_arrives_date = self.next_reorder_date + normal_order_wait_time.months
-    (full_order - expected_quantity_on_date(shipment_arrives_date))
+    quantity = (full_order - expected_quantity_on_date(shipment_arrives_date))
+    quantity <= 0 ? 0 : quantity
   end
 
   def reorder_quantity
