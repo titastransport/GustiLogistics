@@ -130,6 +130,7 @@ class Product < ApplicationRecord
     (naive_quantity + (daily_sales * growth * gap_days)).to_i
   end
 
+  # Refactor me!
   def gap_days
     reorder_after_next_date = (self.next_reorder_date + self.cover_time.months).yday
     days = 0
@@ -141,9 +142,10 @@ class Product < ApplicationRecord
     elsif producer_cant_ship_interval?(reorder_after_next_date) 
       days = difference_in_days(cant_ship_interval.end, reorder_after_next_date)
     end 
+    days += self.reorder_in if self.reorder_in < 0 && days > self.reorder_in.abs
 
-    days += self.actual_reorder_in if self.reorder_in < 0
-  end
+    days
+   end
 
   def expected_quantity_on_date(date_of_arrival)
     # need to raise error if date before 
