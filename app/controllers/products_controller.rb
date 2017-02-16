@@ -53,6 +53,7 @@ class ProductsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:gusti_id, :description, :current, :reorder_in)
+      params.require(:product).permit(:gusti_id, :description, :current,\
+                                      :reorder_in, :cover_time, :growth_factor)
     end
 end
