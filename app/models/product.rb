@@ -132,16 +132,17 @@ class Product < ApplicationRecord
 
   def gap_days
     reorder_after_next_date = (self.next_reorder_date + self.cover_time.months).yday
+    days = 0
 
     if double_block?(reorder_after_next_date)
-      difference_in_days(last_cant_order_day, reorder_after_next_date)
+      days = difference_in_days(last_cant_order_day, reorder_after_next_date)
     elsif producer_cant_produce_interval?(reorder_after_next_date) 
-      difference_in_days(cant_produce_interval.end, reorder_after_next_date)
+      days = difference_in_days(cant_produce_interval.end, reorder_after_next_date)
     elsif producer_cant_ship_interval?(reorder_after_next_date) 
-      difference_in_days(cant_ship_interval.end, reorder_after_next_date)
-    else
-      0
+      days = difference_in_days(cant_ship_interval.end, reorder_after_next_date)
     end 
+
+    days += self.actual_reorder_in if self.reorder_in < 0
   end
 
   def expected_quantity_on_date(date_of_arrival)
