@@ -39,7 +39,7 @@ class Product < ApplicationRecord
   end
 
   def producer_cant_ship_interval?(reorder_date)
-    cant_ship_interval.include?(reorder_date)
+    cant_ship_interval.include?(reorder_date.yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -53,7 +53,7 @@ class Product < ApplicationRecord
   end
 
   def producer_cant_produce_interval?(reorder_date)
-    cant_produce_interval.include?(reorder_date)
+    cant_produce_interval.include?(reorder_date.yday)
   end
 
   def first_cant_order_day
@@ -102,7 +102,7 @@ class Product < ApplicationRecord
   end
 
   def actual_reorder_in
-    if double_block?       
+    if double_block?(naive_reorder_date) 
       calculate_both_block_reorder_in
     elsif producer_cant_produce_interval?(naive_reorder_date) 
       calculate_block_reorder_in(cant_produce_interval)
