@@ -4,8 +4,9 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:edoardo)
-    @product = products(:faellaspaghettoni)
     log_in_as(@user)
+    @product = products(:faella_spaghetti)
+    @products = [@product]
   end
 
   test "should get index" do
@@ -21,11 +22,6 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
     get edit_product_url(@product)
     assert_response :success
-  end
-
-  test "should update product" do
-    patch product_url(@product), params: { product: { current: @product.current, description: @product.description, gusti_id: @product.gusti_id, reorder_in: @product.reorder_in } }
-    assert_redirected_to product_url(@product)
   end
 
   test "should destroy product" do

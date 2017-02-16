@@ -4,6 +4,8 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:edoardo)
+    @product = products(:faella_spaghetti)
+    @products = [@product]
   end
 
   test "login with invalid information" do
@@ -23,13 +25,13 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_redirected_to products_path
     follow_redirect!
     assert_select "a[href=?]", login_path, count: 0
-    delete logout_path
+    get logout_path
     assert_not is_logged_in?
     assert_redirected_to root_url
     # Simulate a user clicking logout in a second window
-    delete logout_path
+    get logout_path
     follow_redirect!
     assert_select "a[href=?]", login_path 
-    assert_select "a[href=?]", logout_path, count: 0
+    assert_select "a[href=?]", logout_path, count: 1
   end
 end

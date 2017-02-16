@@ -4,17 +4,13 @@ class ProductsShowTest < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:edoardo)
+    @product = products(:faella_spaghetti)
+    @products = [@product]
   end
 
   test "unsuccessful view" do
-    get products_path
+    get product_path(@product)
     assert_not flash.empty?
     assert_redirected_to login_url
   end
-
-  test "successful view" do
-    log_in_as(@user)
-    get products_path
-  end
-
 end

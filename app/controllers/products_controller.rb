@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
 
   def index
     @products = Product.select { |p| p.producer == "Faella" }
-    @reorders = Hash.new
+    @reorders = {} 
     @products.each do |product|
       @product = product
       @reorders[@product] = @product.reorder_in
