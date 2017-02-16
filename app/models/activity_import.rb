@@ -66,12 +66,12 @@ class ActivityImport < ApplicationRecord
       if not_empty_row?(row)
         product = current_product(row)
         if product.valid?
-          update_product(product, row)
           if activity_exists_for_month?(product)
             update_activity_sold(product, row)
           else
             create_activity(product, row)
           end
+          update_product(product, row)
         end
       end
     end
