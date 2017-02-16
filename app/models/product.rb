@@ -38,8 +38,8 @@ class Product < ApplicationRecord
     (cant_ship_start..cant_ship_end)
   end
 
-  def producer_cant_ship_interval?(reorder_date)
-    cant_ship_interval.include?(reorder_date.yday)
+  def producer_cant_ship_interval?(reorder_date_yday)
+    cant_ship_interval.include?(reorder_date_yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -52,8 +52,8 @@ class Product < ApplicationRecord
     (cant_produce_start..cant_produce_end)
   end
 
-  def producer_cant_produce_interval?(reorder_date)
-    cant_produce_interval.include?(reorder_date.yday)
+  def producer_cant_produce_interval?(reorder_date_yday)
+    cant_produce_interval.include?(reorder_date_yday)
   end
 
   def first_cant_order_day
@@ -113,8 +113,8 @@ class Product < ApplicationRecord
     end
   end
 
-  def difference_in_days(yday2, yday1)
-    yday2 - yday1
+  def difference_in_days(date2, date1)
+    date2 - date1 
   end
 
   def daily_sales
