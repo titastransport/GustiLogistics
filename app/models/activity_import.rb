@@ -56,6 +56,7 @@ class ActivityImport < ApplicationRecord
     current_product.current = row['Qty on Hand']
     current_product.update_reorder_in
     current_product.update_next_reorder_date
+    current_product.activities.first
   end
 
   def load_imported_activities
