@@ -66,25 +66,25 @@ class Product < ApplicationRecord
     [cant_ship_interval.end, cant_produce_interval.end].max
   end
 
-  def current_day_of_year
+  def current_yday_of_year
     Date.today.yday
   end
 
   # Both cant_ship and cant_produce interval
   def calculate_both_block_reorder_in
-    if current_day_of_year <= first_cant_order_day
-      difference_in_days(first_cant_order_day, current_day_of_year) 
+    if current_yday_of_year <= first_cant_order_day
+      difference_in_days(first_cant_order_day, current_yday_of_year) 
     else
-      difference_in_days(last_cant_order_day, current_day_of_year)
+      difference_in_days(last_cant_order_day, current_yday_of_year)
     end
   end
 
   # Either cant_produce or cant_ship interval
   def calculate_block_reorder_in(interval)
-    if current_day_of_year <= interval.first
-      difference_in_days(interval.first, current_day_of_year)
+    if current_yday_of_year <= interval.first
+      difference_in_days(interval.first, current_yday_of_year)
     else 
-      difference_in_days(interval.end, current_day_of_year)
+      difference_in_days(interval.end, current_yday_of_year)
     end
   end
 
@@ -204,7 +204,7 @@ class Product < ApplicationRecord
   end
 
   def days_till(future_date)
-    future_date - current_day_of_year  
+    future_date - current_yday_of_year  
   end
 
   def expected_quantity_on_date(future_date)
