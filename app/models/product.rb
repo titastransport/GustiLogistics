@@ -188,6 +188,10 @@ class Product < ApplicationRecord
     naive_reorder_date == actual_reorder_date
   end
 
+  def quantity_on_reorder_arrival
+    expected_quantity_on_date(next_shipment_arrives_date)
+  end
+
   def naive_reorder_quantity
     if no_shipping_blocks?
       normal_full_order    
@@ -209,15 +213,15 @@ class Product < ApplicationRecord
   # Necessary to predict if a product being ordered now will have it's next
   # reorder land in a cant order period
   def reorder_after_next_date
-    if order_overdue?
+    if reorder_overdue?
       (Date.today + self.cover_time.months).yday
     else
       (self.next_reorder_date + self.cover_time.months).yday
     end
   end
 
-  def order_overdue?
-    self.reorder_in <= 0 
+  def reorder_overdue?
+    self.actual_reorder_in < 0 
   end
 
   # Calculates gap in days between reorder_after_next for a product and next available
@@ -265,6 +269,7 @@ class Product < ApplicationRecord
       # Sums up number of purchases for a given customer in hash
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
+
     purchases.each do |purchase|
       totals[purchase.customer.name] += purchase.quantity
     end
@@ -272,48 +277,44 @@ class Product < ApplicationRecord
     totals
   end
 
-  # To remove hard coding in future for average sales over any monthly range, or
-  # time for that matter
-  def first_half_average_sales
-    final_date = this_month_date - 1.month
-    start_date = final_date - 5.months
+  # i.e., n of 1 would be the last month
+  def month_back(n)
+    this_month_date - n.months 
+  end
 
-    average_monthly_sales(start_date, final_date)
+  def first_half_average_sales
+    average_monthly_sales(month_back(6), month_back(1))
   end
 
   def second_half_average_sales
-    final_date = this_month_date - 7.months
-    start_date = final_date - 11.months
-
-    average_monthly_sales(start_date, final_date)
+    average_monthly_sales(month_back(12), month_back(7))
   end
 
 
   def first_half_top_customers
-    # start date - 5 months leads to query of last 6 months
-    final_date = this_month_date - 1.month
-    start_date = final_date - 6.months
-
-    find_top_customers(start_date, final_date)
+    find_top_customers(month_back(6), month_back(1))
   end
 
   def second_half_top_customers
-    # start date - 5 months leads to query of previous 6 full months
-    final_date = this_month_date - 7.months
-    start_date = final_date - 12.months
+    find_top_customers(month_back(12), month_back(7))
+  end
 
-    find_top_customers(start_date, final_date)
+  def purchases_total(start_date, final_date)
+    wholesale_purchases = self.customer_purchase_orders.where(date: start_date..final_date)
+    wholesale_customer_totals(wholesale_purchases)
   end
 
   def find_top_customers(start_date, final_date)
-    wholesale_purchases = self.customer_purchase_orders.where(date: start_date..final_date)
-    totals = wholesale_customer_totals(wholesale_purchases)
-    totals['Retail'] = find_retail_total(start_date, final_date, totals)
-    sort_customers(totals)
+    customer_totals = purchases_total(start_date, final_date)
+   
+    customer_totals['Retail'] = find_retail_total(start_date, final_date, customer_totals)
+
+    sort_customers(customer_totals)
   end
 
   def total_units_sold(start_date, final_date)
     matching_activities = self.activities.where(date: start_date..final_date)
+
     matching_activities.reduce(0) { |sum, activity| sum += activity.sold }
   end
 
@@ -339,7 +340,7 @@ class Product < ApplicationRecord
   end
 
   def months_since_year_zero(date)
-    date.year * 12 + date.month
+    (date.year * 12) + date.month
   end
 
   def months_in_interval(final_date, start_date)
@@ -355,15 +356,11 @@ class Product < ApplicationRecord
   end
 
   def forecasting_average_sales 
-    # average sales in last 12 complete months 
-    previous_month = this_month_date - 1.month
-    twelve_months_ago = previous_month - 12.months 
-
-    average_monthly_sales(twelve_months_ago, previous_month)
+    average_monthly_sales(month_back(12), month_back(1))
   end
 
   def display_reorder_date
-    if self.next_reorder_date < Date.today
+    if reorder_overdue? 
       "Overdue!"
     else
       self.next_reorder_date
