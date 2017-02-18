@@ -35,8 +35,8 @@ class Product < ApplicationRecord
     (cant_ship_start..cant_ship_end)
   end
 
-  def producer_cant_ship_interval?(reorder_date)
-    cant_ship_interval.include?(reorder_date.yday)
+  def producer_cant_ship_interval?(reorder_date_yday)
+    cant_ship_interval.include?(reorder_date_yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -49,8 +49,13 @@ class Product < ApplicationRecord
     (cant_produce_start..cant_produce_end)
   end
 
-  def producer_cant_produce_interval?(reorder_date)
-    cant_produce_interval.include?(reorder_date.yday)
+  def producer_cant_produce_interval?(reorder_date_yday)
+    cant_produce_interval.include?(reorder_date_yday)
+  end
+
+  def double_block?(reorder_date_yday)
+    producer_cant_ship_interval?(reorder_date_yday) &&\
+      producer_cant_produce_interval?(reorder_date_yday)
   end
 
   # First day that a product can't be ordered
@@ -92,7 +97,16 @@ class Product < ApplicationRecord
     end
   end
 
-   # Normal time it takes for product to be ordered and then arrive at Gustiamo
+  # lead_time will be stored as integer or string so using to_f will work
+  def lead_time_days
+    self.lead_time.to_f * DAYS_IN_MONTH
+  end
+
+  def growth
+    self.growth_factor.to_f
+  end
+
+  # Normal time it takes for product to be ordered and then arrive at Gustiamo
   def normal_order_wait_time
     self.lead_time + self.travel_time
   end
@@ -112,7 +126,7 @@ class Product < ApplicationRecord
     forecasting_average_sales.to_f * growth
   end
 
-# Not historical, but predictive
+  # Not historical, but predictive
   def expected_daily_sales
     expected_monthly_sales / DAYS_IN_MONTH
   end
@@ -129,11 +143,11 @@ class Product < ApplicationRecord
 
   # Checks for can't ship and/or produce interval
   def actual_reorder_in
-    if double_block?(naive_reorder_date) 
+    if double_block?(naive_reorder_date.yday) 
       calculate_both_block_reorder_in
-    elsif producer_cant_produce_interval?(naive_reorder_date) 
+    elsif producer_cant_produce_interval?(naive_reorder_date.yday) 
       calculate_block_reorder_in(cant_produce_interval)
-    elsif producer_cant_ship_interval?(naive_reorder_date)
+    elsif producer_cant_ship_interval?(naive_reorder_date.yday)
       calculate_block_reorder_in(cant_ship_interval)
     else
       naive_reorder_in
@@ -150,23 +164,31 @@ class Product < ApplicationRecord
     Date.today + actual_reorder_in 
   end
 
-  def double_block?(reorder_date)
-    producer_cant_ship_interval?(reorder_date) &&\
-      producer_cant_produce_interval?(reorder_date)
-  end
-
+  # Used primarily to check if more quantity than necessary will be there on
+  # next reorder date
   def next_shipment_arrives_date
-    (self.next_reorder_date + normal_order_wait_time.months).yday
+    self.next_reorder_date + normal_order_wait_time.months
   end
 
-  def naive_quantity
-    quantity = (normal_full_order - expected_quantity_on_date(next_shipment_arrives_date))
-    # For now, if a product has a reorder date of over a year, shows 0
-    quantity <= 0 ? 0 : quantity
+  # In theory, for normal shipments, this should be near 0
+  def quantity_on_reorder_arrival
+    expected_quantity_on_date(next_shipment_arrives_date.yday)
+  end
+
+  def no_shipping_blocks?
+    naive_reorder_date == actual_reorder_date
+  end
+
+  def naive_reorder_quantity
+    if no_shipping_blocks?
+      normal_full_order    
+    else
+      normal_full_order - quantity_on_reorder_arrival
+    end
   end
 
   def actual_reorder_quantity
-    (naive_quantity + (expected_daily_sales * gap_days)).to_i
+    (naive_reorder_quantity + (expected_daily_sales * gap_days)).to_i
   end
 
   # Doesn't account for gap days
@@ -205,7 +227,7 @@ class Product < ApplicationRecord
   end
 
   def days_till(future_date)
-    future_date - current_yday_of_year  
+    difference_in_days(future_date, current_yday_of_year)  
   end
 
   def expected_quantity_on_date(future_date)
@@ -218,6 +240,7 @@ class Product < ApplicationRecord
     expected_quantity <= 0 ? 0 : expected_quantity 
   end
 
+  # Temp for non-setup products in db
   def setup?
     !self.reorder_in.nil?
   end
@@ -230,16 +253,7 @@ class Product < ApplicationRecord
     Product.where(["gusti_id > ?", self.gusti_id]).first
   end
 
-  def lead_time_days
-    # lead_time will be stored as integer or string so using to_f will work
-    lead_time_days = self.lead_time.to_f * DAYS_IN_MONTH
-  end
-
-  def growth
-    self.growth_factor.to_f
-  end
-
-    # Sums up number of purchases for a given customer in hash
+      # Sums up number of purchases for a given customer in hash
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
     purchases.each do |purchase|
