@@ -35,8 +35,8 @@ class Product < ApplicationRecord
     (cant_ship_start..cant_ship_end)
   end
 
-  def producer_cant_ship_interval?(reorder_date_yday)
-    cant_ship_interval.include?(reorder_date_yday)
+  def producer_cant_ship_interval?(reorder_date)
+    cant_ship_interval.include?(reorder_date.yday)
   end
 
   # In yday format, or integer representation of day in 365 days of year
@@ -49,8 +49,8 @@ class Product < ApplicationRecord
     (cant_produce_start..cant_produce_end)
   end
 
-  def producer_cant_produce_interval?(reorder_date_yday)
-    cant_produce_interval.include?(reorder_date_yday)
+  def producer_cant_produce_interval?(reorder_date)
+    cant_produce_interval.include?(reorder_date.yday)
   end
 
   # First day that a product can't be ordered
@@ -68,6 +68,10 @@ class Product < ApplicationRecord
 
   def current_yday_of_year
     Date.today.yday
+  end
+
+  def difference_in_days(yday1, yday2)
+    (yday1 - yday2).abs 
   end
 
   # Both cant_ship and cant_produce interval
@@ -97,24 +101,34 @@ class Product < ApplicationRecord
     self.lead_time + self.travel_time
   end
 
+  # Sales that occur in waiting period from time of order to receiving the order
+  # physically in warehouse
+  def naive_waiting_sales
+    normal_order_wait_time * expected_monthly_sales 
+  end
+
   # Accounts for sales made in waiting period between reorder and arrival
   def inventory_adjusted_for_wait
     self.current - naive_waiting_sales
   end
 
-  
-  def expected_new_monthly_sales
+  def expected_monthly_sales
     forecasting_average_sales.to_f * growth
   end
 
-  def months_till_reorder
-    inventory_adjusted_for_wait / expected_new_monthly_sales 
+# Not historical, but predictive
+  def expected_daily_sales
+    expected_monthly_sales / DAYS_IN_MONTH
   end
 
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def naive_waiting_sales
-    normal_reorder_wait_time * expected_new_monthly_sales 
+    normal_reorder_wait_time * expected_monthly_sales 
+  end
+
+  def months_till_reorder
+    inventory_adjusted_for_wait / expected_monthly_sales 
   end
 
   # Happens essentially when product inventory at 2 months
@@ -146,14 +160,9 @@ class Product < ApplicationRecord
     Date.today + actual_reorder_in 
   end
 
-  def double_block?(naive_order_date)
-    producer_cant_ship_interval?(naive_reorder_date) &&\
-      producer_cant_produce_interval?(naive_reorder_date)
-  end
-
-  # Not historical, but predictive
-  def daily_sales
-    expected_new_monthly_sales / DAYS_IN_MONTH
+  def double_block?(reorder_date)
+    producer_cant_ship_interval?(reorder_date) &&\
+      producer_cant_produce_interval?(reorder_date)
   end
 
   def next_shipment_arrives_date
@@ -161,19 +170,20 @@ class Product < ApplicationRecord
   end
 
   def naive_quantity
-    quantity = (full_order - expected_quantity_on_date(next_shipment_arrives_date))
+    quantity = (normal_full_order - expected_quantity_on_date(next_shipment_arrives_date))
     # For now, if a product has a reorder date of over a year, shows 0
     quantity <= 0 ? 0 : quantity
   end
 
-  def full_order
-    (expected_new_monthly_sales * self.cover_time).to_i
+  def actual_reorder_quantity
+    (naive_quantity + (expected_daily_sales * gap_days)).to_i
   end
 
-  def reorder_quantity
-    (naive_quantity + (daily_sales * gap_days)).to_i
+  # Doesn't account for gap days
+  def normal_full_order
+    (expected_monthly_sales * self.cover_time).to_i
   end
-
+  
   # Very rough estimate of reorder after next date
   # Necessary to predict if a product being ordered now will have it's next
   # reorder land in a cant order period
@@ -212,7 +222,7 @@ class Product < ApplicationRecord
     # need to raise error if date before 
     return self.current if days_till(future_date) <= 0
 
-    expected_sales_till_date = daily_sales * days_till(future_date)
+    expected_sales_till_date = expected_daily_sales * days_till(future_date)
     expected_quantity = self.current - expected_sales_till_date  
 
     expected_quantity <= 0 ? 0 : expected_quantity 
