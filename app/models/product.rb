@@ -70,6 +70,10 @@ class Product < ApplicationRecord
     Date.today.yday
   end
 
+  def difference_in_days(yday1, yday2)
+    (yday1 - yday2).abs 
+  end
+
   # Both cant_ship and cant_produce interval
   def calculate_both_block_reorder_in
     if current_yday_of_year <= first_cant_order_day
@@ -88,13 +92,15 @@ class Product < ApplicationRecord
     end
   end
 
-  def difference_in_days(yday1, yday2)
-    (yday1 - yday2).abs 
-  end
-
-  # Normal time it takes for product to be ordered and then arrive at Gustiamo
+   # Normal time it takes for product to be ordered and then arrive at Gustiamo
   def normal_order_wait_time
     self.lead_time + self.travel_time
+  end
+
+  # Sales that occur in waiting period from time of order to receiving the order
+  # physically in warehouse
+  def naive_waiting_sales
+    normal_order_wait_time * expected_new_monthly_sales 
   end
 
   # Accounts for sales made in waiting period between reorder and arrival
@@ -106,14 +112,13 @@ class Product < ApplicationRecord
     forecasting_average_sales.to_f * growth
   end
 
-  def months_till_reorder
-    inventory_adjusted_for_wait / expected_new_monthly_sales 
+# Not historical, but predictive
+  def expected_new_daily_sales
+    expected_new_monthly_sales / DAYS_IN_MONTH
   end
 
-  # Sales that occur in waiting period from time of order to receiving the order
-  # physically in warehouse
-  def naive_waiting_sales
-    normal_order_wait_time * expected_new_monthly_sales 
+  def months_till_reorder
+    inventory_adjusted_for_wait / expected_new_monthly_sales 
   end
 
   # Happens essentially when product inventory at 2 months
@@ -150,11 +155,6 @@ class Product < ApplicationRecord
       producer_cant_produce_interval?(naive_reorder_date)
   end
 
-  # Not historical, but predictive
-  def daily_sales
-    expected_new_monthly_sales / DAYS_IN_MONTH
-  end
-
   def next_shipment_arrives_date
     (self.next_reorder_date + normal_order_wait_time.months).yday
   end
@@ -165,14 +165,15 @@ class Product < ApplicationRecord
     quantity <= 0 ? 0 : quantity
   end
 
-  def full_order
-    (expected_new_monthly_sales * self.cover_time).to_i
-  end
-
-  def reorder_quantity
+  def actual_reorder_quantity
     (naive_quantity + (daily_sales * gap_days)).to_i
   end
 
+  # Doesn't account for gap days
+  def normal_full_order
+    (expected_new_monthly_sales * self.cover_time).to_i
+  end
+  
   # Very rough estimate of reorder after next date
   # Necessary to predict if a product being ordered now will have it's next
   # reorder land in a cant order period
