@@ -106,8 +106,12 @@ class Product < ApplicationRecord
     self.growth_factor.to_f
   end
 
+  def difference_in_days(yday1, yday2)
+    (yday1 - yday2).abs 
+  end
+
   # Normal time it takes for product to be ordered and then arrive at Gustiamo
-  def normal_order_wait_time
+  def normal_reorder_wait_time
     self.lead_time + self.travel_time
   end
 
@@ -129,6 +133,12 @@ class Product < ApplicationRecord
   # Not historical, but predictive
   def expected_daily_sales
     expected_monthly_sales / DAYS_IN_MONTH
+  end
+
+  # Sales that occur in waiting period from time of order to receiving the order
+  # physically in warehouse
+  def naive_waiting_sales
+    normal_reorder_wait_time * expected_monthly_sales 
   end
 
   def months_till_reorder
@@ -170,9 +180,8 @@ class Product < ApplicationRecord
     self.next_reorder_date + normal_order_wait_time.months
   end
 
-  # In theory, for normal shipments, this should be near 0
-  def quantity_on_reorder_arrival
-    expected_quantity_on_date(next_shipment_arrives_date.yday)
+  def next_shipment_arrives_date
+    (self.next_reorder_date + normal_reorder_wait_time.months).yday
   end
 
   def no_shipping_blocks?
@@ -266,15 +275,15 @@ class Product < ApplicationRecord
   # To remove hard coding in future for average sales over any monthly range, or
   # time for that matter
   def first_half_average_sales
-    final_date = Activity.most_recent_activity_date
+    final_date = this_month_date - 1.month
     start_date = final_date - 5.months
 
     average_monthly_sales(start_date, final_date)
   end
 
   def second_half_average_sales
-    final_date = Activity.most_recent_activity_date - 6.months
-    start_date = final_date - 5.months
+    final_date = this_month_date - 7.months
+    start_date = final_date - 11.months
 
     average_monthly_sales(start_date, final_date)
   end
@@ -282,15 +291,16 @@ class Product < ApplicationRecord
 
   def first_half_top_customers
     # start date - 5 months leads to query of last 6 months
-    final_date = CustomerPurchaseOrder.most_recent_purchase_date
-    start_date = final_date - 5.months
+    final_date = this_month_date - 1.month
+    start_date = final_date - 6.months
+
     find_top_customers(start_date, final_date)
   end
 
   def second_half_top_customers
-    # start date - 5 months leads to query of last 6 months
-    final_date = CustomerPurchaseOrder.most_recent_purchase_date - 6.months
-    start_date = final_date - 5.months
+    # start date - 5 months leads to query of previous 6 full months
+    final_date = this_month_date - 7.months
+    start_date = final_date - 12.months
 
     find_top_customers(start_date, final_date)
   end
@@ -328,18 +338,28 @@ class Product < ApplicationRecord
     total_units_sold(start_date, final_date) / duration
   end
 
-  def months_in_interval(final_date, start_date)
-    (final_date.year * 12 + final_date.month) - (start_date.year * 12 +
-    start_date.month) + 1
+  def months_since_year_zero(date)
+    date.year * 12 + date.month
+  end
 
+  def months_in_interval(final_date, start_date)
+    months_since_year_zero(final_date) - months_since_year_zero(start_date) + 1
+  end
+
+  def this_month_date
+    Date.today.beginning_of_month
+  end
+
+  def sales_this_month
+    total_units_sold(this_month_date, this_month_date)
   end
 
   def forecasting_average_sales 
-    # last 12 months used for now
-    final_date = Activity.most_recent_activity_date
-    start_date = final_date - 11.months 
+    # average sales in last 12 complete months 
+    previous_month = this_month_date - 1.month
+    twelve_months_ago = previous_month - 12.months 
 
-    average_monthly_sales(start_date, final_date)
+    average_monthly_sales(twelve_months_ago, previous_month)
   end
 
   def display_reorder_date
