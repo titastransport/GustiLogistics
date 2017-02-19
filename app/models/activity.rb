@@ -8,4 +8,8 @@ class Activity < ApplicationRecord
   def self.most_recent_activity_date
     Activity.first.date
   end
+
+  def update_sold(new_quantity)
+    update_attribute(:sold, new_quantity)
+  end
 end

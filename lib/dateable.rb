@@ -30,5 +30,4 @@ module Dateable
   def current_day_of_year
     Date.today.yday
   end
-
 end

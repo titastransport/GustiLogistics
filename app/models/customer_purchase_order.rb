@@ -10,4 +10,8 @@ class CustomerPurchaseOrder < ApplicationRecord
   def self.most_recent_purchase_date
     CustomerPurchaseOrder.first.date
   end
+
+  def update_quantity(new_quantity)
+    update_attribute(:quantity, new_quantity)
+  end
 end
