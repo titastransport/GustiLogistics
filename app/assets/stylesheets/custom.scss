@@ -81,10 +81,6 @@ p {
 
 /* Products Index Page */
 
-th {
-  text-align: center;
-}
-
 table {
   th {
     text-align: center;
@@ -111,9 +107,9 @@ table {
   }
 }
 
-/* Products Show Page */
+/* Product Show Page */
 
-#toptable {
+#product-top-table {
   th {
     text-align: left;
   }
@@ -146,16 +142,16 @@ table {
   flex-direction: row;
   justify-content: center;
   #last-six {
-  display: flex;
-  flex-direction: column;
-  outline: 1px solid black;
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    outline: 1px solid black;
+    padding: 60px;
   }
   #previous-six {
-  display: flex;
-  flex-direction: column;
-  outline: 1px solid black;
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    outline: 1px solid black;
+    padding: 60px;
   }
   p {
 	margin: 0; 
