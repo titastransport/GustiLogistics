@@ -14,11 +14,11 @@ The calculation of reorder dates are based on past sales, growth rates, and expe
 
 Below shows the calendar page, which displays which products should be reordered based on the calculated reorder dates. 
 The calendar makes great use of a calendar helper module and HTML and CSS styling. Seeing order dates in the context of times helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
-![alt text](/sample_images/GustiLogisticsCalendar.png "Calendar Prototype")
+![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
 Reorder quantities are also based on past sales, growth rates, and expected growth rates, as well as "cover time", or the amount of time the next reorder will be expected to last to last. The cover time varies when reorder dates land in the aforementioned "black hole" ordering periods. For instance, if a product can't be ordered for the next 6-7 months, the quantity will be increased if normal cover time is 4 months. A product's current inventory is also taken into consideration in cases where a product needs to be reorderd sooner than needed. 
 
 And here's an example of an individual Product analysis page. It lists and displays top B2B customers and total B2C(retail) sales for a given product. Currently, sales are broken into the last 6 full months, and the previous 6 full months before that, as requested by the client. One of my goals in the next few weeks is to enable dynamic querying for any given month range as well. The pie charts are thanks to [Chartkick](https://github.com/ankane/chartkick) gem. 
-![alt text](/sample_images/ProductShowPage.png "Product Analysis")
+![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
 Although still in Beta, this app is already a "value-add" to the company. My near-future vision for the application is that all matters related to supply chain management, such as reorders calculations, customer, product, and supplier analyses, will take place in the app. I hope it could generalize even more, allowing tasks like company communications and project management to be done within the app. In addition, it could be useful for other small "brick and mortar" businesses to use. 
