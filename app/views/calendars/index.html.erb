@@ -5,7 +5,7 @@
     <%= @date.strftime("%B %Y") %>
     <%= link_to ">", date: @date.next_month %>
   </h2>
-  <%= calendar @date do |date| %>
+  <%= calendar(@date) do |date| %>
     <%= date.day %>
     <% if @products_by_reorder_date[date] %>
       <ul>

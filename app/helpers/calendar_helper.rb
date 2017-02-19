@@ -1,8 +1,10 @@
 module CalendarHelper
+  # Called in calendar view template
   def calendar(date = Date.today, &block)
     Calendar.new(self, date, block).table
   end
 
+  # Struct makes it convient way to define accessors for the various attributes
   class Calendar < Struct.new(:view, :date, :callback)
     HEADER = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday]
     START_DAY = :monday
@@ -29,12 +31,15 @@ module CalendarHelper
       end.join.html_safe
     end
 
+    # Block from calendar index view get's executed here for each day when
+    # calendar is generated 
     def day_cell(day)
       content_tag :td, class: day_classes(day) do 
         content_tag(:div, view.capture(day, &callback), class: "content")
       end
     end
 
+    # Possible to add on more classes
     def day_classes(day)
       classes = []
       classes << "today" if day == Date.today
