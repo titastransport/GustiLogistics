@@ -77,6 +77,7 @@ class PurchaseImport < ApplicationRecord
     existing_purchase = find_matching_purchases(customer, row).first 
     existing_purchase.update_quantity(row['Qty'])
 
+    # Must return purchase object for map method instead of true from update
     existing_purchase
   end 
 

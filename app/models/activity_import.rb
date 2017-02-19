@@ -31,6 +31,7 @@ class ActivityImport < ApplicationRecord
     existing_activity = find_matching_activities(product).first 
     existing_activity.update_sold(row['Units Sold'])
 
+    # Must return activity for map method, instead of true from update
     existing_activity
   end
 
@@ -39,6 +40,7 @@ class ActivityImport < ApplicationRecord
     current_product.update_reorder_in
     current_product.update_next_reorder_date
 
+    # Must return activity for map method, instead of true from update
     current_product.activities.first
   end
 
@@ -52,6 +54,7 @@ class ActivityImport < ApplicationRecord
 
   def process_product(row, product)
     process_activity(row, product)
+    # product updated after new activity
     update_product(product, row)
   end
 
