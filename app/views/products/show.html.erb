@@ -29,8 +29,8 @@
   <div id="last-six">
     <table id='product-top-table'>
       <h2><strong><u>In the Last 6 Full Months</u></strong></h2>
-	  <p><strong>Average monthly sales</strong>: <%= @product.first_half_average_sales %></p>
-	  <h3>Top Customers</h3>
+	    <h5><strong>Average monthly sales</strong>: <%= @product.first_half_average_sales %></h5>
+      <h4><strong><u>Top Customers</u></strong></h4>
       <tr>
         <th>Rank</th>
         <th>Customer</th>
@@ -51,8 +51,8 @@
   <div id="previous-six">
     <table id='product-top-table'>
       <h2><strong><u>In the Previous 6 Full Months</u></strong></h2>
-	  <p><strong>Average monthly sales</strong>: <%= @product.second_half_average_sales %></p>
-	  <h3>Top Customers</h3>
+	    <h5><strong>Average monthly sales</strong>: <%= @product.second_half_average_sales %></h5>
+      <h4><strong><u>Top Customers</u></strong></h4>
       <tr>
         <th>Rank</th>
         <th>Customer</th>
@@ -73,11 +73,11 @@
 </div>
 
 <div id="product-show-bottom-row">
-  <div id="column1">
+  <div id="product-edit-home">
     <%= link_to 'Edit', edit_product_path(@product) %> |
     <%= link_to 'Home', products_path %>
   </div>
-  <div class="product-navigators" id="column2">
+  <div id="product-navigators">
     <% if @product.previous_product && @product.previous_product.setup? %>
       <%= link_to 'Previous Product', product_path(@product.previous_product.id) %> |
     <% end %>
