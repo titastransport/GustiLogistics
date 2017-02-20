@@ -187,7 +187,7 @@ class Product < ApplicationRecord
   # Used primarily to check if more quantity than necessary will be there on
   # next reorder date
   def next_shipment_arrives_date
-    (self.next_reorder_date + normal_reorder_wait_time.months).yday
+    self.next_reorder_date + normal_reorder_wait_time.months
   end
 
   def quantity_on_reorder_arrival

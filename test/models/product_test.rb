@@ -60,11 +60,13 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "days till works for this year" do
-    assert_equal 10, @product.days_till(Date.today + 10.days)
+    date = Date.today + 10.days
+    assert_equal 10, @product.days_till(date)
   end
 
   test "days till works for next year" do
-    assert_equal 370, @product.days_till(Date.today + 1.year + 5.days)
+    date = Date.today + 1.year + 5.days
+    assert_equal 370, @product.days_till(date)
   end
 
   test "gap days finds dif in calculated reorder date and next possible reorder date" do
@@ -72,13 +74,13 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "expected quantity on date finds proper quanties for this year" do
-    future_date = Date.today + 2.months
-    assert_equal 1764, @product.expected_quantity_on_date(future_date)
+    date = Date.today + 2.months
+    assert_equal 1764, @product.expected_quantity_on_date(date)
   end
 
   test "expected quantity on date finds proper quanties for next year" do
-    future_date = Date.today + 1.year
-    assert_equal 540, @product.expected_quantity_on_date(future_date)
+    date = Date.today + 1.year
+    assert_equal 540, @product.expected_quantity_on_date(date)
   end
 
   test "month back finds n months back" do
