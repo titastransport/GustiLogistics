@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module Gustibot
   class Application < Rails::Application
+    # Loads modules in lib
     config.autoload_paths << "#{Rails.root}/lib"
   end
 end

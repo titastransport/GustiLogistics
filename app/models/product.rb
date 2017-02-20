@@ -71,33 +71,11 @@ class Product < ApplicationRecord
     [cant_ship_interval.end, cant_produce_interval.end].max
   end
 
-  def current_yday_of_year
-    Date.today.yday
-  end
-
   def difference_in_days(yday1, yday2)
     (yday1 - yday2).abs 
   end
 
-  # Both cant_ship and cant_produce interval
-  def calculate_both_block_reorder_in
-    if current_yday_of_year <= first_cant_order_day
-      difference_in_days(first_cant_order_day, current_yday_of_year) 
-    else
-      difference_in_days(last_cant_order_day, current_yday_of_year)
-    end
-  end
-
-  # Either cant_produce or cant_ship interval
-  def calculate_block_reorder_in(interval)
-    if current_yday_of_year <= interval.first
-      difference_in_days(interval.first, current_yday_of_year)
-    else 
-      difference_in_days(interval.end, current_yday_of_year)
-    end
-  end
-
-  # lead_time will be stored as integer or string so using to_f will work
+   # lead_time will be stored as integer or string so using to_f will work
   def lead_time_days
     self.lead_time.to_f * DAYS_IN_MONTH
   end
@@ -130,7 +108,12 @@ class Product < ApplicationRecord
     forecasting_average_sales.to_f * growth
   end
 
-  # Not historical, but predictive
+  # Based on last 12 full months
+  def forecasting_average_sales 
+    average_monthly_sales(month_back(12), month_back(1))
+  end
+
+  # Predictive
   def expected_daily_sales
     expected_monthly_sales / DAYS_IN_MONTH
   end
@@ -149,6 +132,24 @@ class Product < ApplicationRecord
   # Returns value in days
   def naive_reorder_in
     months_till_reorder * DAYS_IN_MONTH
+  end
+
+ # Both cant_ship and cant_produce interval
+  def calculate_both_block_reorder_in
+    if current_yday_of_year <= first_cant_order_day
+      difference_in_days(first_cant_order_day, current_yday_of_year) 
+    else
+      difference_in_days(last_cant_order_day, current_yday_of_year)
+    end
+  end
+
+  # Either cant_produce or cant_ship interval
+  def calculate_block_reorder_in(interval)
+    if current_yday_of_year <= interval.first
+      difference_in_days(interval.first, current_yday_of_year)
+    else 
+      difference_in_days(interval.end, current_yday_of_year)
+    end
   end
 
   # Checks for can't ship and/or produce interval
@@ -177,19 +178,15 @@ class Product < ApplicationRecord
   # Used primarily to check if more quantity than necessary will be there on
   # next reorder date
   def next_shipment_arrives_date
-    self.next_reorder_date + normal_order_wait_time.months
-  end
-
-  def next_shipment_arrives_date
     (self.next_reorder_date + normal_reorder_wait_time.months).yday
-  end
-
-  def no_shipping_blocks?
-    naive_reorder_date == actual_reorder_date
   end
 
   def quantity_on_reorder_arrival
     expected_quantity_on_date(next_shipment_arrives_date)
+  end
+
+  def no_shipping_blocks?
+    naive_reorder_date == actual_reorder_date
   end
 
   def naive_reorder_quantity
@@ -354,11 +351,7 @@ class Product < ApplicationRecord
   def sales_this_month
     total_units_sold(this_month_date, this_month_date)
   end
-
-  def forecasting_average_sales 
-    average_monthly_sales(month_back(12), month_back(1))
-  end
-
+  
   def display_reorder_date
     if reorder_overdue? 
       "Overdue!"

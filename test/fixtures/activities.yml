@@ -1,11 +1,18 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  date: <%= Date.today - 2.months %>
+  date: <%= Date.today.beginning_of_month - 1.month %>
   sold: 100
-  product_id: 1 
+  product_id: 2 
 
 two:
-  date: <%= Date.today - 2.months %> 
+  date: <%= Date.today.beginning_of_month - 2.months %> 
   sold: 100
   product_id: 2
+
+<% (3..12).each do |i| %>
+activity_<%= i %>:
+  date: <%= Date.today.beginning_of_month - i.months %>
+  sold: 100
+  product_id: 2
+<% end %>

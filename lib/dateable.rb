@@ -30,7 +30,7 @@ module Dateable
     DateTime.parse("#{1}/#{month}/#{year}")
   end
 
-  def current_day_of_year
+  def current_yday_of_year
     Date.today.yday
   end
 end
