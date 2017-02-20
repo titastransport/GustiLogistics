@@ -9,7 +9,7 @@ faella_spaghetti:
   id: 2
   gusti_id: "PAS12003"
   description: "faella description"
-  current: 1600
+  current: 16000
   reorder_in: 54
   lead_time: 1
   travel_time: 1

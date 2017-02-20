@@ -1,27 +1,30 @@
 require 'date'
 
+# Module used for parsing the date of uploaded excel files
+# Standard format should be TYPEOFFILE_MONTH_YEAR.xlsx
+# I try to account for edge cases around standard format
 module Dateable
-  MATCH_MONTH = /[a-zA-Z]{3,10}/
   MATCH_YEAR = /\d{4}/
-  NOT_ALL_CAPS = /[^A-Z]/
 
+  # All months capitalized in an array
+  def month_names
+    Date::MONTHNAMES.compact
+  end
+
+  # File must be seperate by _ and contain maximum UAR, month, and year..
   def parse_file_name
-    # File must be seperate by _ and contain maximum UAR, month, and year..
-    parts = filename.split(/_/).select { |el| el =~ NOT_ALL_CAPS }
+    parts = filename.split(/_/)
     { month: get_month(parts), year: get_year(parts) }
   end
 
   def get_month(arr)
-    arr.select { |el| Date::MONTHNAMES.include?(el) }.first
+    arr.find { |el| month_names.include?(el.capitalize) }
   end
 
   def get_year(arr)
-    arr.select { |el| el =~ MATCH_YEAR }.first
+    arr.find { |el| el =~ MATCH_YEAR }
   end
 
-  # upload datetimes uses day of upload to distinguish between reports of the
-  # same month
-  # maybe there's way to save week of year if they continue with weekly uplaods?
   def create_datetime
     month, year = parse_file_name[:month], parse_file_name[:year]
     DateTime.parse("#{1}/#{month}/#{year}")
