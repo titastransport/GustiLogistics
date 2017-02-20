@@ -4,6 +4,7 @@ class ProductTest < ActiveSupport::TestCase
 
   def setup
     @product = products(:faella_spaghetti) 
+    @product2 = products(:pianogrillo)
   end
 
   test "associated activities should be destroyed" do
@@ -44,10 +45,44 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "expected sales" do
-    assert_equal @product.forecasting_average_sales * @product.growth, @product.expected_monthly_sales
+    assert_equal @product.forecasting_average_sales * @product.growth,\
+                 @product.expected_monthly_sales
+
     assert_equal @product.expected_monthly_sales / 30, @product.expected_daily_sales
   end
 
-  test "reorder in naive range" do
+  test "reorder in actual accounts for different years" do
+    assert_equal (Date.today + 1.year).year, @product.actual_reorder_date.year 
+  end
+
+  test "reorder in correctly calculates next reorder in for this year" do
+    assert_equal @product2.cant_travel_start - 1.month, @product2.actual_reorder_date
+  end
+
+  test "days till works for this year" do
+    assert_equal 10, @product.days_till(Date.today + 10.days)
+  end
+
+  test "days till works for next year" do
+    assert_equal 370, @product.days_till(Date.today + 1.year + 5.days)
+  end
+
+  test "gap days finds dif in calculated reorder date and next possible reorder date" do
+    assert_equal 31, @product2.gap_days
+  end
+
+  test "expected quantity on date finds proper quanties for this year" do
+    future_date = Date.today + 2.months
+    assert_equal 1764, @product.expected_quantity_on_date(future_date)
+  end
+
+  test "expected quantity on date finds proper quanties for next year" do
+    future_date = Date.today + 1.year
+    assert_equal 540, @product.expected_quantity_on_date(future_date)
+  end
+
+  test "month back finds n months back" do
+    assert_equal Date.today.beginning_of_month - 2.months, @product.month_back(2)
+    assert_equal Date.today.beginning_of_month - 13.months, @product.month_back(13)
   end
 end

@@ -2,15 +2,22 @@ pianogrillo:
   id: 1
   gusti_id: "OLI1000"
   description: "pg description"
-  current: 1
-  reorder_in: 1
+  current: 500
+  lead_time: 1
+  travel_time: 1
+  cover_time: 4
+  growth_factor: 1.2
+  cant_travel_start: <%= Date.new(2017, 5, 15) %>
+  cant_travel_end: <%= Date.new(2017, 9, 30) %>
+  cant_produce_end: <%= Date.new(2017, 9, 15) %>
+  cant_produce_start: <%= Date.new(2017, 8, 1) %>
+  next_reorder_date: <%= Date.new(2017, 4, 15) %>
 
 faella_spaghetti:
   id: 2
   gusti_id: "PAS12003"
   description: "faella description"
   current: 2000
-  reorder_in: 54
   lead_time: 1
   travel_time: 1
   cover_time: 4
@@ -20,7 +27,7 @@ faella_spaghetti:
   cant_travel_end: <%= Date.new(2017, 9, 30) %>
   cant_produce_end: <%= Date.new(2017, 9, 15) %>
   cant_produce_start: <%= Date.new(2017, 8, 1) %>
-  next_reorder_date: <%= Date.new(2017, 5, 11) %>
+  next_reorder_date: <%= Date.new(2018, 4, 15) %>
 
 faellaspaghettoni:
   id: 3

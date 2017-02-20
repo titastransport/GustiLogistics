@@ -5,6 +5,7 @@ require 'date'
 # I try to account for edge cases around standard format
 module Dateable
   MATCH_YEAR = /\d{4}/
+  DAYS_IN_YEAR = 365
 
   # All months capitalized in an array
   def month_names

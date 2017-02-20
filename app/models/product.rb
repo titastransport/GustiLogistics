@@ -137,19 +137,28 @@ class Product < ApplicationRecord
  # Both cant_ship and cant_produce interval
   def calculate_both_block_reorder_in
     if current_yday_of_year <= first_cant_order_day
-      difference_in_days(first_cant_order_day, current_yday_of_year) 
+      difference_in_days(first_cant_order_day, current_yday_of_year) +\
+        years_in_future(naive_reorder_date)
     else
-      difference_in_days(last_cant_order_day, current_yday_of_year)
+      difference_in_days(last_cant_order_day, current_yday_of_year) +\
+        years_in_future(naive_reorder_date)
     end
   end
 
   # Either cant_produce or cant_ship interval
   def calculate_block_reorder_in(interval)
     if current_yday_of_year <= interval.first
-      difference_in_days(interval.first, current_yday_of_year)
+      difference_in_days(interval.first, current_yday_of_year) +\
+        years_in_future(naive_reorder_date)
     else 
-      difference_in_days(interval.end, current_yday_of_year)
+      difference_in_days(interval.end, current_yday_of_year) +\
+        years_in_future(naive_reorder_date)
     end
+  end
+
+  # Returns in days
+  def years_in_future(future_date)
+    (future_date.year - Date.today.year) * DAYS_IN_YEAR
   end
 
   # Checks for can't ship and/or produce interval
@@ -211,9 +220,9 @@ class Product < ApplicationRecord
   # reorder land in a cant order period
   def reorder_after_next_date
     if reorder_overdue?
-      (Date.today + self.cover_time.months).yday
+      Date.today + self.cover_time.months
     else
-      (self.next_reorder_date + self.cover_time.months).yday
+      self.next_reorder_date + self.cover_time.months
     end
   end
 
@@ -225,19 +234,20 @@ class Product < ApplicationRecord
   # reorder day
   # Used to add extra units to next upcoming order to prevent inventory shortage
   def gap_days
-    if double_block?(reorder_after_next_date)
-      difference_in_days(last_cant_order_day, reorder_after_next_date)
-    elsif producer_cant_produce_interval?(reorder_after_next_date) 
-      difference_in_days(cant_produce_interval.end, reorder_after_next_date)
-    elsif producer_cant_ship_interval?(reorder_after_next_date) 
-      difference_in_days(cant_ship_interval.end, reorder_after_next_date)
+    if double_block?(reorder_after_next_date.yday)
+      difference_in_days(last_cant_order_day, reorder_after_next_date.yday)
+    elsif producer_cant_produce_interval?(reorder_after_next_date.yday) 
+      difference_in_days(cant_produce_interval.end, reorder_after_next_date.yday)
+    elsif producer_cant_ship_interval?(reorder_after_next_date.yday) 
+      difference_in_days(cant_ship_interval.end, reorder_after_next_date.yday)
     else
       0
     end 
   end
 
   def days_till(future_date)
-    difference_in_days(future_date, current_yday_of_year)  
+    difference_in_days(future_date.yday, current_yday_of_year) +\
+      years_in_future(future_date) 
   end
 
   def expected_quantity_on_date(future_date)
@@ -286,7 +296,6 @@ class Product < ApplicationRecord
   def second_half_average_sales
     average_monthly_sales(month_back(12), month_back(7))
   end
-
 
   def first_half_top_customers
     find_top_customers(month_back(6), month_back(1))
