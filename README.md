@@ -26,11 +26,11 @@ Note: Not all suppliers and products have been uploaded yet.
 
 Two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
 * Are parsed as an argument in the [params hash](https://gorails.com/episodes/the-params-hash). 
-* Enable updates to the database on the client's end. 
+* Enable updates of the database on the client's end. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-The Calendar link in the top navbar leads to a **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation. This calendar:
+The Calendar link in the top navbar leads to a **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). This calendar:
 * Displays which products should be reordered based on calculated reorder dates. 
 * Provides a context of time, which helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
@@ -39,13 +39,13 @@ The Calendar link in the top navbar leads to a **calendar page**, which takes in
 Clicking on a product link on the calendar page takes you to a **product analysis page** which:
 * Lists all vital stats like reorder dates, quantities and more
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
-* Ranks customers in the last 12 months into 6-month halves, as requested by the client. 
+* Ranks customers in the last 12 months in 6-month halves, as requested by the client. 
 
 One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
 My vision for this application is that it will:
-* Handle all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place within the app. 
-* Generlize to offering more servies, such as company communications and project management. 
-* Become useful for other small "brick and mortar" businesses to use.
+* Handle all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses. 
+* Generalize to more servies, such as company communication and project management. 
+* Become useful for other small "brick and mortar" businesses.
