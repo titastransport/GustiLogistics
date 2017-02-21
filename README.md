@@ -20,7 +20,7 @@ Upon login, the app displays an indexing of all products', along with their curr
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Two spreadsheet uploaders enable updates to the database on their end via. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
+Two spreadsheet uploaders enable updates to the database on the client's end. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
