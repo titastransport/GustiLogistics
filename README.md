@@ -8,7 +8,7 @@ Welcome to my *small business supply chain management web app*, which is current
 
 * Ruby on [Rails](http://rubyonrails.org/) application, which makes particular use of the following [RubyGems](https://rubygems.org/):
   * [Bootstrap-Sass](https://github.com/twbs/bootstrap-sass/) for styling on the Front-End.
-  * [jQuery](https://rubygems.org/gems/jquery-rails) to make [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming) requests.
+  * [jQuery](https://rubygems.org/gems/jquery-rails) to make [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming)) requests.
   * [Chartkick](https://github.com/ankane/chartkick) for Data Visualizations.
   * [Roo](https://github.com/roo-rb/roo) for parsing Excel spreadsheets.
 
