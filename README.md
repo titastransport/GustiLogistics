@@ -1,16 +1,17 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*, which is currently hosted on [Heroku](https://www.heroku.com/). Although still in Beta, this application is already **in production**. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
+Welcome to my *small business supply chain management web app*, which is currently . Although still in Beta, this application is already **in production**. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
 * Data Analytics and Visualization
 * Forecasting of Inventory Reorder Dates and Quantities
 
 ### Tech Stack
 
-* Ruby on [Rails](http://rubyonrails.org/) application, which makes particular use of the following [RubyGems](https://rubygems.org/):
-  * [Bootstrap-Sass](https://github.com/twbs/bootstrap-sass/) for styling on the Front-End.
-  * [jQuery](https://rubygems.org/gems/jquery-rails) for making [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming)) requests.
-  * [Chartkick](https://github.com/ankane/chartkick) for Data Visualizations.
-  * [Roo](https://github.com/roo-rb/roo) for parsing Excel spreadsheets.
+* Ruby on [Rails](http://rubyonrails.org/) application hosted on [Heroku](https://www.heroku.com/) backed by [PostgreSQL](https://www.postgresql.org/) database.
+  * Makes particular use of the following [RubyGems](https://rubygems.org/):
+    * [Bootstrap-Sass](https://github.com/twbs/bootstrap-sass/) for styling on the Front-End.
+    * [jQuery](https://rubygems.org/gems/jquery-rails) for making [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming)) requests.
+    * [Chartkick](https://github.com/ankane/chartkick) for Data Visualizations.
+    * [Roo](https://github.com/roo-rb/roo) for parsing Excel spreadsheets.
 
 ### Application Features
 
