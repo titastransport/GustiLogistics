@@ -16,20 +16,34 @@ Welcome to my *small business supply chain management web app*, which is current
 
 The app requires authentication to access, so I've included some sample images with notes pertaining to the most interesting and challenging parts. 
 
-Upon login, the app displays an indexing of all products', along with their current quantities and reorder by dates. Note: Not all suppliers and products have been uploaded yet.
+Upon login the app displays:
+* An indexing of all products', along with their current quantities and reorder by dates. 
+Note: Not all suppliers and products have been uploaded yet.
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Two spreadsheet uploaders enable updates to the database on the client's end. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
+Links to two spreadsheet uploaders can be seen at the bottom-left of the above page which:
+* Enable updates to the database on the client's end. 
+* Are available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-A calendar page displays which products should be reordered based on calculated reorder dates. The calendar utilizes the calendar helper module, along with significant HTML and CSS styling, both of which take inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). Seeing reorders on a calendar, in the context of time, helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
+A calendar page:
+* Displays which products should be reordered based on calculated reorder dates. 
+* Takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation.
+* Provides a context of time, which helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
-Clicking on a product link on the Calendar pages takes you to an individual Product analysis page. This lists all vital stats like reorder dates, quantities and more. Top B2B customers and total B2C(retail) sales for a given product are diplayed in a table and pie chart. Currently, sales are broken down into the last 6 full months, and the previous 6 full months before that, as requested by the client. One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
+Clicking on a product link on the calendar pages takes you to a product analysis page. which:
+* Lists all vital stats like reorder dates, quantities and more
+* Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
+* Ranks customers in the last 12 months into 6-month halves, as requested by the client. 
+One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
-My near-future vision for the application is that all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place in the app. I hope it could generalize even more, handling tasks such as company communications and project management. In addition, it could be useful for other small "brick and mortar" businesses to use.
+My vision for this application is that it will:
+* Handle all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place within the app. 
+* Generlizes to offering more servies, such as company communications and project management. 
+* Becomes useful for other small "brick and mortar" businesses to use.
