@@ -1,12 +1,12 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*, which is currently . Although still in Beta, this application is already **in production**. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
+Welcome to my *small business supply chain management web app*. Although still in Beta, this application is already **in production** and providing value. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
 * Data Analytics and Visualization
 * Forecasting of Inventory Reorder Dates and Quantities
 
 ### Tech Stack
 
-* Ruby on [Rails](http://rubyonrails.org/) application hosted on [Heroku](https://www.heroku.com/) backed by [PostgreSQL](https://www.postgresql.org/) database.
+* Ruby on [Rails](http://rubyonrails.org/) application hosted on [Heroku](https://www.heroku.com/) and backed by [PostgreSQL](https://www.postgresql.org/) database.
   * Makes particular use of the following [RubyGems](https://rubygems.org/):
     * [Bootstrap-Sass](https://github.com/twbs/bootstrap-sass/) for styling on the Front-End.
     * [jQuery](https://rubygems.org/gems/jquery-rails) for making [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming)) requests.
