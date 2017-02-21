@@ -20,11 +20,11 @@ Upon login, the app displays an indexing of all products', along with their curr
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Two file spreadsheet uploaders enable updates to the database on their end. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. All valid data is writen to the database as necessary. The program rejects invalid files, redirects users to the import page, and alerts users of errors. 
+Two spreadsheet uploaders enable updates to the database on their end via. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-A calendar page displays which products should be reordered based on calculated reorder dates. The calendar makes great use of a calendar helper module, and HTML and CSS styling, both which take inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). Seeing order dates in the context of times helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
+A calendar page displays which products should be reordered based on calculated reorder dates. The calendar utilizes the calendar helper module, along with significant HTML and CSS styling, both of which take inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). Seeing reorders on a calendar, in the context of time, helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
