@@ -14,31 +14,32 @@ Welcome to my *small business supply chain management web app*, which is current
 
 ### Application Features
 
-The app requires authentication to access, so I've included some sample images with notes pertaining to the most interesting and challenging parts. 
+The app requires authentication to access, so below are sample images with notes pertaining to the most interesting and challenging parts. 
 
-Upon login the app displays:
+Upon **login** the app displays:
 * An indexing of all products', along with their current quantities and reorder by dates. 
+
 Note: Not all suppliers and products have been uploaded yet.
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Links to two spreadsheet uploaders can be seen at the bottom-left of the above page which:
+Links to two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
 * Enable updates to the database on the client's end. 
-* Are available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. 
+* Are parsed as an argument in the [params hash](https://gorails.com/episodes/the-params-hash). 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-A calendar page:
+A **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation, and:
 * Displays which products should be reordered based on calculated reorder dates. 
-* Takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation.
 * Provides a context of time, which helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
-Clicking on a product link on the calendar pages takes you to a product analysis page. which:
+Clicking on a product link on the calendar pages takes you to a **product analysis page** which:
 * Lists all vital stats like reorder dates, quantities and more
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
 * Ranks customers in the last 12 months into 6-month halves, as requested by the client. 
+
 One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
