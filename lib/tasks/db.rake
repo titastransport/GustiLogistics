@@ -7,8 +7,8 @@ namespace :db do
     database_name = db_config['development']['database']
 
     begin
-      `heroku pgbackups:capture`
-      `curl -o latest.dump \`heroku pgbackups:url\``
+      `heroku pg:backups:capture`
+      `curl -o latest.dump \`heroku pg:backups:url\``
       `pg_restore --verbose --clean --no-acl --no-owner -h localhost -d #{database_name} latest.dump`
     ensure
       `rm latest.dump`
