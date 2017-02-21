@@ -14,7 +14,7 @@ Welcome to my *small business supply chain management web app*, which is current
 
 ### Application Features
 
-The app requires authentication to access, so below are sample images with notes pertaining to the most interesting and challenging parts. 
+The app requires authentication to access, so below is a recap of the main sections. 
 
 Upon **login** the app displays:
 * An indexing of all products', along with their current quantities and reorder by dates. 
@@ -23,19 +23,19 @@ Note: Not all suppliers and products have been uploaded yet.
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Links to two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
-* Enable updates to the database on the client's end. 
+Two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
 * Are parsed as an argument in the [params hash](https://gorails.com/episodes/the-params-hash). 
+* Enable updates to the database on the client's end. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-A **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation, and:
+The Calendar link in the top navbar leads to a **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars) for design and implementation. This calendar:
 * Displays which products should be reordered based on calculated reorder dates. 
 * Provides a context of time, which helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
-Clicking on a product link on the calendar pages takes you to a **product analysis page** which:
+Clicking on a product link on the calendar page takes you to a **product analysis page** which:
 * Lists all vital stats like reorder dates, quantities and more
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
 * Ranks customers in the last 12 months into 6-month halves, as requested by the client. 
@@ -46,5 +46,5 @@ One of my goals in the next few weeks is to enable dynamic querying on the page 
 
 My vision for this application is that it will:
 * Handle all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place within the app. 
-* Generlizes to offering more servies, such as company communications and project management. 
-* Becomes useful for other small "brick and mortar" businesses to use.
+* Generlize to offering more servies, such as company communications and project management. 
+* Become useful for other small "brick and mortar" businesses to use.
