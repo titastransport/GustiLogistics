@@ -1,25 +1,35 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*, which is currently hosted on [Heroku](https://www.heroku.com/). While working for [Gustiamo](https://www.gustiamo.com), a small food importer in New York City, I yearned to create a product like this to do my job better. After learning software development in the past year, I reached out to my former colleagues to finally bring it to fruition. This [Rails](http://rubyonrails.org/) App now enables my former company  to manage their supply chain more efficiently and effectively via custom Data Analytics and Visualization, and Forecasting. It does so by creating visuals for each product's sales by top customers and predicting future reorder dates and quantities, both of which are rendered on a calendar page. The app requires authentication to access, so I've included some sample images with notes pertaining to the most interesting and challenging parts. 
+Welcome to my *small business supply chain management web app*, which is currently hosted on [Heroku](https://www.heroku.com/). Although still in Beta, this application is already **in production**. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
+* Data Analytics and Visualization
+* Forecasting of Inventory Reorder Dates and Quantities
 
-Upon login, the app displays a listing of all products' current quantities and reorder by dates. Not all suppliers and products have been uploaded yet. I'll take this chance from the beginning to say that styling throughout the application makes great use of the powerful [Bootstrap](https://github.com/twbs/bootstrap-sass/) framework.
+### Tech Stack
+
+* Ruby on [Rails](http://rubyonrails.org/) application, which makes particular use of the following [RubyGems](https://rubygems.org/):
+  * [Bootstrap-Sass](https://github.com/twbs/bootstrap-sass/) for styling on the Front-End.
+  * [jQuery](https://rubygems.org/gems/jquery-rails) to make [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming) requests.
+  * [Chartkick](https://github.com/ankane/chartkick) for Data Visualizations.
+  * [Roo](https://github.com/roo-rb/roo) for parsing Excel spreadsheets.
+
+### Application Features
+
+The app requires authentication to access, so I've included some sample images with notes pertaining to the most interesting and challenging parts. 
+
+Upon login, the app displays an indexing of all products', along with their current quantities and reorder by dates. Note: Not all suppliers and products have been uploaded yet.
 
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
-Obtaining Data: The company's data all currently resides on local servers, which they interact with via a native accounting application. Because of none of their data currently resides in the cloud, I'm unable to access the relavant data via an API. I'm hoping this will change soon. Consequently, I built two file uploaders for them to update the logistics app's database on their end. Links to them can be seen at the bottom-left of the above image. Employees can update the B2B customer purchase sales and raw unit sales via two Import models that parse excel spreadsheets. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse with the [Roo](https://github.com/roo-rb/roo) gem's help. All valid data is writen to the database as necessary. The program rejects invalid files, redirects users to the import page, and alerts users of the errors. 
+Two file spreadsheet uploaders enable updates to the database on their end. Links to them can be seen at the bottom-left of the above image. The uploaded sheet is available as an argument in the [params hash](https://gorails.com/episodes/the-params-hash), which I then parse. All valid data is writen to the database as necessary. The program rejects invalid files, redirects users to the import page, and alerts users of errors. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
-The calculation of reorder dates are based on past sales and growth rates, and expected growth rates, as well as other parameters, such as lead time necessary for a supplier to prepare an order. This becomes more complicated with supplier "black hole" intervals where they either can't produce and/or can't ship a product. If a calculated reorder date falls in this intervial, the next reorder date gets either bumped to the beginning of the "black hole" interval, or the end, depending on the current day of the year.
-
-Below shows the calendar page, which displays which products should be reordered based on the calculated reorder dates. The calendar makes great use of a calendar helper module, and HTML and CSS styling, and takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). Seeing order dates in the context of times helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
+A calendar page displays which products should be reordered based on calculated reorder dates. The calendar makes great use of a calendar helper module, and HTML and CSS styling, both which take inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). Seeing order dates in the context of times helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
-Reorder quantities are also based on past sales, growth rates, and expected growth rates, as well as "cover time", or the amount of time the next reorder will be expected to last. The cover time varies when reorder dates land in the aforementioned "black hole" ordering periods. For instance, if a product can't be ordered for the next 6-7 months, the quantity will be increased if normal cover time is 4 months. A product's current inventory is also taken into consideration in cases where a product needs to be reorderd sooner than needed. 
-
-An individual Product analysis page lists vital stats like reorder dates, quantities and more. Top B2B customers and total B2C(retail) sales for a given product are diplayed in a table and pie chart. The pie charts are thanks to the [Chartkick](https://github.com/ankane/chartkick) gem. Currently, sales are broken into the last 6 full months, and the previous 6 full months before that, as requested by the client. One of my goals in the next few weeks is to enable dynamic querying for any given month range as well. 
+Clicking on a product link on the Calendar pages takes you to an individual Product analysis page. This lists all vital stats like reorder dates, quantities and more. Top B2B customers and total B2C(retail) sales for a given product are diplayed in a table and pie chart. Currently, sales are broken down into the last 6 full months, and the previous 6 full months before that, as requested by the client. One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
-Although still in Beta, this app is already a "value-add" to the company. My near-future vision for the application is that all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place in the app. I hope it could generalize even more, handling tasks such as company communications and project management. In addition, it could be useful for other small "brick and mortar" businesses to use.  
+My near-future vision for the application is that all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses will take place in the app. I hope it could generalize even more, handling tasks such as company communications and project management. In addition, it could be useful for other small "brick and mortar" businesses to use.
