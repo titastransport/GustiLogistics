@@ -34,7 +34,6 @@ class ProductsController < ApplicationController
   end
 
   def update
-    byebug
     if @product.update(product_params)
       # Assuming Current, Growth_Factor, or Cover has been changed
       @product.update_reorder_in

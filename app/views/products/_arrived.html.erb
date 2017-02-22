@@ -1,0 +1,4 @@
+<%= form_for(product) do |f| %>
+  <%= f.hidden_field :ordered, :value => false %>
+  <%= f.submit "Arrived", class: "btn" %>
+<% end %>

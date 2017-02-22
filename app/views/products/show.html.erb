@@ -1,4 +1,8 @@
-<%= render 'mark_ordered', product: @product %>
+<% if @product.ordered %>
+  <%= render 'arrived', product: @product %>
+<% else %>
+  <%= render 'ordered', product: @product %>
+<% end %>
 
 <div class="center-justified" id="product-header">
   <p>
