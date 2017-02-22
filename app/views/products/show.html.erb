@@ -1,8 +1,4 @@
-<% if @product.ordered %>
-  <%= render 'arrived', product: @product %>
-<% else %>
-  <%= render 'ordered', product: @product %>
-<% end %>
+<%= render 'ordered_form' %>
 
 <div class="center-justified" id="product-header">
   <p>
@@ -21,7 +17,7 @@
     <strong>Sales this month:</strong>
     <%= @product.sales_this_month %>
   </p>
-  <p>
+  <p id="reorder-by-show">
     <strong>Reorder By:</strong>
     <%= "#{@product.display_reorder_date}" %>
   </p>

@@ -1,0 +1,7 @@
+<div id="ordered-form">
+  <% if @product.ordered %>
+    <%= render 'arrived' %>
+  <% else %>
+    <%= render 'ordered' %>
+  <% end %>
+</div>

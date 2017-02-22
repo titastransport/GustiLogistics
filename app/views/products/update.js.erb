@@ -1,0 +1,2 @@
+$("#ordered-form").html("<%= escape_javascript(render('products/ordered_form')) %>");
+$("#reorder-by-show").html("<strong>Reorder by: </strong><%= @product.display_reorder_date %>");

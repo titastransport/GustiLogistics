@@ -34,13 +34,17 @@ class ProductsController < ApplicationController
   end
 
   def update
-    if @product.update(product_params)
-      # Assuming Current, Growth_Factor, or Cover has been changed
-      @product.update_reorder_in
-      @product.update_next_reorder_date
-      redirect_to @product, notice: 'Product was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @product.update(product_params)
+        # Assuming Current, Growth_Factor, or Cover has been changed
+        @product.update_reorder_in
+        @product.update_next_reorder_date
+
+        format.js  
+        format.html { redirect_to @product, notice: 'Product was successfully updated.' }
+      else
+        render :edit
+      end
     end
   end
 
