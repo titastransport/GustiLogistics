@@ -34,6 +34,7 @@ class ProductsController < ApplicationController
   end
 
   def update
+    byebug
     if @product.update(product_params)
       # Assuming Current, Growth_Factor, or Cover has been changed
       @product.update_reorder_in
@@ -57,6 +58,6 @@ class ProductsController < ApplicationController
 
     def product_params
       params.require(:product).permit(:description, :current,\
-                                      :cover_time, :growth_factor)
+                                      :cover_time, :growth_factor, :ordered)
     end
 end

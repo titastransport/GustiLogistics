@@ -19,6 +19,7 @@ gem 'turbolinks',                     '5.0.1'
 gem 'jbuilder',                       '2.4.1'
 gem 'rails-controller-testing',       '~> 1.0', '>= 1.0.1'
 gem 'pg',                             '0.19.0'
+gem 'responders',                     '~> 2.3'
 
 group :development, :test do
   gem 'byebug',                       '9.0.0', platform: :mri
