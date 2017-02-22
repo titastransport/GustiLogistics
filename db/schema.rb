@@ -74,14 +74,6 @@ ActiveRecord::Schema.define(version: 20170222154828) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "purchases", force: :cascade do |t|
-    t.string   "customer"
-    t.string   "item_id"
-    t.integer  "quantity"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "reorders", force: :cascade do |t|
     t.date     "date"
     t.integer  "quantity"
