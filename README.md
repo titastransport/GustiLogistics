@@ -1,6 +1,6 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*. Although still in Beta, this application is already **in production** and providing value. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to better manage their supply chain more efficiently and effectively via:
+Welcome to my *small business supply chain management web app*. Although still in Beta, this application is already **in production** and providing value. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to manage their supply chain more efficiently and effectively via:
 * Data Analytics and Visualization
 * Forecasting of Inventory Reorder Dates and Quantities
 
