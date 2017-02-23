@@ -39,7 +39,8 @@ The Calendar link in the top navbar leads to a **calendar page**, which takes in
 Clicking on a product link on the calendar page takes you to a **product analysis page** which:
 * Lists all vital stats like reorder dates, quantities and more
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
-* Ranks customers in the last 12 months in 6-month halves, as requested by the client. 
+* Ranks customers in the last 12 months in 6-month halves, as requested by the client.
+* Enables shipping status and reorder by date of product to be toggled with top button.
 
 One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
 
