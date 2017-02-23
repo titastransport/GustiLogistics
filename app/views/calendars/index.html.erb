@@ -11,7 +11,7 @@
       <ul>
         <% @products_by_reorder_date[date].each do |product| %>
           <li class="reorder-link">
-            <% if product.ordered %>
+            <% if product.enroute %>
               <s><%= link_to product.description, product_path(product.id)
               %></s>
             <% else %>

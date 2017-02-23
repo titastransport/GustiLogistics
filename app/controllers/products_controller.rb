@@ -61,6 +61,6 @@ class ProductsController < ApplicationController
 
     def product_params
       params.require(:product).permit(:description, :current,\
-                                      :cover_time, :growth_factor, :ordered)
+                                      :cover_time, :growth_factor, :enroute)
     end
 end

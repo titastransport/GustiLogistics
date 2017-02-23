@@ -1,5 +1,5 @@
-<div id="ordered-form">
-  <% if @product.ordered %>
+<div id="enroute-form">
+  <% if @product.enroute %>
     <%= render 'arrived' %>
   <% else %>
     <%= render 'ordered' %>

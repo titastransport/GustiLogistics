@@ -12,7 +12,7 @@ pianogrillo:
   cant_produce_end: <%= Date.new(2017, 9, 15) %>
   cant_produce_start: <%= Date.new(2017, 8, 1) %>
   next_reorder_date: <%= Date.new(2017, 4, 15) %>
-  ordered: false
+  enroute: false
 
 faella_spaghetti:
   id: 2
@@ -29,4 +29,4 @@ faella_spaghetti:
   cant_produce_end: <%= Date.new(2017, 9, 15) %>
   cant_produce_start: <%= Date.new(2017, 8, 1) %>
   next_reorder_date: <%= Date.new(2018, 4, 15) %>
-  ordered: true
+  enroute: true

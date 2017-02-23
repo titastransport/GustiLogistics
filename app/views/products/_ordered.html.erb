@@ -1,4 +1,4 @@
 <%= form_for(@product, remote: true, authenticity_token: true) do |f| %>
-  <%= f.hidden_field :ordered, :value => true %>
+  <%= f.hidden_field :enroute, :value => true %>
   <%= f.submit "Mark as Ordered", class: "btn btn-primary" %>
 <% end %>

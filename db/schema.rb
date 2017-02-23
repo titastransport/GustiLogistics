@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170222154828) do
+ActiveRecord::Schema.define(version: 20170222235745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,11 +65,19 @@ ActiveRecord::Schema.define(version: 20170222154828) do
     t.date     "cant_produce_end"
     t.date     "cant_produce_start"
     t.date     "next_reorder_date"
-    t.boolean  "ordered",            default: false
+    t.boolean  "enroute",            default: false
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true, using: :btree
   end
 
   create_table "purchase_imports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "purchases", force: :cascade do |t|
+    t.string   "customer"
+    t.string   "item_id"
+    t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

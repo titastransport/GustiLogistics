@@ -362,7 +362,7 @@ class Product < ApplicationRecord
   end
   
   def display_reorder_date
-    if self.ordered
+    if self.enroute
       "Ordered"
     elsif reorder_overdue? 
       "Overdue!"
