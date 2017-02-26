@@ -16,12 +16,18 @@ class Product < ApplicationRecord
     update_attribute(:current, new_quantity)
   end
 
+  # Used in: Products#update, ActivityImports#create
+  #
   def update_reorder_in
     update_attribute(:reorder_in, actual_reorder_in)
   end
 
+  # Used in: Products#update, ActivityImports#create 
   def update_next_reorder_date
     update_attribute(:next_reorder_date, actual_reorder_date)
+  end
+
+  def update_enroute
   end
 
     # In yday format, or integer representation of day in 365 days of year

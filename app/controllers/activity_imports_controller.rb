@@ -18,12 +18,8 @@ class ActivityImportsController < ApplicationController
   def check_file
     if params[:activity_import].nil?
       redirect_to new_activity_import_path, alert: "File missing for upload."
-      return
-    end
-
-    filename = import_params[:file].original_filename
-    extname = File.extname(filename)
-    unless extname == ".xlsx"
+      #return
+    elsif file_extname != ".xlsx"
       redirect_to new_activity_import_path,\
         alert: "Incorrect file type. Please upload a .xlsx file"
     end
@@ -35,4 +31,8 @@ class ActivityImportsController < ApplicationController
     params.require(:activity_import).permit(:file)
   end
 
+  def file_extname
+    filename = import_params[:file].original_filename
+    File.extname(filename)
+  end
 end

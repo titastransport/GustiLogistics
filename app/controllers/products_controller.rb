@@ -4,11 +4,6 @@ class ProductsController < ApplicationController
 
   def index
     @products = Product.select { |p| p.producer == "Faella" }
-    @reorders = {} 
-    @products.each do |product|
-      @product = product
-      @reorders[@product] = @product.reorder_in
-    end
   end
 
   def show
@@ -35,12 +30,11 @@ class ProductsController < ApplicationController
 
   def update
     respond_to do |format|
-      if @product.update(product_params)
-        # Assuming Current, Growth_Factor, or Cover has been changed
+      if @product.update_attributes(product_params)
         @product.update_reorder_in
         @product.update_next_reorder_date
 
-        format.js  
+        format.js
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }
       else
         render :edit
@@ -50,6 +44,7 @@ class ProductsController < ApplicationController
 
   def destroy
     @product.destroy
+
     redirect_to products_url, notice: 'Product was successfully destroyed.'
   end
 
@@ -63,4 +58,5 @@ class ProductsController < ApplicationController
       params.require(:product).permit(:description, :current,\
                                       :cover_time, :growth_factor, :enroute)
     end
+
 end
