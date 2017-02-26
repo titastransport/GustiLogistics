@@ -36,6 +36,8 @@ class ActivityImport < ApplicationRecord
   end
 
   def update_product(current_product, row)
+    # If there's been a purchase in UAR, enroute is probably false
+    current_product.update_attribute(:enroute, false) if row['Units Purc']
     current_product.update_attribute(:current, row['Qty on Hand'])
     current_product.update_reorder_status
 
