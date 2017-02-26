@@ -28,31 +28,9 @@
 </div>
 
 <div id="top-customers-row">
-  <div id="last-six">
-    <table id='product-top-table'>
-      <h2><strong><u>In the Last 6 Full Months</u></strong></h2>
-	    <h5><strong>Average monthly sales</strong>: <%= @product.first_half_average_sales %></h5>
-      <h4><strong><u>Top Customers</u></strong></h4>
-      <tr>
-        <th>Rank</th>
-        <th>Customer</th>
-        <th>Units Purchased</th>
-      </tr>
-      <% @first_half_top_customers.each_with_index do |(customer, quantity), rank| %>
-      <tr>
-        <td><%= rank + 1 %></td>
-          <td><%= customer %></td>
-        <td><%= quantity %></td>
-      </tr>
-      <% end %>
-    </table>
-    <div class="pie">
-      <%= pie_chart @first_half_top_customers %>
-    </div>
-  </div>
   <div id="previous-six">
     <table id='product-top-table'>
-      <h2><strong><u>In the Previous 6 Full Months</u></strong></h2>
+      <h2><strong><u><%= previous_six_full_months %></u></strong></h2>
 	    <h5><strong>Average monthly sales</strong>: <%= @product.second_half_average_sales %></h5>
       <h4><strong><u>Top Customers</u></strong></h4>
       <tr>
@@ -70,6 +48,28 @@
     </table>
     <div class="pie">
       <%= pie_chart @second_half_top_customers %>
+    </div>
+  </div>
+  <div id="last-six">
+    <table id='product-top-table'>
+      <h2><strong><u><%= last_six_full_months %></u></strong></h2>
+	    <h5><strong>Average monthly sales</strong>: <%= @product.first_half_average_sales %></h5>
+      <h4><strong><u>Top Customers</u></strong></h4>
+      <tr>
+        <th>Rank</th>
+        <th>Customer</th>
+        <th>Units Purchased</th>
+      </tr>
+      <% @first_half_top_customers.each_with_index do |(customer, quantity), rank| %>
+      <tr>
+        <td><%= rank + 1 %></td>
+          <td><%= customer %></td>
+        <td><%= quantity %></td>
+      </tr>
+      <% end %>
+    </table>
+    <div class="pie">
+      <%= pie_chart @first_half_top_customers %>
     </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ require 'date'
 module Dateable
   MATCH_YEAR = /\d{4}/
   DAYS_IN_YEAR = 365
+  DAYS_IN_MONTH = 30
 
   # All months capitalized in an array
   def month_names
