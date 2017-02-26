@@ -1,11 +1,10 @@
-<div class="center-inline">
-  <h1 class="center-inline" id="product-page-description"><strong><%= @product.description %></strong></h1>
+<div class="center" id="product-page-title">
+  <h1 class="center" id="product-description"><strong><%= @product.description %></strong></h1>
   <%= render 'enroute_form' %>
 </div>
 
-
 <div class="center" id="product-header">
-  <h4>
+  <h4 class="center">
     <strong>Item ID:</strong>
     <%= @product.gusti_id %>
   </h4>
