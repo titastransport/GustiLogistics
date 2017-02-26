@@ -36,9 +36,8 @@ class ActivityImport < ApplicationRecord
   end
 
   def update_product(current_product, row)
-    current_product.update_current(row['Qty on Hand'])
-    current_product.update_reorder_in
-    current_product.update_next_reorder_date
+    current_product.update_attribute(:current, row['Qty on Hand'])
+    current_product.update_reorder_status
 
     # Must return activity for map method, instead of true from update
     current_product.activities.first

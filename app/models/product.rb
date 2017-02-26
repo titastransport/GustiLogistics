@@ -12,25 +12,23 @@ class Product < ApplicationRecord
                        uniqueness: { case_sensitive: false } 
   validates :current, presence: true
 
-  def update_current(new_quantity)
-    update_attribute(:current, new_quantity)
-  end
-
   # Used in: Products#update, ActivityImports#create
   #
-  def update_reorder_in
-    update_attribute(:reorder_in, actual_reorder_in)
+  #def update_reorder_in
+  #  update_attribute(:reorder_in, actual_reorder_in)
+  #end
+
+  ## Used in: Products#update, ActivityImports#create 
+  #def update_next_reorder_date
+  #  update_attribute(:next_reorder_date, actual_reorder_date)
+  #end
+
+  def update_reorder_status
+    self.update_attribute(:reorder_in, actual_reorder_in)
+    self.update_attribute(:next_reorder_date, actual_reorder_date)
   end
 
-  # Used in: Products#update, ActivityImports#create 
-  def update_next_reorder_date
-    update_attribute(:next_reorder_date, actual_reorder_date)
-  end
-
-  def update_enroute
-  end
-
-    # In yday format, or integer representation of day in 365 days of year
+  # In yday format, or integer representation of day in 365 days of year
   def cant_ship_interval
     # can't order when within a month of cant travel start
     cant_ship_start = self.cant_travel_start.yday - lead_time_days
@@ -134,13 +132,7 @@ class Product < ApplicationRecord
     inventory_adjusted_for_wait / expected_monthly_sales 
   end
 
-  # Happens essentially when product inventory at 2 months
-  # Returns value in days
-  def naive_reorder_in
-    months_till_reorder * DAYS_IN_MONTH
-  end
-
- # Both cant_ship and cant_produce interval
+   # Both cant_ship and cant_produce interval
   def calculate_both_block_reorder_in
     if current_yday_of_year <= first_cant_order_day
       difference_in_days(first_cant_order_day, current_yday_of_year) +\
@@ -167,6 +159,12 @@ class Product < ApplicationRecord
     (future_date.year - Date.today.year) * DAYS_IN_YEAR
   end
 
+# Happens essentially when product inventory at 2 months
+  # Returns value in days
+  def naive_reorder_in
+    months_till_reorder * DAYS_IN_MONTH
+  end
+
   # Checks for can't ship and/or produce interval
   def actual_reorder_in
     if double_block?(naive_reorder_date.yday) 
@@ -187,7 +185,11 @@ class Product < ApplicationRecord
 
   # Actual dates, not ydays
   def actual_reorder_date
-    Date.today + actual_reorder_in 
+    date = Date.today + actual_reorder_in 
+
+    # They want all any changes to inventory that result in a need to reorder to
+    # set the next reorder date to that date
+    date < Date.today ? Date.today : date
   end
 
   # Used primarily to check if more quantity than necessary will be there on
@@ -370,8 +372,10 @@ class Product < ApplicationRecord
   def display_reorder_date
     if self.enroute
       "Ordered"
-    elsif reorder_overdue? 
+    elsif self.next_reorder_date < Date.today 
       "Overdue!"
+    elsif self.next_reorder_date == Date.today 
+      "Today!"
     else
       self.next_reorder_date
     end

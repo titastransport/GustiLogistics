@@ -31,8 +31,7 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update_attributes(product_params)
-        @product.update_reorder_in
-        @product.update_next_reorder_date
+        @product.update_reorder_status
 
         format.js
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }
@@ -58,5 +57,4 @@ class ProductsController < ApplicationController
       params.require(:product).permit(:description, :current,\
                                       :cover_time, :growth_factor, :enroute)
     end
-
 end
