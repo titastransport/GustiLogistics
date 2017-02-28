@@ -1,7 +1,7 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*. Although still in Beta, this application is already **in production** and providing value. It enables my former company, [Gustiamo](https://www.gustiamo.com/), to manage their supply chain more efficiently and effectively via:
-* Product Data Analytics and Visualization via Customer Purchases
+Welcome to my *small business supply chain management web app*, custom built for my former company, [Gustiamo](https://www.gustiamo.com/). Although I'm continuing to refactor and add features, they have already begun to derive value form it. In short, this application helps them to manage their supply chain more efficiently and effectively via:
+* Inventory and Customer Data Analytics / Visualizations
 * Forecasting of Inventory Reorder Dates and Quantities
 
 ### Tech Stack
@@ -40,13 +40,11 @@ Clicking on a product link on the calendar page takes you to a **product analysi
 * Lists all vital stats like reorder dates, quantities and more
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
 * Ranks customers in the last 12 months in 6-month halves, as requested by the client.
-* Enables shipping status and reorder by date of product to be toggled with top button.
-
-One of my goals in the next few weeks is to enable dynamic querying on the page for any given month range.  
+* Enables shipping status and reorder by date of product to be toggled with top button. 
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
 My vision for this application is that it will:
-* Handle all matters related to supply chain management, such as reorders calculations, and customer, product, and supplier analyses. 
-* Generalize to more servies, such as company communication and project management. 
+* Handle all matters related to supply chain management, such as reorder calculations, and customer, product, and supplier analyses / visualizations. 
+* Generalize to more services, such as company communication and project management. 
 * Become useful for other small "brick and mortar" businesses.
