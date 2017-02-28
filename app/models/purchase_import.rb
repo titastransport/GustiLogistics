@@ -3,7 +3,6 @@ require "dateable"
 class PurchaseImport < ApplicationRecord
   include ActiveModel::Model
   include Dateable
-  include ImportsHelper
 
   validates :file, presence: true
   attr_accessor :file
@@ -43,6 +42,10 @@ class PurchaseImport < ApplicationRecord
     else
       create_purchase(row)
     end
+  end
+
+  def open_spreadsheet
+    Roo::Spreadsheet.open(file)
   end
 
   # Check for Product exists because not using many items now 

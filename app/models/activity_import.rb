@@ -3,7 +3,6 @@ require "dateable"
 class ActivityImport < ApplicationRecord
   include ActiveModel::Model
   include Dateable
-  include ImportsHelper
 
   validates :file, presence: true
   attr_accessor :file
@@ -39,7 +38,7 @@ class ActivityImport < ApplicationRecord
     # If there's been a purchase in UAR, enroute is probably false
     current_product.update_attribute(:enroute, false) if row['Units Purc']
     current_product.update_attribute(:current, row['Qty on Hand'])
-    current_product.update_reorder_status
+    current_product.update_reorder_status if current_product.lead_time
 
     # Must return activity for map method, instead of true from update
     current_product.activities.first
@@ -64,6 +63,20 @@ class ActivityImport < ApplicationRecord
     return unless current_product.valid?
 
     process_product(row, current_product)
+  end
+
+  def imported_activities
+    load_imported_activities
+  end
+
+  def open_spreadsheet
+    Roo::Spreadsheet.open(file)
+  end
+
+  # Filename method currently used for both Action Dispatch object for file
+  # upload and rake db:seed tasks
+  def filename
+    file.is_a?(String) ? File.basename(file) : file.original_filename
   end
 
   # Hash[[]].transpose: transposes pairs header to 
@@ -104,9 +117,5 @@ class ActivityImport < ApplicationRecord
       display_errors(activities)
       false
     end
-  end
-
-  def imported_activities
-    load_imported_activities
   end
 end
