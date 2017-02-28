@@ -14,4 +14,19 @@ namespace :db do
       `rm latest.dump`
     end
   end
+
+  namespace :seed do
+    desc "Upload Unit Activity Reports"
+    task :upload_uars => :environment do
+      Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
+      # Specify which producer by director that their UAR's are located
+      PRODUCER_DIRECTORY = 'santeustachio2015'
+      PATH_TO_DIR = "#{Rails.root}/db/seeds/uar/unit_activity_reports/santeustachio2015"
+      Dir.foreach(PATH_TO_DIR) do |file|
+        next if file.start_with? '.'
+        @file = "#{PATH_TO_DIR}/#{file}"
+        ActivityImport.new(file: @file).save
+      end
+    end
+  end
 end

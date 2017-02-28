@@ -3,7 +3,6 @@ require "dateable"
 class ActivityImport < ApplicationRecord
   include ActiveModel::Model
   include Dateable
-  include ImportsHelper
 
   validates :file, presence: true
   attr_accessor :file
@@ -66,6 +65,14 @@ class ActivityImport < ApplicationRecord
     process_product(row, current_product)
   end
 
+  def imported_activities
+    load_imported_activities
+  end
+
+  def open_spreadsheet
+    Roo::Spreadsheet.open(file)
+  end
+
   # Hash[[]].transpose: transposes pairs header to 
   # corresponding rows to create key value pairs in hash
   def load_imported_activities
@@ -104,9 +111,5 @@ class ActivityImport < ApplicationRecord
       display_errors(activities)
       false
     end
-  end
-
-  def imported_activities
-    load_imported_activities
   end
 end
