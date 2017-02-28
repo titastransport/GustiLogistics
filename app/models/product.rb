@@ -13,8 +13,8 @@ class Product < ApplicationRecord
   validates :current, presence: true
 
   def update_reorder_status
-    self.update_attribute(:reorder_in, actual_reorder_in)
-    self.update_attribute(:next_reorder_date, actual_reorder_date)
+    self.reorder_in = actual_reorder_in
+    self.next_reorder_date = actual_reorder_date
   end
 
   ###############################################################################################
@@ -176,11 +176,11 @@ class Product < ApplicationRecord
 
   # Actual dates, not ydays
   def actual_reorder_date
-     Date.today + actual_reorder_in 
+    date = Date.today + actual_reorder_in 
 
     # They want all any changes to inventory that result in a need to reorder to
     # set the next reorder date to that date
-   # date < Date.today ? Date.today : date
+    date < Date.today ? Date.today : date
   end
 
   ############################################################################################

@@ -3,14 +3,28 @@ require "dateable"
 class PurchaseImport < ApplicationRecord
   include ActiveModel::Model
   include Dateable
+  include Importable
 
   validates :file, presence: true
   attr_accessor :file
-  
+
+####################### Row Validations ######################## 
   # Guard against them uploading Retail Customers individually
   def wholesale_customer?(row)
     row['Customer ID'].upcase.start_with?('AAA')
   end
+
+  # Helper till we figure how to handle new products
+  def product_exists?(row)
+    !(Product.where(gusti_id: row['Item ID'].upcase).empty?)
+  end
+
+  def valid_row?(row)
+    row['Name'] && row['Item ID'] && row['Qty'] &&\
+      wholesale_customer?(row) && product_exists?(row)
+  end
+
+################### Purchase Processing ########################
 
   def same_date?(purchase)
     purchase.date == create_datetime
@@ -20,69 +34,60 @@ class PurchaseImport < ApplicationRecord
     purchase.product.gusti_id == row['Item ID']
   end
 
-  def purchase_exists_for_month?(customer, row)
-    !find_matching_purchases(customer, row).empty?
-  end 
-
-  def valid_row?(row)
-    row['Name'] && row['Item ID'] && row['Qty'] &&\
-      wholesale_customer?(row) && product_exists?(row)
+  def find_current_product(row)
+    Product.find_by(gusti_id: row['Item ID'])
   end
 
-  # Helper till we figure we which products to add
-  def product_exists?(row)
-    !(Product.where(gusti_id: row['Item ID'].upcase).empty?)
-  end
-
-  def process_row(row)
-    current_customer = Customer.find_or_create_by(name: row['Name'])
-
-    if purchase_exists_for_month?(current_customer, row)
-      update_purchase_quantity(current_customer, row)
-    else
-      create_purchase(row)
-    end
-  end
-
-  def open_spreadsheet
-    Roo::Spreadsheet.open(file)
-  end
-
-  # Check for Product exists because not using many items now 
-  def load_imported_purchases
-    spreadsheet = open_spreadsheet
-    header = spreadsheet.row(1)
-
-    imported_purchases = (2..spreadsheet.last_row).map do |i|
-      current_row = Hash[[header, spreadsheet.row(i)].transpose]
-      process_row(current_row) if valid_row?(current_row)
-    end
-
-    imported_purchases.compact
+  def purchase_attributes(row)
+    { quantity: row['Qty'], date: create_datetime,\
+      product_id: find_current_product(row).id }
   end
 
   def create_purchase(row)
     customer.customer_purchase_orders.build(purchase_attributes(row))
   end
 
-  def purchase_attributes(row)
-    { quantity: row['Qty'], date: create_datetime, product_id: find_current_product(row).id }
-  end
-
-  # If not found, gets created and initialized with a current value of 0
-  def find_current_product(row)
-    Product.find_or_create_by(gusti_id: row['Item ID']) do |product|
-      product.current = 0
-    end
-  end
-
   def update_purchase_quantity(customer, row)
-    existing_purchase = find_matching_purchases(customer, row).first 
-    existing_purchase.update_quantity(row['Qty'])
-
-    # Must return purchase object for map method instead of true from update
-    existing_purchase
+    existing_purchase(customer, row).quantity = row['Qty']
   end 
+
+  def current_customer(row)
+    Customer.find_or_create_by(name: row['Name'])
+  end
+
+  def existing_purchase(customer, row)
+    customer.customer_purchase_orders.select do |purchase|
+      same_date?(purchase) && same_product?(purchase, row)
+    end.first
+  end 
+
+#######################################################################
+
+  def process_row(row)
+    if existing_purchase(current_customer(row), row)
+      update_purchase_quantity(current_customer(row), row)
+    else
+      create_purchase(row)
+    end
+
+    current_customer(row).customer_purchase_orders.last
+  end
+
+  def load_imported_purchases
+    spreadsheet = open_spreadsheet
+    header = spreadsheet.row(1)
+
+    purchases = (2..spreadsheet.last_row).map do |i|
+      current_row = Hash[[header, spreadsheet.row(i)].transpose]
+      process_row(current_row) if valid_row?(current_row)
+    end
+
+    purchases.compact
+  end
+
+  def imported_purchases
+    load_imported_purchases
+  end
 
   def save
     purchases = imported_purchases
@@ -94,14 +99,4 @@ class PurchaseImport < ApplicationRecord
       false
     end
   end
-
-  def imported_purchases
-    load_imported_purchases
-  end
-
-  def find_matching_purchases(customer, row)
-    customer.customer_purchase_orders.select do |purchase|
-      same_date?(purchase) && same_product?(purchase, row)
-    end 
-  end 
 end
