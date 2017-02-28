@@ -176,11 +176,11 @@ class Product < ApplicationRecord
 
   # Actual dates, not ydays
   def actual_reorder_date
-    date = Date.today + actual_reorder_in 
+     Date.today + actual_reorder_in 
 
     # They want all any changes to inventory that result in a need to reorder to
     # set the next reorder date to that date
-    date < Date.today ? Date.today : date
+   # date < Date.today ? Date.today : date
   end
 
   ############################################################################################
