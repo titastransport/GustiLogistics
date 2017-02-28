@@ -24,15 +24,18 @@ class ActivityImportsController < ApplicationController
         alert: "Incorrect file type. Please upload a .xlsx file"
     end
   end
-
+  
   private
 
   def import_params
     params.require(:activity_import).permit(:file)
   end
 
+  def filename
+    import_params[:file].original_filename
+  end
+  
   def file_extname
-    filename = import_params[:file].original_filename
     File.extname(filename)
   end
 end
