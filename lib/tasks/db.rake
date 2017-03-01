@@ -8,7 +8,7 @@ namespace :db do
 
     begin
       `heroku pg:backups:capture`
-      `curl -o latest.dump \`heroku pg:backups:url\``
+      `curl -o latest.dump \ heroku pg:backups:url`
       `pg_restore --verbose --clean --no-acl --no-owner -h localhost -d #{database_name} latest.dump`
     ensure
       `rm latest.dump`
@@ -20,7 +20,7 @@ namespace :db do
     task :upload_uars => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
       # Specify which producer by director that their UAR's are located
-      PATH_TO_DIR = "#{Rails.root}/db/seeds/uar/unit_activity_reports/santeustachio20162017"
+      PATH_TO_DIR = "#{Rails.root}/db/seeds/uar/unit_activity_reports/santeustachio2015"
       Dir.foreach(PATH_TO_DIR) do |file|
         next if file.start_with? '.'
         file = "#{PATH_TO_DIR}/#{file}"
