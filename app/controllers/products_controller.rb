@@ -3,7 +3,7 @@ class ProductsController < ApplicationController
   before_action :logged_in_user
 
   def index
-    @products = Product.select { |p| p.producer == "Faella" }
+    @products = Product.select { |p| p.setup? }
   end
 
   def show

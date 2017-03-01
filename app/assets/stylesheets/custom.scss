@@ -41,13 +41,13 @@ textarea {
 
 /* Products Index Page */
 
-table {
+#products-index-table {
+  width: 38%;
+  border-collapse: separate;
   th {
     text-align: center;
   }
-  border-spacing: 10px;
-  border-collapse: separate;
-  #products-index-body {
+    #products-index-body {
     text-align: left; 
   }
   #product-index-description {
@@ -153,6 +153,8 @@ p {
     width: 42%;
     table {
       margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 4px;
     }
   }
   #previous-six {
@@ -163,6 +165,8 @@ p {
     width: 42%;
     table {
       margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 4px;
     }
   }
   p {

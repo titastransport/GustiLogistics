@@ -180,7 +180,11 @@ class Product < ApplicationRecord
 
     # They want all any changes to inventory that result in a need to reorder to
     # set the next reorder date to that date
-    date < Date.today ? Date.today : date
+    if date < Date.today
+      Date.today
+    else
+      date
+    end
   end
 
   ############################################################################################
