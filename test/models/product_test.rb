@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class ProductTest < ActiveSupport::TestCase
+  include Dateable
 
   def setup
     @product = products(:faella_spaghetti) 
@@ -75,7 +76,9 @@ class ProductTest < ActiveSupport::TestCase
 
   test "expected quantity on date finds proper quanties for this year" do
     date = Date.today + 2.months
-    assert_equal 1764, @product.expected_quantity_on_date(date)
+    sales = @product.expected_daily_sales * days_till(date)
+    quantity = @product.current - sales
+    assert_equal quantity, @product.expected_quantity_on_date(date)
   end
 
   test "expected quantity on date finds proper quanties for next year" do
