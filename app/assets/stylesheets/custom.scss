@@ -42,18 +42,12 @@ textarea {
 /* Products Index Page */
 
 #products-index-table {
-  width: 38%;
+  border-spacing: 1em;
   border-collapse: separate;
-  th {
-    text-align: center;
-  }
-    #products-index-body {
-    text-align: left; 
-  }
-  #product-index-description {
-    padding-right: 50px;
-  }
   td, ul {
+    text-align: left;
+    padding-left: 0px;
+    padding-right: 0px;
     a {
       text-decoration: none;
       color: black;
