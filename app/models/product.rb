@@ -13,23 +13,11 @@ class Product < ApplicationRecord
   validates :current, presence: true
 
   def update_reorder_status
-    self.reorder_in = actual_reorder_in
+    self.reorder_in = actual_days_till_reorder
     self.next_reorder_date = actual_reorder_date
   end
 
-
- # ######################################################################################################
-  # Actual Reorder In/Date methods
-
-  # Happens essentially when product inventory at 2 months
-  # Returns value in days
-  def naive_reorder_in
-    months_till_reorder * DAYS_IN_MONTH
-  end
-
-  def naive_reorder_date
-    Date.today + naive_reorder_in
-  end
+ ################### Reorder In/Date Calculations ######################
 
   # Assumption: can't produce during no travel time as well
   # Interval substracts waiting time from cant_travel_start to ensure product
@@ -47,7 +35,7 @@ class Product < ApplicationRecord
     (travel_block_start..travel_block_end)
   end
 
-  def cant_order_interval?(proposed_yday)
+  def in_cant_order_interval?(proposed_yday)
     travel_block_interval.include?(proposed_yday) ||
       produce_block_interval.include?(proposed_yday)
   end
@@ -76,23 +64,31 @@ class Product < ApplicationRecord
   # Rescursively handles any non-valid ydays based on whether they yday is in a
   # shipping cant order interval
   def find_reorder_yday(proposed_yday)
-    if cant_order_interval?(proposed_yday)
+    if in_cant_order_interval?(proposed_yday)
       find_reorder_yday(reorder_yday_adjusted_for_block(proposed_yday))
     else
       proposed_yday
     end
   end
 
-  def actual_reorder_in
+  # number of days till self's inventory at 2 months till depletion
+  def naive_days_till_reorder
+    months_till_reorder * DAYS_IN_MONTH
+  end
+
+  def naive_reorder_date
+    Date.today + naive_days_till_reorder
+  end
+
+  def actual_days_till_reorder
     find_reorder_yday(naive_reorder_date.yday) - Date.today.yday
   end
 
   # Actual dates, not ydays
   def actual_reorder_date
-    date = Date.today + actual_reorder_in 
+    date = Date.today + actual_days_till_reorder
 
-    # They want all any changes to inventory that result in a need to reorder to
-    # set the next reorder date to that date
+    # Overdue dates have a reorder date of today 
     if date < Date.today
       Date.today
     else
@@ -100,19 +96,16 @@ class Product < ApplicationRecord
     end
   end
 
-  ###############################################################################################
-  # Methods related to ordering block intervals
-
   #############################################################################################
   # Reorder In/Date Helpers
   
-   # lead_time will be stored as integer or string so using to_f will work
-  def lead_time_days
-    self.lead_time.to_f * DAYS_IN_MONTH
-  end
+ #  # lead_time will be stored as integer or string so using to_f will work
+ # def lead_time_days
+ #   self.lead_time.to_f * DAYS_IN_MONTH
+ # end
 
- # Normal time it takes for product to be ordered and then arrive at Gustiamo
-  def normal_reorder_wait_time
+  # Normal time it takes for product to be ordered and then arrive at Gustiamo
+  def normal_months_till_reorder_arrival
     self.lead_time + self.travel_time
   end
 
@@ -123,7 +116,7 @@ class Product < ApplicationRecord
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
   def naive_waiting_sales
-    normal_reorder_wait_time * expected_monthly_sales 
+    normal_months_till_reorder_arrival * expected_monthly_sales 
   end
  
   # Accounts for sales made in waiting period between reorder and arrival
@@ -157,7 +150,6 @@ class Product < ApplicationRecord
   def months_till_reorder
     inventory_adjusted_for_wait / expected_monthly_sales 
   end
-
   
   ############################################################################################
   # Reorder Quantity
@@ -224,6 +216,8 @@ class Product < ApplicationRecord
   # Actual Reorder Quantity methods
 
   def naive_reorder_quantity
+    # Shipping Blocks means there had to be a premature order because of actual
+    # next reorder dates landing in a cant order interval
     if no_shipping_blocks?
       normal_full_order    
     else
