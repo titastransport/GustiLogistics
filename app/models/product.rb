@@ -27,8 +27,8 @@ class Product < ApplicationRecord
     months_till_reorder * DAYS_IN_MONTH
   end
 
-  def naive_reorder_yday
-    (Date.today + naive_reorder_in).yday
+  def naive_reorder_date
+    Date.today + naive_reorder_in
   end
 
   # Assumption: can't produce during no travel time as well
@@ -84,7 +84,7 @@ class Product < ApplicationRecord
   end
 
   def actual_reorder_in
-    find_reorder_yday(naive_reorder_yday) - Date.today.yday
+    find_reorder_yday(naive_reorder_date.yday) - Date.today.yday
   end
 
   # Actual dates, not ydays
@@ -169,11 +169,11 @@ class Product < ApplicationRecord
   # Very rough estimate of reorder after next date
   # Necessary to predict if a product being ordered now will have it's next
   # reorder land in a cant order period
-  def reorder_after_next_date
+  def reorder_after_next_yday
     if reorder_overdue?
-      Date.today + self.cover_time.months
+      (Date.today + self.cover_time.months).yday
     else
-      self.next_reorder_date + self.cover_time.months
+      (self.next_reorder_date + self.cover_time.months).yday
     end
   end
 
@@ -201,20 +201,18 @@ class Product < ApplicationRecord
     expected_quantity_on_date(next_shipment_arrives_date)
   end
 
-    # Calculates gap in days between reorder_after_next for a product and next available
+  # Calculates gap in days between reorder_after_next for a product and next available
   # reorder day after that
   # Used to add extra units to next upcoming order to prevent inventory shortage
   # period past a product's cover time
-  def gap_days
-    if double_block?(reorder_after_next_date.yday)
-      difference_in_days(last_cant_order_day, reorder_after_next_date.yday)
-    elsif producer_cant_produce_interval?(reorder_after_next_date.yday) 
-      difference_in_days(cant_produce_interval.end, reorder_after_next_date.yday)
-    elsif producer_cant_ship_interval?(reorder_after_next_date.yday) 
-      difference_in_days(cant_ship_interval.end, reorder_after_next_date.yday)
+  def gap_days(proposed_reorder_after_next_yday)
+    if travel_block_interval.include?(proposed_reorder_after_next_yday) 
+      gap_days(travel_block_interval.end + 1)
+    elsif produce_block_interval.include?(proposed_reorder_after_next_yday) 
+      gap_days(produce_block_interval.end + 1)
     else
-      0
-    end 
+      proposed_reorder_after_next_yday - reorder_after_next_yday 
+    end
   end
 
   # Doesn't account for gap days
@@ -235,7 +233,7 @@ class Product < ApplicationRecord
 
   # Need to augment cover_time for gap days
   def actual_reorder_quantity
-    (naive_reorder_quantity + (expected_daily_sales * gap_days)).to_i
+    (naive_reorder_quantity + (expected_daily_sales * gap_days(reorder_after_next_yday))).to_i
   end
  
   ###########################################################################################################
