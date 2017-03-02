@@ -19,12 +19,18 @@ class Product < ApplicationRecord
 
  ################### Reorder In/Date Calculations ######################
 
+  # Normal time it takes for product to be ordered and then arrive at Gustiamo
+  def normal_months_till_reorder_arrival
+    self.lead_time + self.travel_time
+  end
+
   # Assumption: can't produce during no travel time as well
   # Interval substracts waiting time from cant_travel_start to ensure product
   # will not be traveling in cant_travel time
   # Ydays used because year is irrelevant 
   def travel_block_interval
-    travel_block_start = (self.cant_travel_start - normal_reorder_wait_time.months).yday
+    travel_block_start = (self.cant_travel_start -
+    normal_months_till_reorder_arrival.months).yday
     travel_block_end = (self.cant_travel_end).yday
     (travel_block_start..travel_block_end)
   end
@@ -43,19 +49,15 @@ class Product < ApplicationRecord
   def reorder_yday_adjusted_for_block(proposed_yday)
     if travel_block_interval.include?(proposed_yday) 
       if current_yday_of_year < travel_block_interval.first
-        travel_block_interval.first - 1
-          #+ years_in_future(naive_reorder_date)
+        (travel_block_interval.first - 1) + years_in_future(naive_reorder_date)
       else 
-        travel_block_interval.end + 1
-        #+ years_in_future(naive_reorder_date)
+        (travel_block_interval.end + 1) + years_in_future(naive_reorder_date)
       end
     elsif produce_block_interval.include?(proposed_yday) 
       if current_yday_of_year < produce_block_interval.first
-        produce_block_interval.first - 1
-          #+ years_in_future(naive_reorder_date)
+        (produce_block_interval.first - 1) + years_in_future(naive_reorder_date)
       else 
-        produce_block_interval.end + 1
-        #+ years_in_future(naive_reorder_date)
+        (produce_block_interval.end + 1) + years_in_future(naive_reorder_date)
       end
     end
   end
@@ -104,11 +106,7 @@ class Product < ApplicationRecord
  #   self.lead_time.to_f * DAYS_IN_MONTH
  # end
 
-  # Normal time it takes for product to be ordered and then arrive at Gustiamo
-  def normal_months_till_reorder_arrival
-    self.lead_time + self.travel_time
-  end
-
+  
   def growth
     self.growth_factor.to_f
   end
@@ -155,7 +153,7 @@ class Product < ApplicationRecord
   # Reorder Quantity
   
   def reorder_overdue?
-    self.actual_reorder_in < 0 
+    self.actual_days_till_reorder < 0 
   end
 
   # Very rough estimate of reorder after next date
@@ -186,7 +184,7 @@ class Product < ApplicationRecord
   # Used primarily to check if more quantity than necessary will be there on
   # next reorder date
   def next_shipment_arrives_date
-    self.next_reorder_date + normal_reorder_wait_time.months
+    self.next_reorder_date + normal_months_till_reorder_arrival.months
   end
 
   def quantity_on_reorder_arrival

@@ -24,19 +24,8 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "detects can't order intervals for Faella" do
-    assert @product.producer_cant_ship_interval?(Date.new(2017, 5, 15).yday)
-    assert_not @product.producer_cant_produce_interval?(Date.today.yday)
-    # double block
-    assert @product.double_block?(Date.new(2017, 8, 15).yday)
-  end
-
-  test "detects first and last can't order days" do
-    assert_equal Date.new(2017, 4, 15).yday, @product.first_cant_order_day
-    assert_equal Date.new(2017, 9, 15).yday, @product.last_cant_order_day
-  end
-
-  test "lead time days calculates correctly" do
-    assert_equal @product.lead_time.to_f * 30, @product.lead_time_days
+    assert @product.in_cant_order_interval?(Date.new(2017, 5, 15).yday)
+    assert_not @product.in_cant_order_interval?(Date.new(2017, 1, 15))
   end
 
   test "average sales calculated correctly" do
@@ -57,7 +46,8 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "reorder in correctly calculates next reorder in for this year" do
-    assert_equal @product2.cant_travel_start - 1.month, @product2.actual_reorder_date
+    normal_wait_months = (@product.lead_time + @product.travel_time).months
+    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_reorder_date
   end
 
   test "days till works for this year" do
@@ -71,7 +61,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "gap days finds dif in calculated reorder date and next possible reorder date" do
-    assert_equal 31, @product2.gap_days
+    assert_equal 64, @product2.gap_days(@product.reorder_after_next_yday)
   end
 
   test "expected quantity on date finds proper quanties for this year" do

@@ -7,11 +7,11 @@ pianogrillo:
   travel_time: 1
   cover_time: 4
   growth_factor: 1.2
-  cant_travel_start: <%= Date.new(2017, 5, 15) %>
-  cant_travel_end: <%= Date.new(2017, 9, 30) %>
+  cant_travel_start: <%= Date.new(2017, 6, 1) %>
+  cant_travel_end: <%= Date.new(2017, 8, 30) %>
   cant_produce_end: <%= Date.new(2017, 9, 15) %>
   cant_produce_start: <%= Date.new(2017, 8, 1) %>
-  next_reorder_date: <%= Date.new(2017, 4, 15) %>
+  next_reorder_date: <%= Date.new(2017, 3, 14) %>
   enroute: false
 
 faella_spaghetti:
