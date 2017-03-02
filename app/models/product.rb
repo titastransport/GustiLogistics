@@ -17,56 +17,91 @@ class Product < ApplicationRecord
     self.next_reorder_date = actual_reorder_date
   end
 
+
+ # ######################################################################################################
+  # Actual Reorder In/Date methods
+
+  # Happens essentially when product inventory at 2 months
+  # Returns value in days
+  def naive_reorder_in
+    months_till_reorder * DAYS_IN_MONTH
+  end
+
+  def naive_reorder_yday
+    (Date.today + naive_reorder_in).yday
+  end
+
+  # Assumption: can't produce during no travel time as well
+  # Interval substracts waiting time from cant_travel_start to ensure product
+  # will not be traveling in cant_travel time
+  # Ydays used because year is irrelevant 
+  def travel_block_interval
+    travel_block_start = (self.cant_travel_start - normal_reorder_wait_time.months).yday
+    travel_block_end = (self.cant_travel_end).yday
+    (travel_block_start..travel_block_end)
+  end
+
+  def produce_block_interval
+    travel_block_start = (self.cant_produce_start - self.lead_time.months).yday
+    travel_block_end = (self.cant_produce_end).yday
+    (travel_block_start..travel_block_end)
+  end
+
+  def cant_order_interval?(proposed_yday)
+    travel_block_interval.include?(proposed_yday) ||
+      produce_block_interval.include?(proposed_yday)
+  end
+
+  def reorder_yday_adjusted_for_block(proposed_yday)
+    if travel_block_interval.include?(proposed_yday) 
+      if current_yday_of_year < travel_block_interval.first
+        travel_block_interval.first - 1
+          #+ years_in_future(naive_reorder_date)
+      else 
+        travel_block_interval.end + 1
+        #+ years_in_future(naive_reorder_date)
+      end
+    elsif produce_block_interval.include?(proposed_yday) 
+      if current_yday_of_year < produce_block_interval.first
+        produce_block_interval.first - 1
+          #+ years_in_future(naive_reorder_date)
+      else 
+        produce_block_interval.end + 1
+        #+ years_in_future(naive_reorder_date)
+      end
+    end
+  end
+
+  # Checks if naive yday is valid
+  # Rescursively handles any non-valid ydays based on whether they yday is in a
+  # shipping cant order interval
+  def find_reorder_yday(proposed_yday)
+    if cant_order_interval?(proposed_yday)
+      find_reorder_yday(reorder_yday_adjusted_for_block(proposed_yday))
+    else
+      proposed_yday
+    end
+  end
+
+  def actual_reorder_in
+    find_reorder_yday(naive_reorder_yday) - Date.today.yday
+  end
+
+  # Actual dates, not ydays
+  def actual_reorder_date
+    date = Date.today + actual_reorder_in 
+
+    # They want all any changes to inventory that result in a need to reorder to
+    # set the next reorder date to that date
+    if date < Date.today
+      Date.today
+    else
+      date
+    end
+  end
+
   ###############################################################################################
   # Methods related to ordering block intervals
-
-  # In yday format, or integer representation of day in 365 days of year
-  def cant_ship_interval
-    # can't order when within a month of cant travel start
-    cant_ship_start = self.cant_travel_start.yday - lead_time_days
-    # in contrast, can order when within a month of a cant travel start
-    cant_ship_end = self.cant_travel_end.yday - lead_time_days
-
-    # returns range of integers as dates are reprsented by their yday
-    (cant_ship_start..cant_ship_end)
-  end
-
-  def producer_cant_ship_interval?(reorder_date_yday)
-    cant_ship_interval.include?(reorder_date_yday)
-  end
-
-  # In yday format, or integer representation of day in 365 days of year
-  def cant_produce_interval
-    cant_produce_start = self.cant_produce_start.yday - lead_time_days 
-    # don't subtract lead time here like in cant_ship because production
-    # affected here but not in cant ship
-    cant_produce_end = self.cant_produce_end.yday
-
-    (cant_produce_start..cant_produce_end)
-  end
-
-  def producer_cant_produce_interval?(reorder_date_yday)
-    cant_produce_interval.include?(reorder_date_yday)
-  end
-
-  # Both can't order intervals
-  def double_block?(reorder_date_yday)
-    producer_cant_ship_interval?(reorder_date_yday) &&\
-      producer_cant_produce_interval?(reorder_date_yday)
-  end
-
-  # First day that a product can't be ordered
-  # Reorder dates will be set to this if the current day is before it
-  def first_cant_order_day
-    [cant_ship_interval.first, cant_produce_interval.first].min
-  end
-
-  # First day that a product can be reordered again
-  # Reorder dates will be set to this if the current day is already in the
-  # cant_order interval
-  def last_cant_order_day
-    [cant_ship_interval.end, cant_produce_interval.end].max
-  end
 
   #############################################################################################
   # Reorder In/Date Helpers
@@ -123,70 +158,7 @@ class Product < ApplicationRecord
     inventory_adjusted_for_wait / expected_monthly_sales 
   end
 
-  # Both cant_ship and cant_produce interval
-  # Returns days
-  def calculate_both_block_reorder_in
-    if current_yday_of_year <= first_cant_order_day
-      difference_in_days(first_cant_order_day, current_yday_of_year) +\
-        years_in_future(naive_reorder_date)
-    else
-      difference_in_days(last_cant_order_day, current_yday_of_year) +\
-        years_in_future(naive_reorder_date)
-    end
-  end
-
-  # Either cant_produce or cant_ship interval
-  # Returns days
-  def calculate_block_reorder_in(interval)
-    if current_yday_of_year <= interval.first
-      difference_in_days(interval.first, current_yday_of_year) +\
-        years_in_future(naive_reorder_date)
-    else 
-      difference_in_days(interval.end, current_yday_of_year) +\
-        years_in_future(naive_reorder_date)
-    end
-  end
-
-  ######################################################################################################
-  # Actual Reorder In/Date methods
-
- # Happens essentially when product inventory at 2 months
-  # Returns value in days
-  def naive_reorder_in
-    months_till_reorder * DAYS_IN_MONTH
-  end
-
-  # Checks for can't ship and/or produce interval
-  def actual_reorder_in
-    if double_block?(naive_reorder_date.yday) 
-      calculate_both_block_reorder_in
-    elsif producer_cant_produce_interval?(naive_reorder_date.yday) 
-      calculate_block_reorder_in(cant_produce_interval)
-    elsif producer_cant_ship_interval?(naive_reorder_date.yday)
-      calculate_block_reorder_in(cant_ship_interval)
-    else
-      naive_reorder_in
-    end
-  end
-
-  # Actual dates, not ydays
-  def naive_reorder_date
-    Date.today + naive_reorder_in
-  end
-
-  # Actual dates, not ydays
-  def actual_reorder_date
-    date = Date.today + actual_reorder_in 
-
-    # They want all any changes to inventory that result in a need to reorder to
-    # set the next reorder date to that date
-    if date < Date.today
-      Date.today
-    else
-      date
-    end
-  end
-
+  
   ############################################################################################
   # Reorder Quantity
   
