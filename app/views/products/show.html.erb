@@ -81,10 +81,10 @@
     <%= link_to 'Home', products_path %>
   </div>
   <div id="product-navigators">
-    <% if @product.previous_product && @product.previous_product.setup? %>
+    <% if @product.previous_product %>
       <%= link_to 'Previous Product', product_path(@product.previous_product.id) %> |
     <% end %>
-    <% if @product.next_product && @product.next_product.setup? %>
+    <% if @product.next_product %>
       <%= link_to 'Next Product', product_path(@product.next_product.id) %>
     <% end %>
   </div>

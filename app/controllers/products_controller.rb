@@ -1,9 +1,10 @@
 class ProductsController < ApplicationController
+  helper ProductsHelper
   before_action :set_product, only: [:show, :edit, :update, :destroy]
   before_action :logged_in_user
 
   def index
-    @products = Product.select { |p| p.setup? }
+    @products = Product.select { |p| !p.reorder_in.nil? }
   end
 
   def show
@@ -31,7 +32,10 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update_attributes(product_params)
-        @product.update_reorder_status
+        unless @product.enroute
+          @product.update_reorder_status
+          @product.save!
+        end
 
         format.js
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }

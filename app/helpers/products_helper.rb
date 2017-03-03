@@ -1,6 +1,22 @@
 module ProductsHelper
   include Dateable
 
+  def display_reorder_date
+    if enroute
+      "Ordered"
+    elsif next_reorder_date < Date.today 
+      "Overdue!"
+    elsif next_reorder_date == Date.today 
+      "Today!"
+    else
+      next_reorder_date
+    end
+  end
+
+  def sales_this_month
+    total_units_sold(this_month_date, this_month_date)
+  end
+
   def percentage(quantity, total)
     ((quantity.to_f / total) * 100).to_i + 1
   end

@@ -22,7 +22,9 @@ class ActivityImport < ApplicationRecord
 
     current_product.current = row['Qty on Hand']
     # Not updating reorder status if product enroute, for now
-    current_product.update_reorder_status if current_product.lead_time && !current_product.enroute
+    if current_product.lead_time && !current_product.enroute
+      current_product.update_reorder_status 
+    end
 
     # Used for settting up new products description for now
     current_product.description = row['Item Description']
