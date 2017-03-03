@@ -20,10 +20,11 @@ gem 'jbuilder',                       '2.4.1'
 gem 'rails-controller-testing',       '~> 1.0', '>= 1.0.1'
 gem 'pg',                             '0.19.0'
 gem 'responders',                     '~> 2.3'
+gem 'pry-rails',                      '~> 0.3.5'
 
 group :development, :test do
   gem 'byebug',                       '9.0.0', platform: :mri
-  gem 'pry',                          '~> 0.10.3'
+  gem 'jazz_fingers',                 '~> 4.0', '>= 4.0.1'
 end
 
 group :development do
