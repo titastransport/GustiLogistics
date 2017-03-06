@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170222235745) do
+ActiveRecord::Schema.define(version: 20170306223220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,8 +19,9 @@ ActiveRecord::Schema.define(version: 20170222235745) do
     t.integer  "sold"
     t.date     "date"
     t.integer  "product_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "purchased",  default: 0
     t.index ["product_id", "date"], name: "index_activities_on_product_id_and_date", unique: true, using: :btree
     t.index ["product_id"], name: "index_activities_on_product_id", using: :btree
   end
@@ -70,6 +71,14 @@ ActiveRecord::Schema.define(version: 20170222235745) do
   end
 
   create_table "purchase_imports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "purchases", force: :cascade do |t|
+    t.string   "customer"
+    t.string   "item_id"
+    t.integer  "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

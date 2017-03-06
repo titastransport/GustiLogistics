@@ -14,6 +14,11 @@ class ActivityImport < ApplicationRecord
       row['Beg Qty'] && row['Qty on Hand']
   end
 
+  # Used till all products are decided and setup
+  def product_exists?(row)
+    find_current_product(row).nil? 
+  end
+
 ################## Product Update #############################
 
   def update_product(current_product, row)
@@ -55,17 +60,20 @@ class ActivityImport < ApplicationRecord
     end.first
   end
 
-  def update_activity_sold(product, row)
-    existing_activity(product).sold = row['Units Sold']
+  def update_activity(product, row)
+    existing_activity(product).sold = row['Units Sold'].to_i
+    existing_activity(product).purchased = row['Units Purc'].to_i
   end
 
   def create_activity(product, row)
-    product.activities.build(sold: row['Units Sold'], date: create_datetime)
+    product.activities.build(sold: row['Units Sold'].to_i,
+                             date: create_datetime,
+                             purchased: row['Units Purc'].to_i)
   end
   
   def process_activity(product, row)
     if existing_activity(product)
-      update_activity_sold(product, row)
+      update_activity(product, row)
     else
       create_activity(product, row)
     end
@@ -91,7 +99,7 @@ class ActivityImport < ApplicationRecord
 
     activities = (2..spreadsheet.last_row).map do |i|
       current_row = Hash[[header, spreadsheet.row(i)].transpose]
-      process_row(current_row) if valid_row?(current_row)
+      process_row(current_row) if valid_row?(current_row) && product_exists?(current_row)
     end
 
     activities.compact

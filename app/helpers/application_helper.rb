@@ -17,21 +17,3 @@ module ApplicationHelper
     end
   end
 end
-
-module ImportsHelper
-  def open_spreadsheet
-    Roo::Spreadsheet.open(file.path)
-  end
-
-  def filename
-    File.basename(file.original_filename, File.extname(file.original_filename))
-  end
-
-  def display_errors(invalid_purchases)
-    purchases.each_with_index do |purchase, index|
-      purchase.errors.full_messages.each do |message|
-        self.errors.add :base, "Row #{index + 2}: #{message}"
-      end
-    end
-  end
-end

@@ -1,12 +1,15 @@
-require 'date'
+require_relative 'importable'
 
 # Module used for parsing the date of uploaded excel files
 # Standard format should be TYPEOFFILE_MONTH_YEAR.xlsx
 # I try to account for edge cases around standard format
 module Dateable
+  include Importable
   MATCH_YEAR = /\d{4}/
   DAYS_IN_YEAR = 365
   DAYS_IN_MONTH = 30
+  MONTHS_IN_YEAR = 12
+  FIRST_OF_MONTH = 1
 
   # All months capitalized in an array
   def month_names
@@ -30,7 +33,7 @@ module Dateable
 
   def create_datetime
     month, year = parse_file_name[:month], parse_file_name[:year]
-    DateTime.parse("#{1}/#{month}/#{year}")
+    DateTime.parse("#{FIRST_OF_MONTH}/#{month}/#{year}")
   end
 
   def current_yday_of_year
@@ -38,7 +41,7 @@ module Dateable
   end
 
   def months_since_year_zero(date)
-    (date.year * 12) + date.month
+    (date.year * MONTHS_IN_YEAR) + date.month
   end
 
   def difference_in_months(date1, date2)
