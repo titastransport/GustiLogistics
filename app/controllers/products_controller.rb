@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
   before_action :logged_in_user
 
   def index
-    @products = Product.select { |p| !p.reorder_in.nil? }
+    @products = Product.select { |p| setup_product(p) }
   end
 
   def show
@@ -60,5 +60,9 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:description, :current,\
                                       :cover_time, :growth_factor, :enroute)
+    end
+
+    def setup_product(product)
+      !(product.next_reorder_date.nil?)
     end
 end

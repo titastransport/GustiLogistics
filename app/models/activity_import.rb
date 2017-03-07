@@ -43,7 +43,7 @@ class ActivityImport < ApplicationRecord
   # desired for now
   def create_new_product(row)
     Product.new(gusti_id: row['Item ID'], description: row['Item Description'],\
-                current: row['Qty on Hand'], reorder_in: 999)
+                current: row['Qty on Hand'])
   end
 
 ##################### Activity Processing ##########################

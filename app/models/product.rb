@@ -13,7 +13,6 @@ class Product < ApplicationRecord
   validates :current, presence: true
 
   def update_reorder_status
-    self.reorder_in = actual_days_till_reorder
     self.next_reorder_date = actual_reorder_date
   end
 

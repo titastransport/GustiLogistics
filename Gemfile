@@ -28,6 +28,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'bullet',                       '~> 5.5', '>= 5.5.1'
   gem 'web-console',                  '3.1.1'
   gem 'listen',                       '3.0.8'
   gem 'spring',                       '1.7.2'
