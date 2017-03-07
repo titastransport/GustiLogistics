@@ -101,11 +101,11 @@ class Product < ApplicationRecord
     (produce_block_start_yday..produce_block_end_yday)
   end
 
-  def day_before_interval(blocking_interval)
+  def yday_before_interval(blocking_interval)
     blocking_interval.first - 1
   end
 
-  def day_after_interval(blocking_interval)
+  def yday_after_interval(blocking_interval)
     blocking_interval.end + 1
   end
 
@@ -121,9 +121,9 @@ class Product < ApplicationRecord
   ##################### Calculate Reorder Date ##########################
   def adjust_yday_for_block(blocking_interval)
     if before_blocking_interval?(blocking_interval, current_yday_of_year)
-      day_before_interval(blocking_interval)
+      yday_before_interval(blocking_interval)
     else
-      day_after_interval(blocking_interval)
+      yday_after_interval(blocking_interval)
     end
   end
 
@@ -137,7 +137,8 @@ class Product < ApplicationRecord
 
   def find_reorder_yday(proposed_yday)
     if in_cant_order_interval?(proposed_yday)
-      find_reorder_yday(reorder_yday_adjusted_for_block(proposed_yday))
+        adjusted_proposed_yday = reorder_yday_adjusted_for_block(proposed_yday)
+      find_reorder_yday(adjusted_proposed_yday)
     else
       proposed_yday
     end
@@ -154,7 +155,7 @@ class Product < ApplicationRecord
   end
 
   def days_till_reorder_yday 
-    find_reorder_yday(naive_reorder_date.yday) - Date.today.yday 
+    find_reorder_yday(naive_reorder_date.yday) - current_yday_of_year 
   end
 
   def actual_days_till_reorder
@@ -183,11 +184,11 @@ class Product < ApplicationRecord
     (self.next_reorder_date + self.cover_time.months).yday
   end
 
-  
   def no_shipping_blocks?
     naive_reorder_date == actual_reorder_date
   end
 
+  # Extract out 
   def expected_quantity_on_date(future_date)
     # need to raise error if date before 
     # return self.current if days_till(future_date) <= 0
@@ -226,11 +227,12 @@ class Product < ApplicationRecord
       reorder_after_next_yday
   end
 
+  # Refactor########!!!
   def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
     if travel_block_interval.include?(proposed_reorder_after_next_yday) 
-      adjusted_reorder_after_next_yday(day_after_interval(travel_block_interval))
+      adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
     elsif produce_block_interval.include?(proposed_reorder_after_next_yday) 
-      adjusted_reorder_after_next_yday(day_after_interval(produce_block_interval))
+      adjusted_reorder_after_next_yday(yday_after_interval(produce_block_interval))
     else
       proposed_reorder_after_next_yday
     end
