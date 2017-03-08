@@ -10,13 +10,13 @@ class ActivityImport < ApplicationRecord
 
 ################## Validations #########################
   def valid_row?(row)
-    row['Item ID'] && row['Units Sold'] &&\
-      row['Beg Qty'] && row['Qty on Hand']
+    !!(row['Item ID'] && row['Units Sold'] &&
+      row['Beg Qty'] && row['Qty on Hand'])
   end
 
   # Used till all products are decided and setup
   def product_exists?(row)
-    find_current_product(row).nil? 
+    !(find_current_product(row).nil?)
   end
 
 ################## Product Update #############################
@@ -42,7 +42,8 @@ class ActivityImport < ApplicationRecord
   # Currently not making new products from imports, because of limited products
   # desired for now
   def create_new_product(row)
-    Product.new(gusti_id: row['Item ID'], description: row['Item Description'],\
+    Product.new(gusti_id: row['Item ID'],
+                description: row['Item Description'],
                 current: row['Qty on Hand'])
   end
 
@@ -99,6 +100,7 @@ class ActivityImport < ApplicationRecord
 
     activities = (2..spreadsheet.last_row).map do |i|
       current_row = Hash[[header, spreadsheet.row(i)].transpose]
+      binding.pry
       process_row(current_row) if valid_row?(current_row) && product_exists?(current_row)
     end
 
