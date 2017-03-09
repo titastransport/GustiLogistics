@@ -25,14 +25,14 @@ Note: Not all suppliers and products have been uploaded yet.
 ![alt text](/sample_images/ProductsIndexPage.png "Products List")
 
 Two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
-* Are parsed as an argument in the [params hash](https://gorails.com/episodes/the-params-hash). 
-* Enable updates of the database on the client's end. 
+* Are parsed as an argument from the [params hash](https://gorails.com/episodes/the-params-hash). 
+* Enable the client to update the production database. 
 
 ![alt text](/sample_images/FileUploader.png "File Uploader")
 
 The Calendar link in the top navbar leads to a **calendar page**, which takes inspiration from this [RailsCast](http://railscasts.com/episodes/213-calendars). This calendar:
 * Displays which products should be reordered based on calculated reorder dates. 
-* Provides a context of time, which helps my former company envision the bigger picture of ordering, as they need to group orders from different vendors in one vessel from Italy. 
+* Provides a context of time, which helps envision the bigger picture of ordering, as orders are grouped from different vendors across Italy into one shipping vessel. 
 
 ![alt text](/sample_images/CalendarPage.png "Calendar Prototype")
 
@@ -40,7 +40,7 @@ Clicking on a product link on the calendar page takes you to a **product analysi
 * Lists all vital stats, such as reorder dates and quantities.
 * Displays Top B2B customers and total B2C(retail) sales in a table and pie chart. 
 * Ranks customers in the last 12 months in 6-month halves, as requested by the client.
-* Enables shipping status and reorder by date of product to be toggled with top button. 
+* Enables shipping status and reorder by date of product to be toggled with button. 
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
