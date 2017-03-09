@@ -45,6 +45,7 @@ Clicking on a product link on the calendar page takes you to a **product analysi
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
 
 Finally, here's a schematic of how I calculate the **Reorder Dates and Quantities** for shipments:
+
 ![alt text](/sample_images/ReorderGustiLogistics.png "Reorder Model")
 
 My **vision** for this application is that it will:
