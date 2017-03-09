@@ -1,6 +1,6 @@
 # GustiLogistics
 
-Welcome to my *small business supply chain management web app*, custom built for my former company, [Gustiamo](https://www.gustiamo.com/). Although I'm continuing to refactor and add features, they have already begun to derive value use it weekly. In short, this application helps them to manage their supply chain more efficiently and effectively via:
+Welcome to my *small business supply chain management web app*, custom built for my former company, [Gustiamo](https://www.gustiamo.com/). Although I'm continuing to add features and build out the front-end, my company has already begun to use it weekly. In short, this application helps them to manage their supply chain more efficiently and effectively via:
 * Inventory and Customer Data Analytics / Visualizations
 * Forecasting of Inventory Reorder Dates and Quantities
 
@@ -43,6 +43,9 @@ Clicking on a product link on the calendar page takes you to a **product analysi
 * Enables shipping status and reorder by date of product to be toggled with button. 
 
 ![alt text](/sample_images/ProductAnalysisPage.png "Product Analysis")
+
+Finally, here's a schematic of how I calculate the **Reorder Dates and Quantities** for shipments:
+![alt text](/sample_images/ReorderGustiLogistics.png "Reorder Model")
 
 My **vision** for this application is that it will:
 * Handle all matters related to supply chain management, such as reorder calculations, and customer, product, and supplier analyses / visualizations. 

@@ -7,7 +7,7 @@ class ActivityImportsController < ApplicationController
   end
 
   def create
-    @activity_import = ActivityImport.new(import_params)
+    @activity_import = ActivityImport.new(file: import_params[:file])
     if @activity_import.save
       redirect_to root_url, notice: "Imported Unit Activity Report successfully."
     else
