@@ -175,12 +175,9 @@ class Product < ApplicationRecord
     self.actual_days_till_reorder < 0 
   end
 
-  def cover_time_from_today
-    (Date.today + self.cover_time.months).yday
-  end
-
-  def cover_time_from_next_reorder_date
-    (self.next_reorder_date + self.cover_time.months).yday
+  def months_till_reorder_after_next
+    (self.normal_months_till_reorder_arrival +
+      (self.cover_time - self.normal_months_till_reorder_arrival)).months
   end
 
   def no_shipping_blocks?
@@ -189,11 +186,8 @@ class Product < ApplicationRecord
 
   # Extract out 
   def expected_quantity_on_date(future_date)
-    # need to raise error if date before 
-    # return self.current if days_till(future_date) <= 0
     expected_sales_till_date = expected_daily_sales * days_till(future_date)
     expected_quantity = self.current - expected_sales_till_date  
-
     expected_quantity <= 0 ? 0 : expected_quantity 
   end
 
@@ -207,14 +201,14 @@ class Product < ApplicationRecord
     expected_quantity_on_date(naive_next_shipment_arrives_date)
   end
 
-    # Very rough estimate of reorder after next date
+  # Very rough estimate of reorder after next date
   # Necessary to predict if a product being ordered now will have it's next
   # reorder land in a cant order period
   def reorder_after_next_yday
     if reorder_overdue?
-      cover_time_from_today
+      (Date.today + months_till_next_reorder).yday
     else
-      cover_time_from_next_reorder_date
+      (self.next_reorder_date + months_till_reorder_after_next).yday
     end
   end
 
@@ -226,7 +220,6 @@ class Product < ApplicationRecord
       reorder_after_next_yday
   end
 
-  # Refactor########!!!
   def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
     if travel_block_interval.include?(proposed_reorder_after_next_yday) 
       adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
