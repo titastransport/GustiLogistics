@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
 
   def index
     @products = Product.select { |p| setup_product(p) }
+    @products.each { |product| product.update_reorder_status && product.save! }
   end
 
   def show

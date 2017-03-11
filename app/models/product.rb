@@ -16,7 +16,7 @@ class Product < ApplicationRecord
     self.next_reorder_date = actual_reorder_date
   end
 
-  ##################### Reorder In/Date Helpers #####################
+  #################### Reorder In/Date Helpers #####################
 
   # growth stored in database as string, so needs to be converted to float
   def growth
