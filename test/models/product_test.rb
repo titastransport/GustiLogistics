@@ -38,12 +38,12 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "reorder in actual accounts for different years" do
-    assert_equal (Date.today + 1.year).year, @product.actual_reorder_date.year 
+    assert_equal (Date.today + 1.year).year, @product.actual_next_reorder_date.year 
   end
 
   test "reorder in correctly calculates next reorder in for this year" do
     normal_wait_months = (@product.lead_time + @product.travel_time).months
-    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_reorder_date
+    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_next_reorder_date
   end
 
   test "days till works for this year" do

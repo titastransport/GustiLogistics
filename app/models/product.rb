@@ -210,7 +210,7 @@ class Product < ApplicationRecord
       proposed_reorder_after_next_yday
   end
  
-  def expected_sales_till_future_date(future_date)
+  def expected_sales_till_date(future_date)
     expected_daily_sales * days_till(future_date)
   end
 
@@ -219,19 +219,17 @@ class Product < ApplicationRecord
     expected_quantity <= 0 ? 0 : expected_quantity 
   end
 
-  # Used primarily to check if more quantity than necessary will be there on
-  # next reorder date
   def next_shipment_arrives_date
-    self.actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
+    actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
   end
 
+  # Used in cases where a product is ordered sooner than expected because of
+  # shipping block and consequently a full order isn't appropriate 
   def quantity_on_next_reorder_arrival
     expected_quantity_on_date(next_shipment_arrives_date)
   end
 
   def naive_reorder_quantity
-    # Shipping Blocks means there had to be a premature order because of actual
-    # next reorder dates landing in a cant order interval
     if no_shipping_blocks?
       naive_full_order    
     else
@@ -243,7 +241,6 @@ class Product < ApplicationRecord
     expected_daily_sales * gap_days(naive_reorder_after_next_yday)
   end
 
-  # Need to augment cover_time for gap days
   def actual_reorder_quantity
     (naive_reorder_quantity + cover_gap_days_quantity).to_i
   end
@@ -258,34 +255,32 @@ class Product < ApplicationRecord
     average_monthly_sales_in_range(month_back(12), month_back(7))
   end
 
-  def first_half_top_customers
-    find_top_customers(month_back(6), month_back(1))
-  end
-
-  def second_half_top_customers
-    find_top_customers(month_back(12), month_back(7))
-  end
-
-  def wholesale_purchases(start_date, final_date)
-    self.customer_purchase_orders.where(date: start_date..final_date)
+  def wholesale_purchases_in_range(start_date, final_date)
+    customer_purchase_orders.where(date: start_date..final_date)
   end
 
   # Sums up number of purchases for a given customer in hash
+  # { customer: quantity }
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
-
     purchases.each do |purchase|
       totals[purchase.customer.name] += purchase.quantity
     end
-
     totals
   end
 
-  def purchases_total(start_date, final_date)
+  def purchases_total_in_range(start_date, final_date)
     wholesale_customer_totals(wholesale_purchases(start_date, final_date))
   end
 
-  def find_retail_total(start_date, final_date, wholesale_totals)
+  def total_wholesale_units_sold(wholesale_totals)
+    wholesale_totals.values.reduce(0) { |sum, quantity| sum += quantity }
+  end
+
+  # Doesn't acctualy count up retail orders..
+  # Subtract total units sold calculated from activities - total wholesale units
+  # sold calculated from Items Sold to Customers
+  def find_retail_total_in_range(start_date, final_date, wholesale_totals)
     total_units_sold_in_range(start_date, final_date) - total_wholesale_units_sold(wholesale_totals)
   end
 
@@ -293,23 +288,30 @@ class Product < ApplicationRecord
   def sort_customers(totals)
     totals.sort_by { |_, quantity| quantity }.reverse!
   end
-
-  def total_wholesale_units_sold(wholesale_totals)
-    wholesale_totals.values.reduce(0) { |sum, quantity| sum += quantity }
-  end
-
-  def find_top_customers(start_date, final_date)
-    customer_totals = wholesale_customer_totals(wholesale_purchases(start_date, final_date))
-    customer_totals['Retail'] = find_retail_total(start_date, final_date, customer_totals)
+  
+  def find_top_customers_in_range(start_date, final_date)
+    customer_totals = wholesale_customer_totals(wholesale_purchases_in_range(start_date, final_date))
+    customer_totals['Retail'] = find_retail_total_in_range(start_date, final_date, customer_totals)
     sort_customers(customer_totals)
   end
 
+  def first_half_top_customers
+    find_top_customers_in_range(month_back(6), month_back(1))
+  end
+
+  def second_half_top_customers
+    find_top_customers_in_range(month_back(12), month_back(7))
+  end
+
   ##################### Used in Product Show View ##########################
+  #Checking for length of producer assures product is set up since producer
+  #still set manually by me
+
   def previous_product
-    Product.where(["gusti_id < ? AND LENGTH(producer) > 0", self.gusti_id]).last
+    Product.where(["gusti_id < ? AND LENGTH(producer) > 0", gusti_id]).last
   end
 
   def next_product
-    Product.where(["gusti_id > ? AND LENGTH(producer) > 0", self.gusti_id]).first
+    Product.where(["gusti_id > ? AND LENGTH(producer) > 0", gusti_id]).first
   end
 end
