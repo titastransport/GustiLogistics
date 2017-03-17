@@ -61,7 +61,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "gap days finds dif in calculated reorder date and next possible reorder date" do
-    assert_equal 64, @product2.gap_days(@product.naive_reorder_after_next_yday)
+    assert_equal 47, @product2.gap_days(@product2.naive_reorder_after_next_yday)
   end
 
   test "expected quantity on date finds proper quanties for this year" do
