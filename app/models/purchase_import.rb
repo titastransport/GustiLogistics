@@ -51,17 +51,18 @@ class PurchaseImport < ApplicationRecord
     existing_purchase(customer, row).quantity = row['Qty']
   end 
 
-  def current_customer(row)
-    Customer.find_or_create_by(name: row['Name'])
-  end
-
+  
   def existing_purchase(customer, row)
     customer.customer_purchase_orders.select do |purchase|
       same_date?(purchase) && same_product?(purchase, row)
     end.first
   end 
 
-#######################################################################
+###################### Main Processing #######################
+  
+  def current_customer(row)
+    Customer.find_or_create_by(name: row['Name'])
+  end
 
   def process_row(row)
     if existing_purchase(current_customer(row), row)

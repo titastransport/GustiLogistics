@@ -5,19 +5,13 @@ class ProductsController < ApplicationController
 
   def index
     @products = Product.select { |p| setup_product(p) }
+    # Currently updating reorder status on index page
     @products.each { |product| product.update_reorder_status && product.save! }
   end
 
   def show
-    @first_half_top_customers = @product.first_half_top_customers
+    @first_half_top_customers  = @product.first_half_top_customers
     @second_half_top_customers = @product.second_half_top_customers
-  end
-
-  def new
-    @product = Product.new
-  end
-
-  def edit
   end
 
   def create
