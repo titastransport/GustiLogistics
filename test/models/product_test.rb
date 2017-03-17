@@ -31,13 +31,9 @@ class ProductTest < ActiveSupport::TestCase
   test "average sales calculated correctly" do
     assert_equal 100, @product.first_half_average_sales
     assert_equal 100, @product.second_half_average_sales
-    assert_equal 100, @product.forecasting_average_sales
   end
 
   test "expected sales" do
-    assert_equal @product.forecasting_average_sales * @product.growth,\
-                 @product.expected_monthly_sales
-
     assert_equal @product.expected_monthly_sales / 30, @product.expected_daily_sales
   end
 
