@@ -57,18 +57,9 @@ class ActivityImport < ApplicationRecord
   end
 
   def existing_activity(product)
-    product.activities.select do |activity|
+    product.activities.find do |activity|
       same_activity_month?(activity)
-    end.first
-  end
-
-  def update_activity(product, row)
-    activity = existing_activity(product)
-
-    activity.sold = row['Units Sold'].to_i
-    activity.purchased = row['Units Purc'].to_i
-
-    activity
+    end
   end
 
   def create_activity(product, row)
@@ -78,8 +69,12 @@ class ActivityImport < ApplicationRecord
   end
   
   def process_activity(product, row)
-    if existing_activity(product)
-      update_activity(product, row)
+    found_activity = existing_activity(product)
+
+    if found_activity      
+       found_activity.sold = row['Units Sold'].to_i
+       found_activity.purchased = row['Units Purc'].to_i
+       found_activity
     else
       create_activity(product, row)
     end
@@ -91,10 +86,10 @@ class ActivityImport < ApplicationRecord
     current_product = find_current_product(row)
     return unless current_product.valid?
 
-    process_activity(current_product, row)
+    processed_activity = process_activity(current_product, row)
     update_product(current_product, row)
-
-    current_product.activities.last
+  
+    processed_activity
   end
 
   # Hash[[]].transpose: transposes pairs header to 
