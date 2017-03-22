@@ -66,6 +66,8 @@ class PurchaseImport < ApplicationRecord
       end.first
     end 
 
+###################### Main Processing #######################
+  
     def current_customer(row)
       Customer.find_or_create_by(name: row['Name'])
     end

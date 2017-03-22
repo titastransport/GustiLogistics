@@ -31,23 +31,19 @@ class ProductTest < ActiveSupport::TestCase
   test "average sales calculated correctly" do
     assert_equal 100, @product.first_half_average_sales
     assert_equal 100, @product.second_half_average_sales
-    assert_equal 100, @product.forecasting_average_sales
   end
 
   test "expected sales" do
-    assert_equal @product.forecasting_average_sales * @product.growth,\
-                 @product.expected_monthly_sales
-
     assert_equal @product.expected_monthly_sales / 30, @product.expected_daily_sales
   end
 
   test "reorder in actual accounts for different years" do
-    assert_equal (Date.today + 1.year).year, @product.actual_reorder_date.year 
+    assert_equal (Date.today + 1.year).year, @product.actual_next_reorder_date.year 
   end
 
   test "reorder in correctly calculates next reorder in for this year" do
     normal_wait_months = (@product.lead_time + @product.travel_time).months
-    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_reorder_date
+    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_next_reorder_date
   end
 
   test "days till works for this year" do
@@ -61,7 +57,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "gap days finds dif in calculated reorder date and next possible reorder date" do
-    assert_equal 64, @product2.gap_days(@product.reorder_after_next_yday)
+    assert_equal 47, @product2.gap_days(@product2.naive_reorder_after_next_yday)
   end
 
   test "expected quantity on date finds proper quanties for this year" do

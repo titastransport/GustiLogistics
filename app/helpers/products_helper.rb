@@ -14,7 +14,7 @@ module ProductsHelper
   end
 
   def sales_this_month
-    total_units_sold(this_month_date, this_month_date)
+    total_units_sold_in_range(this_month_date, this_month_date)
   end
 
   def percentage(quantity, total)

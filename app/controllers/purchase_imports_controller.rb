@@ -15,24 +15,23 @@ class PurchaseImportsController < ApplicationController
     end
   end
 
-  def check_file
-    if params[:purchase_import].nil?
-      redirect_to new_purchase_import_path, alert: "File missing for upload."
-      return
-    end
-
-    filename = import_params[:file].original_filename
-    extname = File.extname(filename)
-    unless extname == ".xlsx"
-      redirect_to new_purchase_import_path,\
-        alert: "Incorrect file type. Please upload a .xlsx file"
-    end
-  end
-
+ 
   private
 
-  def import_params
-    params.require(:purchase_import).permit(:file)
-  end
+    def check_file
+      if params[:purchase_import].nil?
+        redirect_to new_purchase_import_path, alert: "File missing for upload."
+      elsif file_extname != ".xlsx"
+        redirect_to new_purchase_import_path,\
+          alert: "Incorrect file type. Please upload a .xlsx file"
+      end
+    end
 
+    def import_params
+      params.require(:purchase_import).permit(:file)
+    end
+
+    def file_extname
+      File.extname(import_params[:file].original_filename)
+    end
 end

@@ -13,73 +13,76 @@ class Product < ApplicationRecord
   validates :current, presence: true
 
   def update_reorder_status
-    self.next_reorder_date = actual_reorder_date
+    self.next_reorder_date = actual_next_reorder_date
   end
 
-  ##################### Reorder In/Date Helpers #####################
+  def setup?
+    next_reorder_date
+  end
+
+  #################### Reorder In/Date Helpers #####################
 
   # growth stored in database as string, so needs to be converted to float
   def growth
-    self.growth_factor.to_f
+    growth_factor.to_f
   end
 
-# Normal time it takes for product to be ordered and then arrive at Gustiamo
-  def normal_months_till_reorder_arrival
-    self.lead_time + self.travel_time
+  # naive time it takes for product to be ordered and then arrive at Gustiamo
+  def naive_months_from_reorder_till_arrival
+    lead_time + travel_time
   end
 
   # Sales that occur in waiting period from time of order to receiving the order
   # physically in warehouse
-  def normal_waiting_sales
-    normal_months_till_reorder_arrival * expected_monthly_sales 
+  def naive_waiting_sales
+    naive_months_from_reorder_till_arrival * expected_monthly_sales 
   end
  
-  # Adjusts for sales made in waiting period between reorder and arrival
-  def inventory_adjusted_for_normal_wait
-    self.current - normal_waiting_sales
+  # Adjusts for sales made in waiting period between product reorder and reorder's arrival
+  def inventory_adjusted_for_naive_wait
+    current - naive_waiting_sales
   end
 
-  def matching_activities(start_date, final_date)
-    self.activities.where(date: start_date..final_date)
+  def activities_in_range(start_date, final_date)
+    activities.where(date: start_date..final_date)
   end
 
-  def total_units_sold(start_date, final_date)
-    matching_activities(start_date, final_date).reduce(0) do |sum, activity| 
+  def total_units_sold_in_range(start_date, final_date)
+    activities_in_range(start_date, final_date).reduce(0) do |sum, activity| 
       sum += activity.sold
     end
   end
 
-  def average_monthly_sales(start_date, final_date)
-    total_units_sold(start_date, final_date) /
-    difference_in_months(start_date, final_date)
+  def average_monthly_sales_in_range(start_date, final_date)
+    total_units_sold_in_range(start_date, final_date) / difference_in_months(start_date, final_date)
   end
 
-  # last 12 full months
-  def forecasting_average_sales 
-    average_monthly_sales(month_back(12), month_back(1))
-  end
-
-  def expected_monthly_sales
-    forecasting_average_sales.to_f * growth
+  # Based on last 12 full months of product sales multiple by growth factor
+  # defined by client
+  def expected_monthly_sales 
+    average_monthly_sales_in_range(month_back(12), month_back(1)) * growth
   end
 
   def expected_daily_sales
     expected_monthly_sales / DAYS_IN_MONTH
   end
 
-  def months_till_reorder
-    inventory_adjusted_for_normal_wait / expected_monthly_sales 
+  # number of days till self's inventory will be at 2 months till depletion
+  # naive, because does not account for shipping blocks
+  def naive_days_till_next_reorder
+    inventory_adjusted_for_naive_wait / expected_daily_sales 
   end
   
- ################### Intervals Setups and Helper Methods ######################
+ ################### Blocking Intervals Setups and Helper Methods ######################
   # Ydays used because year is irrelevant 
   
   # Subtracts waiting time becuase any orders must be placed before waiting time
   # would start
   def travel_block_start_yday
-    (self.cant_travel_start - normal_months_till_reorder_arrival.months).yday  
+    (self.cant_travel_start - naive_months_from_reorder_till_arrival.months).yday  
   end
 
+  # Assymption: First day to reorder for can't travel block is last day of interval
   def travel_block_end_yday
     (self.cant_travel_end).yday
   end
@@ -118,6 +121,7 @@ class Product < ApplicationRecord
   end
 
   ##################### Calculate Reorder Date ##########################
+  # Blocking interval either cant_travel or cant_produce as defined above
   def adjust_yday_for_block(blocking_interval)
     if before_blocking_interval?(blocking_interval, current_yday_of_year)
       yday_before_interval(blocking_interval)
@@ -126,7 +130,7 @@ class Product < ApplicationRecord
     end
   end
 
-  def reorder_yday_adjusted_for_block(proposed_yday)
+  def next_reorder_yday_adjusted_for_block(proposed_yday)
     if travel_block_interval.include?(proposed_yday) 
       adjust_yday_for_block(travel_block_interval)
     else 
@@ -134,99 +138,66 @@ class Product < ApplicationRecord
     end
   end
 
-  def find_reorder_yday(proposed_yday)
+  # Recurses until proposed_yday not cant order interval
+  # Can probably change to while loop
+  def find_next_reorder_yday(proposed_yday)
     if in_cant_order_interval?(proposed_yday)
-        adjusted_proposed_yday = reorder_yday_adjusted_for_block(proposed_yday)
-      find_reorder_yday(adjusted_proposed_yday)
+      adjusted_proposed_yday = next_reorder_yday_adjusted_for_block(proposed_yday)
+      find_next_reorder_yday(adjusted_proposed_yday)
     else
       proposed_yday
     end
   end
 
-  # number of days till self's inventory will be at 2 months till depletion
-  # naive, because does not account for shipping blocks
-  def naive_days_till_reorder
-    months_till_reorder * DAYS_IN_MONTH
+  def naive_next_reorder_date
+    Date.today + naive_days_till_next_reorder
   end
 
-  def naive_reorder_date
-    Date.today + naive_days_till_reorder
+  def naive_days_till_next_reorder_yday 
+    find_next_reorder_yday(naive_next_reorder_date.yday) - current_yday_of_year 
   end
 
-  def days_till_reorder_yday 
-    find_reorder_yday(naive_reorder_date.yday) - current_yday_of_year 
-  end
-
-  def actual_days_till_reorder
-    days_till_reorder_yday + years_in_future(naive_reorder_date)
+  def actual_days_till_next_reorder
+    naive_days_till_next_reorder_yday + years_in_future(naive_next_reorder_date)
   end
 
   # Actual dates, not ydays
-  def actual_reorder_date
-    date = Date.today + actual_days_till_reorder
+  def actual_next_reorder_date
+    calculated_date = Date.today + actual_days_till_next_reorder
 
-    # Overdue dates have a reorder date of today 
-    date < Date.today ? Date.today : date
+    # Overdue dates have a reorder date of today, as asked by Gustiamo 
+    calculated_date < Date.today ? Date.today : calculated_date
   end
 
   ######################### Reorder Quantity ##########################
   
   def reorder_overdue?
-    self.actual_days_till_reorder < 0 
+    actual_days_till_next_reorder < 0 
   end
 
-  def cover_time_from_today
-    (Date.today + self.cover_time.months).yday
-  end
-
-  def cover_time_from_next_reorder_date
-    (self.next_reorder_date + self.cover_time.months).yday
+  # Naive because doesn't account for gap days
+  def naive_full_order
+    (expected_monthly_sales * cover_time).to_i
   end
 
   def no_shipping_blocks?
-    naive_reorder_date == actual_reorder_date
+    naive_next_reorder_date == actual_next_reorder_date
   end
 
-  # Extract out 
-  def expected_quantity_on_date(future_date)
-    # need to raise error if date before 
-    # return self.current if days_till(future_date) <= 0
-    expected_sales_till_date = expected_daily_sales * days_till(future_date)
-    expected_quantity = self.current - expected_sales_till_date  
-
-    expected_quantity <= 0 ? 0 : expected_quantity 
+  # Assumption: next reorder is happening around time this is calculated
+  def naive_months_from_next_reorder_to_reorder_after_next
+    (naive_months_from_reorder_till_arrival +
+      (cover_time - naive_months_from_reorder_till_arrival)).months
   end
-
-  # Used primarily to check if more quantity than necessary will be there on
-  # next reorder date
-  def naive_next_shipment_arrives_date
-    self.next_reorder_date + normal_months_till_reorder_arrival.months
-  end
-
-  def quantity_on_reorder_arrival
-    expected_quantity_on_date(naive_next_shipment_arrives_date)
-  end
-
-    # Very rough estimate of reorder after next date
+  
+  # Very rough estimate of reorder after next yday
   # Necessary to predict if a product being ordered now will have it's next
-  # reorder land in a cant order period
-  def reorder_after_next_yday
-    if reorder_overdue?
-      cover_time_from_today
-    else
-      cover_time_from_next_reorder_date
-    end
+  # reorder land in a cant order period and thus to compensate and order more
+  def naive_reorder_after_next_yday
+    (actual_next_reorder_date + naive_months_from_next_reorder_to_reorder_after_next).yday
   end
 
-  # Calculates gap in days between reorder_after_next and next available reorder day after that
-  # Used to add extra units to next upcoming order to prevent inventory shortage
-  # period past a product's cover time
-  def gap_days(proposed_reorder_after_next_yday)
-    adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
-      reorder_after_next_yday
-  end
-
-  # Refactor########!!!
+  # Also could change from recursion to while
   def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
     if travel_block_interval.include?(proposed_reorder_after_next_yday) 
       adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
@@ -237,26 +208,43 @@ class Product < ApplicationRecord
     end
   end
 
-  # Doesn't account for gap days
-  def normal_full_order
-    (expected_monthly_sales * self.cover_time).to_i
+  # Days between naive and acutal reorder after next dates
+  def gap_days(proposed_reorder_after_next_yday)
+    adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
+      proposed_reorder_after_next_yday
+  end
+ 
+  def expected_sales_till_date(future_date)
+    expected_daily_sales * days_till(future_date)
+  end
+
+  def expected_quantity_on_date(future_date)
+    expected_quantity = self.current - expected_sales_till_date(future_date)  
+    expected_quantity <= 0 ? 0 : expected_quantity 
+  end
+
+  def next_shipment_arrives_date
+    actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
+  end
+
+  # Used in cases where a product is ordered sooner than expected because of
+  # shipping block and consequently a full order isn't appropriate 
+  def quantity_on_next_reorder_arrival
+    expected_quantity_on_date(next_shipment_arrives_date)
   end
 
   def naive_reorder_quantity
-    # Shipping Blocks means there had to be a premature order because of actual
-    # next reorder dates landing in a cant order interval
     if no_shipping_blocks?
-      normal_full_order    
+      naive_full_order    
     else
-      normal_full_order - quantity_on_reorder_arrival
+      naive_full_order - quantity_on_next_reorder_arrival
     end
   end
 
   def cover_gap_days_quantity
-    expected_daily_sales * gap_days(reorder_after_next_yday)
+    expected_daily_sales * gap_days(naive_reorder_after_next_yday)
   end
 
-  # Need to augment cover_time for gap days
   def actual_reorder_quantity
     (naive_reorder_quantity + cover_gap_days_quantity).to_i
   end
@@ -264,65 +252,70 @@ class Product < ApplicationRecord
   #######################  Customer Sales ##########################
 
   def first_half_average_sales
-    average_monthly_sales(month_back(6), month_back(1))
+    average_monthly_sales_in_range(month_back(6), month_back(1))
   end
 
   def second_half_average_sales
-    average_monthly_sales(month_back(12), month_back(7))
+    average_monthly_sales_in_range(month_back(12), month_back(7))
   end
 
-  def first_half_top_customers
-    find_top_customers(month_back(6), month_back(1))
-  end
-
-  def second_half_top_customers
-    find_top_customers(month_back(12), month_back(7))
-  end
-
-  def wholesale_purchases(start_date, final_date)
-    self.customer_purchase_orders.where(date: start_date..final_date)
+  def wholesale_purchases_in_range(start_date, final_date)
+    customer_purchase_orders.where(date: start_date..final_date)
   end
 
   # Sums up number of purchases for a given customer in hash
+  # { customer: quantity }
   def wholesale_customer_totals(purchases)
     totals = Hash.new(0)
-
     purchases.each do |purchase|
       totals[purchase.customer.name] += purchase.quantity
     end
-
     totals
   end
 
-  def purchases_total(start_date, final_date)
+  def purchases_total_in_range(start_date, final_date)
     wholesale_customer_totals(wholesale_purchases(start_date, final_date))
-  end
-
-  def find_retail_total(start_date, final_date, wholesale_totals)
-    total_units_sold(start_date, final_date) - total_wholesale_units_sold(wholesale_totals)
-  end
-
-  # Sorts customers by quantity bought and then reverse to have in descending order
-  def sort_customers(totals)
-    totals.sort_by { |_, quantity| quantity }.reverse!
   end
 
   def total_wholesale_units_sold(wholesale_totals)
     wholesale_totals.values.reduce(0) { |sum, quantity| sum += quantity }
   end
 
-  def find_top_customers(start_date, final_date)
-    customer_totals = wholesale_customer_totals(wholesale_purchases(start_date, final_date))
-    customer_totals['Retail'] = find_retail_total(start_date, final_date, customer_totals)
+  # Doesn't acctualy count up retail orders..
+  # Subtract total units sold calculated from activities - total wholesale units
+  # sold calculated from Items Sold to Customers
+  def find_retail_total_in_range(start_date, final_date, wholesale_totals)
+    total_units_sold_in_range(start_date, final_date) - total_wholesale_units_sold(wholesale_totals)
+  end
+
+  # Sorts customers by quantity bought and then reverse to have in descending order
+  def sort_customers(totals)
+    totals.sort_by { |_, quantity| quantity }.reverse!
+  end
+  
+  def find_top_customers_in_range(start_date, final_date)
+    customer_totals = wholesale_customer_totals(wholesale_purchases_in_range(start_date, final_date))
+    customer_totals['Retail'] = find_retail_total_in_range(start_date, final_date, customer_totals)
     sort_customers(customer_totals)
   end
 
+  def first_half_top_customers
+    find_top_customers_in_range(month_back(6), month_back(1))
+  end
+
+  def second_half_top_customers
+    find_top_customers_in_range(month_back(12), month_back(7))
+  end
+
   ##################### Used in Product Show View ##########################
+  #Checking for length of producer assures product is set up since producer
+  #still set manually by me
+
   def previous_product
-    Product.where(["gusti_id < ? AND LENGTH(producer) > 0", self.gusti_id]).last
+    Product.where(["gusti_id < ? AND LENGTH(producer) > 0", gusti_id]).last
   end
 
   def next_product
-    Product.where(["gusti_id > ? AND LENGTH(producer) > 0", self.gusti_id]).first
+    Product.where(["gusti_id > ? AND LENGTH(producer) > 0", gusti_id]).first
   end
 end

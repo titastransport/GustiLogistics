@@ -7,7 +7,7 @@ class ActivityImportsController < ApplicationController
   end
 
   def create
-    @activity_import = ActivityImport.new(import_params)
+    @activity_import = ActivityImport.new(file: import_params[:file])
     if @activity_import.save
       redirect_to root_url, notice: "Imported Unit Activity Report successfully."
     else
@@ -15,17 +15,16 @@ class ActivityImportsController < ApplicationController
     end
   end
 
-  def check_file
-    if params[:activity_import].nil?
-      redirect_to new_activity_import_path, alert: "File missing for upload."
-      #return
-    elsif file_extname != ".xlsx"
-      redirect_to new_activity_import_path,\
-        alert: "Incorrect file type. Please upload a .xlsx file"
-    end
-  end
-  
   private
+
+    def check_file
+      if params[:activity_import].nil?
+        redirect_to new_activity_import_path, alert: "File missing for upload."
+      elsif file_extname != ".xlsx"
+        redirect_to new_activity_import_path,\
+          alert: "Incorrect file type. Please upload a .xlsx file"
+      end
+    end
 
     def import_params
       params.require(:activity_import).permit(:file)

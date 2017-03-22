@@ -19,7 +19,7 @@ class ActivityImport < ApplicationRecord
     !(find_current_product(row).nil?)
   end
 
-################## Product Update #############################
+################## Product Methods #############################
 
   def update_product(current_product, row)
     # If there's been a purchase arrival in UAR, enroute is probably false
@@ -27,7 +27,8 @@ class ActivityImport < ApplicationRecord
 
     current_product.current = row['Qty on Hand']
     # Not updating reorder status if product enroute, for now
-    if current_product.lead_time && !current_product.enroute
+    # Checking for producer to make sure product set up
+    if current_product.setup? && !current_product.enroute
       current_product.update_reorder_status 
     end
 
@@ -49,9 +50,9 @@ class ActivityImport < ApplicationRecord
 
 ##################### Activity Processing ##########################
 
+  # Create datetime creates datetime from current files title date
+  # This will compare against the activity date in database
   def same_activity_month?(activity)
-    # Create datetime creates datetime from current files title date
-    # This will match an activity date of the same in database
     activity.date == create_datetime
   end
 
@@ -62,8 +63,10 @@ class ActivityImport < ApplicationRecord
   end
 
   def update_activity(product, row)
-    existing_activity(product).sold = row['Units Sold'].to_i
-    existing_activity(product).purchased = row['Units Purc'].to_i
+    activity = existing_activity(product)
+
+    activity.sold = row['Units Sold'].to_i
+    activity.purchased = row['Units Purc'].to_i
   end
 
   def create_activity(product, row)
@@ -80,8 +83,8 @@ class ActivityImport < ApplicationRecord
     end
   end
 
-#######################################################################
-
+#################### File Processing ###################################
+  # Returns activity just updated or created assuming we're in the most recent month
   def process_row(row)
     current_product = find_current_product(row)
     return unless current_product.valid?
@@ -100,7 +103,6 @@ class ActivityImport < ApplicationRecord
 
     activities = (2..spreadsheet.last_row).map do |i|
       current_row = Hash[[header, spreadsheet.row(i)].transpose]
-      binding.pry
       process_row(current_row) if valid_row?(current_row) && product_exists?(current_row)
     end
 
