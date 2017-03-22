@@ -67,6 +67,8 @@ class ActivityImport < ApplicationRecord
 
     activity.sold = row['Units Sold'].to_i
     activity.purchased = row['Units Purc'].to_i
+
+    activity
   end
 
   def create_activity(product, row)
