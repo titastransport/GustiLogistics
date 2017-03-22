@@ -1,11 +1,9 @@
-require_relative 'importable'
-
 # Module used for parsing the date of uploaded excel files
 # Standard format should be TYPEOFFILE_MONTH_YEAR.xlsx
 # I try to account for edge cases around standard format
+
 module Dateable
-  include Importable
-  MATCH_YEAR = /\d{4}/
+  YEAR = /\d{4}/
   DAYS_IN_YEAR = 365
   DAYS_IN_MONTH = 30
   MONTHS_IN_YEAR = 12
@@ -16,40 +14,44 @@ module Dateable
     Date::MONTHNAMES.compact
   end
 
-  # File must be seperate by _ and contain maximum UAR, month, and year..
+  def month_name(file_title_arr)
+    file_title_arr.find { |el| month_names.include?(el.capitalize) }
+  end
+
+  def get_month(file_title_arr)
+    month_names.index(month_name(file_title_arr)) + 1
+  end
+
+  # Assumes valid year now..what about typos?
+  def get_year(file_title_arr)
+    file_title_arr.find { |el| el =~ YEAR }.match(YEAR).to_s
+  end
+
+  # File seperated by _ 
   def parse_file_name
     parts = filename.split(/_/)
     { month: get_month(parts), year: get_year(parts) }
   end
 
-  def get_month(arr)
-    arr.find { |el| month_names.include?(el.capitalize) }
-  end
-
-  # Assumes valid year now..what about typos?
-  def get_year(arr)
-    arr.find { |el| el =~ MATCH_YEAR }
-  end
-
   def create_datetime
     month, year = parse_file_name[:month], parse_file_name[:year]
-    DateTime.parse("#{FIRST_OF_MONTH}/#{month}/#{year}")
-  end
-
-  def current_yday_of_year
-    Date.today.yday
-  end
-
-  def months_since_year_zero(date)
-    (date.year * MONTHS_IN_YEAR) + date.month
+    Date.strptime("#{month}/#{FIRST_OF_MONTH}/#{year}", "%m/%d/%Y")
   end
 
   def difference_in_months(date1, date2)
     (months_since_year_zero(date2) - months_since_year_zero(date1)).abs + 1
   end
 
+  def difference_in_days(yday1, yday2)
+    (yday1 - yday2).abs 
+  end
+
   def this_month_date
     Date.today.beginning_of_month
+  end
+
+  def current_yday_of_year
+    Date.today.yday
   end
 
   # i.e., n of 1 would be the last month
@@ -57,8 +59,8 @@ module Dateable
     this_month_date - n.months 
   end
 
-  def difference_in_days(yday1, yday2)
-    (yday1 - yday2).abs 
+  def months_since_year_zero(date)
+    (date.year * MONTHS_IN_YEAR) + date.month
   end
 
  # Necessary because of inability to ignore years of dates in database when

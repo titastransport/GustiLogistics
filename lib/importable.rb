@@ -9,7 +9,7 @@ module Importable
   end
 
   def display_errors(invalid_purchases)
-    purchases.each_with_index do |purchase, index|
+    invalid_purchases.each_with_index do |purchase, index|
       purchase.errors.full_messages.each do |message|
         self.errors.add :base, "Row #{index + 2}: #{message}"
       end
