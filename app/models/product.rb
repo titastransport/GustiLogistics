@@ -20,6 +20,10 @@ class Product < ApplicationRecord
     next_reorder_date
   end
 
+  def self.exists?(gusti_id)
+    Product.find_by(gusti_id: gusti_id)
+  end
+
   #################### Reorder In/Date Helpers #####################
 
   # growth stored in database as string, so needs to be converted to float

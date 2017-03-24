@@ -27,33 +27,27 @@ class PurchaseImport < ApplicationRecord
       row['Customer ID'].upcase.start_with?('AAA')
     end
 
-    # Helper till we figure how to handle new products
-    def product_exists?(row)
-      !(Product.where(gusti_id: row['Item ID'].upcase).empty?)
-    end
-
     def valid_row?(row)
       row['Name'] && row['Item ID'] && row['Qty'] &&\
-        wholesale_customer?(row) && product_exists?(row)
+        wholesale_customer?(row) && Product.exists?(row['Item ID'])
     end
 
     ################# Purchase Processing ########################
 
     def same_date?(purchase)
-      purchase.date == create_datetime
+      purchase.date == date_from_file_title
     end
 
     def same_product?(purchase, row)
       purchase.product.gusti_id == row['Item ID']
     end
 
-    def find_current_product(row)
-      Product.find_by(gusti_id: row['Item ID'])
-    end
-
     def purchase_attributes(row)
-      { quantity: row['Qty'], date: create_datetime,\
-        product_id: find_current_product(row).id }
+      { 
+        quantity: row['Qty'], 
+        date: date_from_file_title,
+        product_id: Product.find_by(gusti_id: row['Item ID']).id 
+      }
     end
 
     def create_purchase(customer, row)

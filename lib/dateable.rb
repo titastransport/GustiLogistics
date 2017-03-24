@@ -33,7 +33,7 @@ module Dateable
     { month: get_month_number(parts), year: get_year(parts) }
   end
 
-  def create_datetime
+  def date_from_file_title
     month, year = parse_file_name[:month], parse_file_name[:year]
     Date.strptime("#{month}/#{FIRST_OF_MONTH}/#{year}", "%m/%d/%Y")
   end
@@ -48,6 +48,10 @@ module Dateable
 
   def this_month_date
     Date.today.beginning_of_month
+  end
+
+  def import_for_current_month?
+    date_from_file_title == this_month_date
   end
 
   def current_yday_of_year
