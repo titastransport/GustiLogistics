@@ -8,6 +8,15 @@ module Importable
     file.is_a?(String) ? File.basename(file) : File.basename(file.original_filename, '.xlsx')
   end
 
+  def check_for_valid_file
+    if params[:activity_import].nil?
+      redirect_to new_activity_import_path, alert: "File missing for upload."
+    elsif file_extname != ".xlsx"
+      redirect_to new_activity_import_path,\
+        alert: "Incorrect file type. Please upload a .xlsx file"
+    end
+  end
+
   def display_errors(invalid_purchases)
     invalid_purchases.each_with_index do |purchase, index|
       purchase.errors.full_messages.each do |message|

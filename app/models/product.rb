@@ -49,7 +49,7 @@ class Product < ApplicationRecord
 
   def total_units_sold_in_range(start_date, final_date)
     activities_in_range(start_date, final_date).reduce(0) do |sum, activity| 
-      sum += activity.sold
+      sum + activity.sold
     end
   end
 
@@ -278,7 +278,7 @@ class Product < ApplicationRecord
   end
 
   def total_wholesale_units_sold(wholesale_totals)
-    wholesale_totals.values.reduce(0) { |sum, quantity| sum += quantity }
+    wholesale_totals.values.reduce(0) { |sum, quantity| sum + quantity }
   end
 
   # Doesn't acctualy count up retail orders..

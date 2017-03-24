@@ -22,6 +22,11 @@ gem 'pg',                             '0.19.0'
 gem 'responders',                     '~> 2.3'
 gem 'pry-rails',                      '~> 0.3.5'
 
+group :test do
+  gem 'simplecov',                    '~> 0.14.1'
+  gem "codeclimate-test-reporter",    '> 1.0.0'
+end
+
 group :development, :test do
   gem 'byebug',                       '9.0.0', platform: :mri
   gem 'jazz_fingers',                 '~> 4.0', '>= 4.0.1'
