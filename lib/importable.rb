@@ -8,8 +8,10 @@ module Importable
     file.is_a?(String) ? File.basename(file) : File.basename(file.original_filename, '.xlsx')
   end
 
-  def check_for_valid_file
-    if params[:activity_import].nil?
+  def check_valid_file_present
+    import_controller = params[:controller].singularize.to_sym
+    
+    if params[import_controller].nil?
       redirect_to new_activity_import_path, alert: "File missing for upload."
     elsif file_extname != ".xlsx"
       redirect_to new_activity_import_path,\

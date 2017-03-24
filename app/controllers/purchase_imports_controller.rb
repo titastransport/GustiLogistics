@@ -1,6 +1,7 @@
 class PurchaseImportsController < ApplicationController
+  include Importable
   before_action :logged_in_user
-  before_action :check_file, only: :create
+  before_action :check_valid_file_present, only: :create
 
   def new
     @purchase_import = PurchaseImport.new
@@ -17,15 +18,6 @@ class PurchaseImportsController < ApplicationController
 
  
   private
-
-    def check_file
-      if params[:purchase_import].nil?
-        redirect_to new_purchase_import_path, alert: "File missing for upload."
-      elsif file_extname != ".xlsx"
-        redirect_to new_purchase_import_path,\
-          alert: "Incorrect file type. Please upload a .xlsx file"
-      end
-    end
 
     def import_params
       params.require(:purchase_import).permit(:file)
