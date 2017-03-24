@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/EDalSanto/GustiLogistics/badges/gpa.svg)](https://codeclimate.com/github/EDalSanto/GustiLogistics)
+
 # GustiLogistics
 
 Welcome to my *small business supply chain management web app*, custom built for my former company, [Gustiamo](https://www.gustiamo.com/). Although I'm continuing to add features and build out the front-end, my company has already begun to use it weekly. In short, this application helps them to manage their supply chain more efficiently and effectively via:
