@@ -24,7 +24,7 @@ gem 'pry-rails',                      '~> 0.3.5'
 
 group :test do
   gem 'simplecov',                    '~> 0.14.1'
-  gem "codeclimate-test-reporter",    '> 1.0.0'
+  gem "codeclimate-test-reporter",    '~> 1.0.0'
 end
 
 group :development, :test do

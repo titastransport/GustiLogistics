@@ -220,7 +220,7 @@ DEPENDENCIES
   bullet (~> 5.5, >= 5.5.1)
   byebug (= 9.0.0)
   chartkick (= 2.2.1)
-  codeclimate-test-reporter (> 1.0.0)
+  codeclimate-test-reporter (~> 1.0.0)
   coffee-rails (= 4.2.1)
   jazz_fingers (~> 4.0, >= 4.0.1)
   jbuilder (= 2.4.1)
