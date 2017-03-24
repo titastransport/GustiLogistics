@@ -18,7 +18,7 @@ module Dateable
     file_title_arr.find { |el| month_names.include?(el.capitalize) }
   end
 
-  def get_month(file_title_arr)
+  def get_month_number(file_title_arr)
     month_names.index(month_name(file_title_arr)) + 1
   end
 
@@ -30,7 +30,7 @@ module Dateable
   # File seperated by _ 
   def parse_file_name
     parts = filename.split(/_/)
-    { month: get_month(parts), year: get_year(parts) }
+    { month: get_month_number(parts), year: get_year(parts) }
   end
 
   def create_datetime
@@ -61,6 +61,10 @@ module Dateable
 
   def months_since_year_zero(date)
     (date.year * MONTHS_IN_YEAR) + date.month
+  end
+
+  def english_month_name(date)
+    month_names[date.month - 1]  
   end
 
  # Necessary because of inability to ignore years of dates in database when
