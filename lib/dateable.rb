@@ -14,27 +14,12 @@ module Dateable
     Date::MONTHNAMES.compact
   end
 
-  def month_name(file_title_arr)
-    file_title_arr.find { |el| month_names.include?(el.capitalize) }
+  def english_month_name(date)
+    month_names[date.month - 1]  
   end
 
-  def get_month_number(file_title_arr)
-    month_names.index(month_name(file_title_arr)) + 1
-  end
-
-  # Assumes valid year now..what about typos?
-  def get_year(file_title_arr)
-    file_title_arr.find { |el| el =~ YEAR }.match(YEAR).to_s
-  end
-
-  # File seperated by _ 
-  def parse_file_name
-    parts = filename.split(/_/)
-    { month: get_month_number(parts), year: get_year(parts) }
-  end
-
-  def date_from_file_title
-    month, year = parse_file_name[:month], parse_file_name[:year]
+  def date_from_file_name(file_name)
+    month, year = parse_file_name(file_name)
     Date.strptime("#{month}/#{FIRST_OF_MONTH}/#{year}", "%m/%d/%Y")
   end
 
@@ -51,7 +36,7 @@ module Dateable
   end
 
   def import_for_current_month?
-    date_from_file_title == this_month_date
+    date_from_file_name(filename) == this_month_date
   end
 
   def current_yday_of_year
@@ -67,10 +52,6 @@ module Dateable
     (date.year * MONTHS_IN_YEAR) + date.month
   end
 
-  def english_month_name(date)
-    month_names[date.month - 1]  
-  end
-
  # Necessary because of inability to ignore years of dates in database when
   # calculating reorder ins with blocks
   def years_in_future(future_date)
@@ -82,4 +63,25 @@ module Dateable
     difference_in_days(future_date.yday, current_yday_of_year) +\
       years_in_future(future_date) 
   end
+
+  private
+
+    def month_name(file_title_arr)
+      file_title_arr.find { |el| month_names.include?(el.capitalize) }
+    end
+
+    def get_month_number(file_title_arr)
+      month_names.index(month_name(file_title_arr)) + 1
+    end
+
+    # Assumes valid year now..what about typos?
+    def get_year(file_title_arr)
+      file_title_arr.find { |el| el =~ YEAR }.match(YEAR).to_s
+    end
+
+    # File seperated by _ 
+    def parse_file_name(file_name, delimiter='_')
+      parts = file_name.split(/#{delimiter}/)
+      [ get_month_number(parts), get_year(parts) ]
+    end
 end

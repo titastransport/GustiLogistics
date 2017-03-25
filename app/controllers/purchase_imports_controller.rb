@@ -2,13 +2,13 @@ class PurchaseImportsController < ApplicationController
   include Importable
   before_action :logged_in_user
   before_action :check_valid_file_present, only: :create
+  before_action :check_valid_filename, only: :create
 
   def new
     @purchase_import = PurchaseImport.new
   end
 
   def create
-    binding.pry
     @purchase_import = PurchaseImport.new(import_params)
     if @purchase_import.save
       redirect_to root_url, notice: "Imported Items Sold to Customers Report successfully."

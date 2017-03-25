@@ -38,7 +38,7 @@ class PurchaseImport < ApplicationRecord
     ################# Purchase Processing ########################
 
     def same_date?(purchase)
-      purchase.date == date_from_file_title
+      purchase.date == date_from_file_name(filename)
     end
 
     def same_product?(purchase, row)
@@ -48,7 +48,7 @@ class PurchaseImport < ApplicationRecord
     def purchase_attributes(row)
       { 
         quantity: row['Qty'], 
-        date: date_from_file_title,
+        date: date_from_file_name(filename),
         product_id: Product.find_by(gusti_id: row['Item ID']).id 
       }
     end

@@ -1,8 +1,25 @@
 require 'roo'
+include Dateable
 
 module Importable
-  def open_spreadsheet
-    Roo::Spreadsheet.open(file)
+
+  # Before action
+  def check_valid_file_present
+    import_controller = params[:controller].singularize.to_sym
+    
+    if params[import_controller].nil?
+      redirect_to "/#{params[:controller]}", alert: "File missing for upload."
+    elsif file_extname != ".xlsx"
+      redirect_to "/#{params[:controller]}", alert: "Incorrect file type. Please upload a .xlsx file"
+    end
+  end
+
+  def check_valid_filename
+    begin
+      date_from_file_name(import_params[:file].original_filename) 
+    rescue 
+      redirect_to "/#{params[:controller]}", alert: "Please save file in the following format: Type_Month_Year.xlsx, i.e., UAR_July_2015.xlsx"
+    end
   end
 
   def file_extname
@@ -10,20 +27,20 @@ module Importable
   end
 
   # Filename method currently used for both Action Dispatch object for file
-    # upload and rake db:seed tasks
+  # upload and rake db:seed tasks, and test
+  # Ok checking for string since String and File are core Ruby class and most likely
+  # won't change too much
   def filename
-    File.basename(file) || File.basename(file.original_filename, '.xlsx')
+    case file
+    when String, File
+      File.basename(file) 
+    else
+      File.basename(file.original_filename, '.xlsx')
+    end
   end
 
-  def check_valid_file_present
-    import_controller = params[:controller].singularize.to_sym
-    
-    if params[import_controller].nil?
-      redirect_to new_activity_import_path, alert: "File missing for upload."
-    elsif file_extname != ".xlsx"
-      redirect_to new_activity_import_path,\
-        alert: "Incorrect file type. Please upload a .xlsx file"
-    end
+  def open_spreadsheet
+    Roo::Spreadsheet.open(file)
   end
 
   def display_errors(invalid_purchases)

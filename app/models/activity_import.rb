@@ -60,7 +60,7 @@ class ActivityImport < ApplicationRecord
     # Create datetime creates datetime from current files title date
     # This will compare against the activity date in database
     def same_activity_month?(activity)
-      activity.date == date_from_file_title
+      activity.date == date_from_file_name(filename)
     end
   
     def existing_activity(product)
@@ -71,7 +71,7 @@ class ActivityImport < ApplicationRecord
   
     def create_activity(product, row)
       product.activities.build(sold: row['Units Sold'].to_i,
-                               date: date_from_file_title,
+                               date: date_from_file_name(filename),
                                purchased: row['Units Purc'].to_i)
     end
   
