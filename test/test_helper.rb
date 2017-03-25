@@ -1,4 +1,5 @@
 require 'simplecov'
+require 'minitest/autorun'
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)

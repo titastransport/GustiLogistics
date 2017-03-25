@@ -22,8 +22,4 @@ class ActivityImportsController < ApplicationController
     def import_params
       params.require(:activity_import).permit(:file)
     end
-
-    def file_extname
-      File.extname(import_params[:file].original_filename)
-    end
 end

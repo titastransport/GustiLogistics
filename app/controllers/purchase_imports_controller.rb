@@ -8,6 +8,7 @@ class PurchaseImportsController < ApplicationController
   end
 
   def create
+    binding.pry
     @purchase_import = PurchaseImport.new(import_params)
     if @purchase_import.save
       redirect_to root_url, notice: "Imported Items Sold to Customers Report successfully."
@@ -15,15 +16,10 @@ class PurchaseImportsController < ApplicationController
       render :new
     end
   end
-
  
   private
 
     def import_params
       params.require(:purchase_import).permit(:file)
-    end
-
-    def file_extname
-      File.extname(import_params[:file].original_filename)
     end
 end

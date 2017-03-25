@@ -33,6 +33,11 @@ class PurchaseImport < ApplicationRecord
     end
 
     ################# Purchase Processing ########################
+    #
+
+    def create_new_product
+
+    end
 
     def same_date?(purchase)
       purchase.date == date_from_file_title

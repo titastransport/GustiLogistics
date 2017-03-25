@@ -1,11 +1,18 @@
+require 'roo'
+
 module Importable
   def open_spreadsheet
     Roo::Spreadsheet.open(file)
   end
-    # Filename method currently used for both Action Dispatch object for file
+
+  def file_extname
+    File.extname(import_params[:file].original_filename)
+  end
+
+  # Filename method currently used for both Action Dispatch object for file
     # upload and rake db:seed tasks
   def filename
-    file.is_a?(String) ? File.basename(file) : File.basename(file.original_filename, '.xlsx')
+    File.basename(file) || File.basename(file.original_filename, '.xlsx')
   end
 
   def check_valid_file_present
