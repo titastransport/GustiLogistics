@@ -1,10 +1,6 @@
 require 'test_helper'
-require 'roo'
 
-include Dateable
-include ActionDispatch::TestProcess::FixtureFile
-
-describe 'Purchase Import Model' do
+describe PurchaseImport, '.save' do
 
   describe 'when given a valid file' do
 
@@ -13,11 +9,27 @@ describe 'Purchase Import Model' do
       @purchase_import = PurchaseImport.new(file: file)
     end
 
-    it 'creates new valid purchases' do
-      num_purchases_before = CustomerPurchaseOrder.count 
+    after do
+      CustomerPurchaseOrder.delete_all 
+    end
+
+    it "creates new purchases" do
+        num_purchases_before = CustomerPurchaseOrder.count 
+
+        @purchase_import.save 
+        num_purchases_after = CustomerPurchaseOrder.count
+        
+        num_purchases_after.must_be :>, num_purchases_before
+    end
+
+    it 'updates purchases that already exist' do
       @purchase_import.save 
-      num_purchases_after = CustomerPurchaseOrder.count
-      assert_operator num_purchases_after, :>, num_purchases_before
+      num_purchases_after_first_save = CustomerPurchaseOrder.count 
+
+      @purchase_import.save 
+      num_purchases_after_second_save = CustomerPurchaseOrder.count
+
+      num_purchases_after_first_save.must_be :==, num_purchases_after_second_save
     end
   end
 

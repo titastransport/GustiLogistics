@@ -27,17 +27,15 @@ class PurchaseImport < ApplicationRecord
       row['Customer ID'].upcase.start_with?('AAA')
     end
 
+    def correct_values_present?(row)
+      row['Name'] && row['Item ID'] && row['Qty'] 
+    end
+
     def valid_row?(row)
-      row['Name'] && row['Item ID'] && row['Qty'] &&\
-        wholesale_customer?(row) && Product.exists?(row['Item ID'])
+      correct_values_present?(row) && wholesale_customer?(row) && Product.exists?(row['Item ID'])
     end
 
     ################# Purchase Processing ########################
-    #
-
-    def create_new_product
-
-    end
 
     def same_date?(purchase)
       purchase.date == date_from_file_title
