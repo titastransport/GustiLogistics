@@ -44,6 +44,7 @@ describe ActivityImport, '.save' do
       @activity_import.save 
       num_activities_after = Activity.count
 
+
       num_activities_after.must_be :==, num_activities_before
     end
   end
