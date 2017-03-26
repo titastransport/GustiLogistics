@@ -20,6 +20,7 @@ module Dateable
 
   def date_from_file_name(file_name)
     month, year = parse_file_name(file_name)
+
     Date.strptime("#{month}/#{FIRST_OF_MONTH}/#{year}", "%m/%d/%Y")
   end
 
@@ -74,9 +75,14 @@ module Dateable
       month_names.index(month_name(file_title_arr)) + 1
     end
 
+    def strip_out_year(str)
+      str.match(YEAR).to_s
+    end
+
     # Assumes valid year now..what about typos?
     def get_year(file_title_arr)
-      file_title_arr.find { |el| el =~ YEAR }.match(YEAR).to_s
+      year_string = file_title_arr.find { |el| el =~ YEAR }
+      strip_out_year(year_string)
     end
 
     # File seperated by _ 

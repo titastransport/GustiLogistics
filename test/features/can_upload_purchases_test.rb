@@ -1,6 +1,6 @@
 require "test_helper"
 
-feature "CanUploadPurchaseImports" do
+feature "CanUploadPurchases" do
   
   before do
     feature_log_in
@@ -31,7 +31,7 @@ feature "CanUploadPurchaseImports" do
   end
 
   scenario "Gustiamo attempts to upload a valid file with an improper name" do
-    file = Rails.root.join('test/fixtures/files/improper_filename_2017.xlsx')
+    file = Rails.root.join('test/fixtures/files/improper_file_name.xlsx')
     find('#purchase_import_file').set(file)
 
     click_button "Import"

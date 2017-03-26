@@ -43,9 +43,9 @@ module Importable
     Roo::Spreadsheet.open(file)
   end
 
-  def display_errors(invalid_purchases)
-    invalid_purchases.each_with_index do |purchase, index|
-      purchase.errors.full_messages.each do |message|
+  def display_errors(invalid_records)
+    invalid_records.each_with_index do |record, index|
+      record.errors.full_messages.each do |message|
         self.errors.add :base, "Row #{index + 2}: #{message}"
       end
     end
