@@ -86,7 +86,7 @@ describe Product, '#gap_days' do
 
   describe 'when reorder after next date in block interval' do
     it 'finds number of days to cover inventory for travel block' do
-      @product.gap_days(@proposed_reorder_after_next_yday).must_equal @hand_calculated_gap_days
+      @product.send(:gap_days, @proposed_reorder_after_next_yday).must_equal @hand_calculated_gap_days
     end
   end
 end
@@ -143,10 +143,31 @@ describe Product, '#find_top_customers_in_range' do
     product = products(:pianogrillo)
     start_date = Date.new(2016, 7, 1)
     final_date = Date.new(2016, 12, 1)
-    @top = product.find_top_customers_in_range(start_date, final_date)
+    tops = product.find_top_customers_in_range(start_date, final_date)
+    @top = tops.keys.first
   end
 
   it 'finds top customers including retail in range' do
+    @top.must_equal 'Retail'
+  end
+end
+
+describe Product, '#next_product' do
+  before do
+    @product = products(:pianogrillo)
   end
 
+  it 'finds the next product' do
+    @product.next_product.must_equal products(:faella_spaghetti) 
+  end
+end
+
+describe Product, '#previous_product' do
+  before do
+    @product = products(:faella_spaghetti)
+  end
+
+  it 'finds the next product' do
+    @product.previous_product.must_equal products(:pianogrillo) 
+  end
 end

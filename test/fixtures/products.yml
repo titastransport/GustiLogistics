@@ -7,6 +7,7 @@ pianogrillo:
   travel_time: 1
   cover_time: 4
   growth_factor: 1.2
+  producer: 'Pianogrillo'
   cant_travel_start: <%= Date.new(2017, 6, 1) %>
   cant_travel_end: <%= Date.new(2017, 8, 30) %>
   cant_produce_end: <%= Date.new(2017, 9, 15) %>

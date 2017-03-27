@@ -10,8 +10,8 @@ class ProductsController < ApplicationController
   end
 
   def show
-    @first_half_top_customers  = @product.first_half_top_customers
-    @second_half_top_customers = @product.second_half_top_customers
+    @first_half_top_customers  = first_half_top_customers
+    @second_half_top_customers = second_half_top_customers
   end
 
   def create

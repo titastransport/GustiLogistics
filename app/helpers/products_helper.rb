@@ -32,4 +32,20 @@ module ProductsHelper
   def previous_six_full_months
     display_human_friendly_month_range(month_back(12), month_back(7))
   end
+
+  def first_half_average_sales
+    @product.send(:average_monthly_sales_in_range, month_back(6), month_back(1))
+  end
+
+  def second_half_average_sales
+    @product.send(:average_monthly_sales_in_range, month_back(12), month_back(7))
+  end
+
+  def first_half_top_customers
+    @product.find_top_customers_in_range(month_back(6), month_back(1))
+  end
+
+  def second_half_top_customers
+    @product.find_top_customers_in_range(month_back(12), month_back(7))
+  end
 end

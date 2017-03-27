@@ -24,19 +24,14 @@ class Product < ApplicationRecord
     next_reorder_date
   end
  
-  # Actual dates, not ydays
+  # Actual date, not yday
   def actual_next_reorder_date
     calculated_date = Date.today + actual_days_till_next_reorder
+
     # Overdue dates have a reorder date of today, as asked by Gustiamo 
     calculated_date < Date.today ? Date.today : calculated_date
   end
 
-  # Days between naive and acutal reorder after next dates
-  def gap_days(proposed_reorder_after_next_yday)
-    adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
-      proposed_reorder_after_next_yday
-  end
- 
   def expected_quantity_on_date(future_date)
     expected_quantity = current - expected_sales_till_date(future_date)  
     expected_quantity <= 0 ? 0 : expected_quantity 
@@ -46,67 +41,14 @@ class Product < ApplicationRecord
     (naive_reorder_quantity + cover_gap_days_quantity).to_i
   end
  
-  #######################  Customer Sales ##########################
-
-  def first_half_average_sales
-    average_monthly_sales_in_range(month_back(6), month_back(1))
-  end
-
-  def second_half_average_sales
-    average_monthly_sales_in_range(month_back(12), month_back(7))
-  end
-
-  def wholesale_purchases_in_range(start_date, final_date)
-    customer_purchase_orders.where(date: start_date..final_date)
-  end
-
-  # Sums up number of purchases for a given customer in hash
-  # { customer: quantity }
-  def wholesale_customer_totals(purchases)
-    totals = Hash.new(0)
-    purchases.each do |purchase|
-      totals[purchase.customer.name] += purchase.quantity
-    end
-    totals
-  end
-
-  def purchases_total_in_range(start_date, final_date)
-    wholesale_customer_totals(wholesale_purchases(start_date, final_date))
-  end
-
-  def total_wholesale_units_sold(wholesale_totals)
-    wholesale_totals.values.reduce(0) { |sum, quantity| sum + quantity }
-  end
-
-  # Doesn't acctualy count up retail orders..
-  # Subtract total units sold calculated from activities - total wholesale units
-  # sold calculated from Items Sold to Customers
-  def find_retail_total_in_range(start_date, final_date, wholesale_totals)
-    total_units_sold_in_range(start_date, final_date) - total_wholesale_units_sold(wholesale_totals)
-  end
-
-  # Sorts customers by quantity bought and then reverse to have in descending order
-  def sort_customers(totals)
-    totals.sort_by { |_, quantity| quantity }.reverse!
-  end
-  
   def find_top_customers_in_range(start_date, final_date)
     customer_totals = wholesale_customer_totals(wholesale_purchases_in_range(start_date, final_date))
     customer_totals['Retail'] = find_retail_total_in_range(start_date, final_date, customer_totals)
     sort_customers(customer_totals)
   end
 
-  def first_half_top_customers
-    find_top_customers_in_range(month_back(6), month_back(1))
-  end
-
-  def second_half_top_customers
-    find_top_customers_in_range(month_back(12), month_back(7))
-  end
-
   ##################### Used in Product Show View ##########################
-  #Checking for length of producer assures product is set up since producer
-  #still set manually by me
+  #Checking for length of producer assures product is set up since producerstill set manually
 
   def previous_product
     Product.where(["gusti_id < ? AND LENGTH(producer) > 0", gusti_id]).last
@@ -308,8 +250,50 @@ class Product < ApplicationRecord
         naive_full_order - quantity_on_next_reorder_arrival
       end
     end
+
+    # Days between naive and acutal reorder after next dates
+    def gap_days(proposed_reorder_after_next_yday)
+      adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
+        proposed_reorder_after_next_yday
+    end
   
     def cover_gap_days_quantity
       expected_daily_sales * gap_days(naive_reorder_after_next_yday)
+    end
+
+    #######################  Customer Sales ##########################
+  
+    def wholesale_purchases_in_range(start_date, final_date)
+      customer_purchase_orders.where(date: start_date..final_date)
+    end
+  
+    # Sums up number of purchases for a given customer in hash
+    # { customer: quantity }
+    def wholesale_customer_totals(purchases)
+      totals = Hash.new(0)
+      purchases.each do |purchase|
+        totals[purchase.customer.name] += purchase.quantity
+      end
+      totals
+    end
+  
+    def wholesale_purchases_total_in_range(start_date, final_date)
+      wholesale_customer_totals(wholesale_purchases(start_date, final_date))
+    end
+  
+    def total_wholesale_units_sold(wholesale_totals)
+      wholesale_totals.values.reduce(0) { |sum, quantity| sum + quantity }
+    end
+  
+    # Doesn't acctualy count up retail orders..
+    # Subtract total units sold calculated from activities - total wholesale units
+    # sold calculated from Items Sold to Customers
+    def find_retail_total_in_range(start_date, final_date, wholesale_totals)
+      total_units_sold_in_range(start_date, final_date) - total_wholesale_units_sold(wholesale_totals)
+    end
+  
+    # Sorts customers by quantity bought and then reverse to have in descending order
+    def sort_customers(totals)
+      totals.sort_by { |_, quantity| quantity }.reverse!.to_h
     end
 end
