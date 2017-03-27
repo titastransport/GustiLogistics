@@ -23,11 +23,10 @@ class ActivityImport < ApplicationRecord
 
   ################## Product Methods #############################
   
+    # If there's been a purchase arrival in UAR, enroute is probably false
     def update_product(current_product, row)
       if import_for_current_month?
-        # If there's been a purchase arrival in UAR, enroute is probably false
         current_product.enroute = false if row['Units Purc']
-  
         current_product.current = row['Qty on Hand'] 
       end
   
@@ -41,18 +40,14 @@ class ActivityImport < ApplicationRecord
       end
     end
     
-    # Currently not making new products from imports, because of limited products
-    # desired for now
-    def create_new_product(row)
-      Product.new(gusti_id: row['Item ID'],
-                  description: row['Item Description'],
-                  current: row['Qty on Hand'])
-    end
-  
   ################## Validations #########################
+
+    def correct_value_presents(row) 
+      !!(row['Item ID'] && row['Units Sold'] && row['Beg Qty'] && row['Qty on Hand'])
+    end
+
     def valid_row?(row)
-      !!(row['Item ID'] && row['Units Sold'] &&
-        row['Beg Qty'] && row['Qty on Hand'])
+      correct_value_presents(row) 
     end
   
   ##################### Activity Processing ##########################
@@ -60,10 +55,10 @@ class ActivityImport < ApplicationRecord
     # Create datetime creates datetime from current files title date
     # This will compare against the activity date in database
     def same_activity_month?(activity)
-      activity.date == date_from_file_title
+      activity.date == date_from_file_name(filename)
     end
   
-    def existing_activity(product)
+    def find_existing_activity(product)
       product.activities.find do |activity|
         same_activity_month?(activity)
       end
@@ -71,7 +66,7 @@ class ActivityImport < ApplicationRecord
   
     def create_activity(product, row)
       product.activities.build(sold: row['Units Sold'].to_i,
-                               date: date_from_file_title,
+                               date: date_from_file_name(filename),
                                purchased: row['Units Purc'].to_i)
     end
   
@@ -83,7 +78,7 @@ class ActivityImport < ApplicationRecord
     end
     
     def process_activity(product, row)
-      found_activity = existing_activity(product)
+      found_activity = find_existing_activity(product)
   
       if found_activity      
         update_activity(found_activity, row)
@@ -95,8 +90,7 @@ class ActivityImport < ApplicationRecord
   #################### File Processing ###################################
     # Returns activity just updated or created assuming we're in the most recent month
     def process_row(row)
-      current_product = Product.find_by(gusti_id: row['Item ID'])
-      return unless current_product.valid?
+      current_product = Product.find_or_create_by(gusti_id: row['Item ID'])
   
       processed_activity = process_activity(current_product, row)
       update_product(current_product, row)
@@ -112,7 +106,7 @@ class ActivityImport < ApplicationRecord
   
       activities = (2..spreadsheet.last_row).map do |i|
         current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        process_row(current_row) if valid_row?(current_row) && Product.exists?(current_row['Item ID']) 
+        process_row(current_row) if valid_row?(current_row)
       end
   
       activities.compact

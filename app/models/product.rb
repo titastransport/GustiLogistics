@@ -16,159 +16,17 @@ class Product < ApplicationRecord
     self.next_reorder_date = actual_next_reorder_date
   end
 
+  def self.existing_gusti_id?(gusti_id)
+    !!find_by(gusti_id: gusti_id)
+  end
+
   def setup?
     next_reorder_date
   end
-
-  def self.exists?(gusti_id)
-    Product.find_by(gusti_id: gusti_id)
-  end
-
-  #################### Reorder In/Date Helpers #####################
-
-  # growth stored in database as string, so needs to be converted to float
-  def growth
-    growth_factor.to_f
-  end
-
-  # naive time it takes for product to be ordered and then arrive at Gustiamo
-  def naive_months_from_reorder_till_arrival
-    lead_time + travel_time
-  end
-
-  # Sales that occur in waiting period from time of order to receiving the order
-  # physically in warehouse
-  def naive_waiting_sales
-    naive_months_from_reorder_till_arrival * expected_monthly_sales 
-  end
  
-  # Adjusts for sales made in waiting period between product reorder and reorder's arrival
-  def inventory_adjusted_for_naive_wait
-    current - naive_waiting_sales
-  end
-
-  def activities_in_range(start_date, final_date)
-    activities.where(date: start_date..final_date)
-  end
-
-  def total_units_sold_in_range(start_date, final_date)
-    activities_in_range(start_date, final_date).reduce(0) do |sum, activity| 
-      sum + activity.sold
-    end
-  end
-
-  def average_monthly_sales_in_range(start_date, final_date)
-    total_units_sold_in_range(start_date, final_date) / difference_in_months(start_date, final_date)
-  end
-
-  # Based on last 12 full months of product sales multiple by growth factor
-  # defined by client
-  def expected_monthly_sales 
-    average_monthly_sales_in_range(month_back(12), month_back(1)) * growth
-  end
-
-  def expected_daily_sales
-    expected_monthly_sales / DAYS_IN_MONTH
-  end
-
-  # number of days till self's inventory will be at 2 months till depletion
-  # naive, because does not account for shipping blocks
-  def naive_days_till_next_reorder
-    inventory_adjusted_for_naive_wait / expected_daily_sales 
-  end
-  
- ################### Blocking Intervals Setups and Helper Methods ######################
-  # Ydays used because year is irrelevant 
-  
-  # Subtracts waiting time becuase any orders must be placed before waiting time
-  # would start
-  def travel_block_start_yday
-    (self.cant_travel_start - naive_months_from_reorder_till_arrival.months).yday  
-  end
-
-  # Assymption: First day to reorder for can't travel block is last day of interval
-  def travel_block_end_yday
-    (self.cant_travel_end).yday
-  end
-
-  def travel_block_interval
-    (travel_block_start_yday..travel_block_end_yday)
-  end
-
-  def produce_block_start_yday
-    (self.cant_produce_start - self.lead_time.months).yday
-  end
-
-  def produce_block_end_yday
-    (self.cant_produce_end).yday
-  end
-
-  def produce_block_interval
-    (produce_block_start_yday..produce_block_end_yday)
-  end
-
-  def yday_before_interval(blocking_interval)
-    blocking_interval.first - 1
-  end
-
-  def yday_after_interval(blocking_interval)
-    blocking_interval.end + 1
-  end
-
-  def in_cant_order_interval?(proposed_yday)
-    travel_block_interval.include?(proposed_yday) ||
-      produce_block_interval.include?(proposed_yday)
-  end
-
-  def before_blocking_interval?(blocking_interval, yday)
-    yday < blocking_interval.first
-  end
-
-  ##################### Calculate Reorder Date ##########################
-  # Blocking interval either cant_travel or cant_produce as defined above
-  def adjust_yday_for_block(blocking_interval)
-    if before_blocking_interval?(blocking_interval, current_yday_of_year)
-      yday_before_interval(blocking_interval)
-    else
-      yday_after_interval(blocking_interval)
-    end
-  end
-
-  def next_reorder_yday_adjusted_for_block(proposed_yday)
-    if travel_block_interval.include?(proposed_yday) 
-      adjust_yday_for_block(travel_block_interval)
-    else 
-      adjust_yday_for_block(produce_block_interval)
-    end
-  end
-
-  # Recurses until proposed_yday not cant order interval
-  # Can probably change to while loop
-  def find_next_reorder_yday(proposed_yday)
-    if in_cant_order_interval?(proposed_yday)
-      adjusted_proposed_yday = next_reorder_yday_adjusted_for_block(proposed_yday)
-      find_next_reorder_yday(adjusted_proposed_yday)
-    else
-      proposed_yday
-    end
-  end
-
-  def naive_next_reorder_date
-    Date.today + naive_days_till_next_reorder
-  end
-
-  def naive_days_till_next_reorder_yday 
-    find_next_reorder_yday(naive_next_reorder_date.yday) - current_yday_of_year 
-  end
-
-  def actual_days_till_next_reorder
-    naive_days_till_next_reorder_yday + years_in_future(naive_next_reorder_date)
-  end
-
   # Actual dates, not ydays
   def actual_next_reorder_date
     calculated_date = Date.today + actual_days_till_next_reorder
-
     # Overdue dates have a reorder date of today, as asked by Gustiamo 
     calculated_date < Date.today ? Date.today : calculated_date
   end
@@ -322,4 +180,139 @@ class Product < ApplicationRecord
   def next_product
     Product.where(["gusti_id > ? AND LENGTH(producer) > 0", gusti_id]).first
   end
+
+  private
+    
+#################### Reorder In/Date Helpers #####################
+
+    # growth stored in database as string, so needs to be converted to float
+    def expected_growth_percentage
+      growth_factor.to_f
+    end
+  
+    # naive time it takes for product to be ordered and then arrive at Gustiamo
+    def naive_months_from_reorder_till_arrival
+      lead_time + travel_time
+    end
+  
+    # Sales that occur in waiting period from time of order to receiving the order
+    # physically in warehouse
+    def naive_waiting_sales
+      naive_months_from_reorder_till_arrival * expected_monthly_sales 
+    end
+   
+    # Adjusts for sales made in waiting period between product reorder and reorder's arrival
+    def inventory_adjusted_for_naive_wait
+      current - naive_waiting_sales
+    end
+  
+    def activities_in_range(start_date, final_date)
+      activities.where(date: start_date..final_date)
+    end
+  
+    def total_units_sold_in_range(start_date, final_date)
+      activities_in_range(start_date, final_date).reduce(0) do |sum, activity| 
+        sum + activity.sold
+      end
+    end
+  
+    def average_monthly_sales_in_range(start_date, final_date)
+      total_units_sold_in_range(start_date, final_date) / difference_in_months(start_date, final_date)
+    end
+  
+    def expected_monthly_sales 
+      average_monthly_sales_in_range(month_back(12), month_back(1)) * expected_growth_percentage
+    end
+  
+    def expected_daily_sales
+      expected_monthly_sales / DAYS_IN_MONTH
+    end
+  
+    # number of days till self's inventory will be at 2 months till depletion
+    # naive, because does not account for shipping blocks
+    def naive_days_till_next_reorder
+      inventory_adjusted_for_naive_wait / expected_daily_sales 
+    end
+
+ ################### Blocking Intervals Setups and Helper Methods ######################
+ 
+    # Ydays used because year is irrelevant 
+    
+    # Subtracts waiting time becuase any orders must be placed before waiting time would start
+    def travel_block_start_yday
+      (cant_travel_start - naive_months_from_reorder_till_arrival.months).yday  
+    end
+  
+    # Assumption: First day to reorder for can't travel block is last day of interval
+    def travel_block_end_yday
+      (cant_travel_end).yday
+    end
+  
+    def travel_block_interval
+      (travel_block_start_yday..travel_block_end_yday)
+    end
+    
+    # Subtract time needed to produce product
+    def produce_block_start_yday
+      (cant_produce_start - lead_time.months).yday
+    end
+  
+    def produce_block_end_yday
+      (cant_produce_end).yday
+    end
+  
+    def produce_block_interval
+      (produce_block_start_yday..produce_block_end_yday)
+    end
+  
+    def in_cant_order_interval?(proposed_yday)
+      travel_block_interval.include?(proposed_yday) ||
+        produce_block_interval.include?(proposed_yday)
+    end
+  
+    def before_blocking_interval?(blocking_interval, yday)
+      yday < blocking_interval.first
+    end
+
+##################### Calculate Reorder Date ##########################
+
+    # Blocking interval either cant_travel or cant_produce as defined above
+    def adjust_yday_for_block(blocking_interval)
+      if before_blocking_interval?(blocking_interval, current_yday_of_year)
+        yday_before_interval(blocking_interval)
+      else
+        yday_after_interval(blocking_interval)
+      end
+    end
+  
+    def next_reorder_yday_adjusted_for_block(proposed_yday)
+      if travel_block_interval.include?(proposed_yday) 
+        adjust_yday_for_block(travel_block_interval)
+      else 
+        adjust_yday_for_block(produce_block_interval)
+      end
+    end
+  
+    # Recurses until proposed_yday not cant order interval
+    # Can probably change to while loop
+    def find_next_reorder_yday(proposed_yday)
+      if in_cant_order_interval?(proposed_yday)
+        adjusted_proposed_yday = next_reorder_yday_adjusted_for_block(proposed_yday)
+        find_next_reorder_yday(adjusted_proposed_yday)
+      else
+        proposed_yday
+      end
+    end
+  
+    def naive_next_reorder_date
+      Date.today + naive_days_till_next_reorder
+    end
+  
+    def naive_days_till_next_reorder_yday 
+      find_next_reorder_yday(naive_next_reorder_date.yday) - current_yday_of_year 
+    end
+
+    def actual_days_till_next_reorder
+      naive_days_till_next_reorder_yday + years_in_future(naive_next_reorder_date)
+    end
 end

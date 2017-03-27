@@ -1,7 +1,7 @@
 pianogrillo:
   id: 1
   gusti_id: "OLI1000"
-  description: "pg description"
+  description: "Pianogrillo"
   current: 500
   lead_time: 1
   travel_time: 1
@@ -17,7 +17,7 @@ pianogrillo:
 faella_spaghetti:
   id: 2
   gusti_id: "PAS12003"
-  description: "faella description"
+  description: "Faella Ziti Tagliati 500g/20"
   current: 2000
   lead_time: 1
   travel_time: 1

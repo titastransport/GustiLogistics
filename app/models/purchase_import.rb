@@ -10,6 +10,7 @@ class PurchaseImport < ApplicationRecord
 
   def save
     purchases = imported_purchases
+
     if purchases.map(&:valid?).all?
       purchases.each(&:save!)
       true
@@ -24,29 +25,38 @@ class PurchaseImport < ApplicationRecord
     ####################### Row Validations ######################## 
     # Guard against them uploading Retail Customers individually
     def wholesale_customer?(row)
-      row['Customer ID'].upcase.start_with?('AAA')
+      !!(row['Customer ID'] =~ /^AAA/i)
+    end
+
+    def correct_values_present?(row)
+      row['Name'] && row['Item ID'] && row['Qty'] 
     end
 
     def valid_row?(row)
-      row['Name'] && row['Item ID'] && row['Qty'] &&\
-        wholesale_customer?(row) && Product.exists?(row['Item ID'])
+      correct_values_present?(row) && wholesale_customer?(row)  
     end
 
     ################# Purchase Processing ########################
 
     def same_date?(purchase)
-      purchase.date == date_from_file_title
+      purchase.date == date_from_file_name(filename)
     end
 
     def same_product?(purchase, row)
       purchase.product.gusti_id == row['Item ID']
     end
 
+    def current_product_id(row)
+      product = Product.find_by(gusti_id: row['Item ID']) 
+
+      product ? product.id : nil
+    end
+
     def purchase_attributes(row)
       { 
         quantity: row['Qty'], 
-        date: date_from_file_title,
-        product_id: Product.find_by(gusti_id: row['Item ID']).id 
+        date: date_from_file_name(filename),
+        product_id: current_product_id(row)
       }
     end
 
@@ -54,10 +64,10 @@ class PurchaseImport < ApplicationRecord
       customer.customer_purchase_orders.build(purchase_attributes(row))
     end
 
-    def existing_purchase(customer, row)
-      customer.customer_purchase_orders.select do |purchase|
+    def find_existing_purchase(customer, row)
+      customer.customer_purchase_orders.find do |purchase|
         same_date?(purchase) && same_product?(purchase, row)
-      end.first
+      end
     end 
 
 ###################### Main Processing #######################
@@ -66,18 +76,20 @@ class PurchaseImport < ApplicationRecord
       Customer.find_or_create_by(name: row['Name'])
     end
 
+    def update_purchase(found_purchase, row)
+      found_purchase.quantity = row['Qty']
+      
+      found_purchase
+    end
+
     def process_row(row)
       customer = current_customer(row)
+      found_purchase = find_existing_purchase(customer, row)
 
-      new_purchase = create_purchase(customer, row)
-
-      # this checks also if purchase already exists
-      if new_purchase.valid?
-        new_purchase
+      if found_purchase
+        update_purchase(found_purchase, row)
       else
-        purchase_to_update = existing_purchase(customer, row)
-        purchase_to_update.quantity = row['Qty']
-        purchase_to_update
+        create_purchase(customer, row)
       end
     end
 

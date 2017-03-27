@@ -1,79 +1,79 @@
 require 'test_helper'
 
-class ProductTest < ActiveSupport::TestCase
-  include Dateable
+include Dateable
 
-  def setup
+describe Product, 'gusti_id' do 
+
+  before do 
     @product = products(:faella_spaghetti) 
+  end
+
+  it 'should be unique' do
+    duplicate_product = @product.dup
+    duplicate_product.gusti_id.downcase!
+
+    duplicate_product.wont_be :valid?
+  end
+end
+
+describe Product, '#setup?' do 
+
+  before do 
+    @product = products(:faella_spaghetti) 
+  end
+
+  it 'detects if a product is setup with a next reorder date' do
+    @product.must_be :setup?
+
+    @product.next_reorder_date = nil
+    
+    @product.wont_be :setup?
+  end
+end
+
+describe Product, '.existing_gusti_id?' do 
+
+  before do 
+    @product = products(:faella_spaghetti) 
+  end
+
+  it 'determines if a product exists by gusti id' do
+    Product.existing_gusti_id?(@product.gusti_id).must_equal true
+    Product.existing_gusti_id?('gustigusti').wont_equal true
+  end
+end
+
+describe Product, '#actual_next_reorder_date' do
+
+  before do
+    @product = products(:faella_spaghetti)
     @product2 = products(:pianogrillo)
   end
 
-  test "associated activities should be destroyed" do
-    @product.save
-    @product.activities.create!(date: Time.now, sold: 100)
-    assert_difference 'Reorder.count', -1 do
-      @product.destroy
-    end
+  it "calculates reorder dates and accounts for different years" do
+    @product.actual_next_reorder_date.year.must_equal (Date.today + 1.year).year
   end
 
-  test "gusti_id should be unique" do
-    duplicate_product = @product.dup
-    duplicate_product.gusti_id.downcase
-    @product.save
-    assert_not duplicate_product.valid?
+  it "calculates next reorder date for before block interval" do
+    normal_wait_months = (@product2.lead_time + @product2.travel_time).months
+
+    @product2.actual_next_reorder_date.must_equal @product2.cant_travel_start - normal_wait_months - 1.day
   end
 
-  test "detects can't order intervals for Faella" do
-    assert @product.in_cant_order_interval?(Date.new(2017, 5, 15).yday)
-    assert_not @product.in_cant_order_interval?(Date.new(2017, 1, 15))
+  it "calculates next reorder date for product that just went out of inventory" do
+    @product2.current = 0
+
+    @product2.actual_next_reorder_date.must_equal Date.today 
+  end
+end
+
+describe Product, '#gap_days' do
+
+  before do
+    @product = products(:pianogrillo)
   end
 
-  test "average sales calculated correctly" do
-    assert_equal 100, @product.first_half_average_sales
-    assert_equal 100, @product.second_half_average_sales
-  end
-
-  test "expected sales" do
-    assert_equal @product.expected_monthly_sales / 30, @product.expected_daily_sales
-  end
-
-  test "reorder in actual accounts for different years" do
-    assert_equal (Date.today + 1.year).year, @product.actual_next_reorder_date.year 
-  end
-
-  test "reorder in correctly calculates next reorder in for this year" do
-    normal_wait_months = (@product.lead_time + @product.travel_time).months
-    assert_equal @product2.cant_travel_start - normal_wait_months - 1.day, @product2.actual_next_reorder_date
-  end
-
-  test "days till works for this year" do
-    date = Date.today + 10.days
-    assert_equal 10, @product.days_till(date)
-  end
-
-  test "days till works for next year" do
-    date = Date.today + 1.year + 5.days
-    assert_equal 370, @product.days_till(date)
-  end
-
-  test "gap days finds dif in calculated reorder date and next possible reorder date" do
-    assert_equal 47, @product2.gap_days(@product2.naive_reorder_after_next_yday)
-  end
-
-  test "expected quantity on date finds proper quanties for this year" do
-    date = Date.today + 2.months
-    sales = @product.expected_daily_sales * days_till(date)
-    quantity = @product.current - sales
-    assert_equal quantity, @product.expected_quantity_on_date(date)
-  end
-
-  test "expected quantity on date finds proper quanties for next year" do
-    date = Date.today + 1.year
-    assert_equal 540, @product.expected_quantity_on_date(date)
-  end
-
-  test "month back finds n months back" do
-    assert_equal Date.today.beginning_of_month - 2.months, @product.month_back(2)
-    assert_equal Date.today.beginning_of_month - 13.months, @product.month_back(13)
+  it 'finds dif for reorder after date in blocking interval and next possible reorder date' do
+    @product.gap_days(@product.naive_reorder_after_next_yday).must_equal 47
   end
 end

@@ -25,6 +25,10 @@ gem 'pry-rails',                      '~> 0.3.5'
 group :test do
   gem 'simplecov',                    '~> 0.14.1'
   gem "codeclimate-test-reporter",    '~> 1.0.0'
+  gem 'minitest', '~> 5.10',          '>= 5.10.1'
+  gem 'minitest-reporters',           '~> 1.1', '>= 1.1.14'
+  gem 'minitest-rails-capybara',      '~> 3.0', '>= 3.0.1'
+  gem 'timecop',                      '~> 0.8.1'
 end
 
 group :development, :test do
