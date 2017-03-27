@@ -28,6 +28,7 @@ group :test do
   gem 'minitest', '~> 5.10',          '>= 5.10.1'
   gem 'minitest-reporters',           '~> 1.1', '>= 1.1.14'
   gem 'minitest-rails-capybara',      '~> 3.0', '>= 3.0.1'
+  gem 'timecop',                      '~> 0.8.1'
 end
 
 group :development, :test do

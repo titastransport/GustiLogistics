@@ -9,6 +9,14 @@ module Dateable
   MONTHS_IN_YEAR = 12
   FIRST_OF_MONTH = 1
 
+  def yday_before_interval(interval)
+    interval.first - 1
+  end
+
+  def yday_after_interval(interval)
+    interval.end + 1
+  end
+
   # All months capitalized in an array
   def month_names
     Date::MONTHNAMES.compact

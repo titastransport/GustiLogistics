@@ -19,7 +19,7 @@ describe ActivityImport, '.save' do
       end
     end
 
-    it 'updates activities that already exist' do
+    it "doesn't create new activities that already exist" do
       @activity_import.save 
 
       assert_no_difference 'Activity.count' do 

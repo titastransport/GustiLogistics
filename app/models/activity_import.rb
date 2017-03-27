@@ -43,8 +43,7 @@ class ActivityImport < ApplicationRecord
   ################## Validations #########################
 
     def correct_value_presents(row) 
-      !!(row['Item ID'] && row['Units Sold'] &&
-         row['Beg Qty'] && row['Qty on Hand'])
+      !!(row['Item ID'] && row['Units Sold'] && row['Beg Qty'] && row['Qty on Hand'])
     end
 
     def valid_row?(row)
@@ -91,8 +90,7 @@ class ActivityImport < ApplicationRecord
   #################### File Processing ###################################
     # Returns activity just updated or created assuming we're in the most recent month
     def process_row(row)
-      current_product = Product.find_by(gusti_id: row['Item ID'])
-      return Activity.create(product_id: nil) if current_product.nil?
+      current_product = Product.find_or_create_by(gusti_id: row['Item ID'])
   
       processed_activity = process_activity(current_product, row)
       update_product(current_product, row)
