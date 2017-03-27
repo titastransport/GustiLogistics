@@ -10,14 +10,14 @@ two:
   sold: 100
   product_id: 2
 
-<% (3..12).each do |i| %>
+<% (3..24).each do |i| %>
 activity2_<%= i %>:
   date: <%= Date.today.beginning_of_month - i.months %>
   sold: 100
   product_id: 2
 <% end %>
 
-<% (1..12).each do |i| %>
+<% (1..24).each do |i| %>
 activity1_<%= i %>:
   date: <%= Date.today.beginning_of_month - i.months %>
   sold: 100

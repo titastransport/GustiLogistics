@@ -1,3 +1,7 @@
 customer1:
   id: 1
   name: "Ribalta"
+
+customer2:
+  id: 2
+  name: "Del Posto"

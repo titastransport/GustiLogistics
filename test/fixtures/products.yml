@@ -17,7 +17,7 @@ pianogrillo:
 faella_spaghetti:
   id: 2
   gusti_id: "PAS12003"
-  description: "Faella Ziti Tagliati 500g/20"
+  description: "Faella Spaghetti 500g/20"
   current: 2000
   lead_time: 1
   travel_time: 1

@@ -31,80 +31,15 @@ class Product < ApplicationRecord
     calculated_date < Date.today ? Date.today : calculated_date
   end
 
-  ######################### Reorder Quantity ##########################
-  
-  def reorder_overdue?
-    actual_days_till_next_reorder < 0 
-  end
-
-  # Naive because doesn't account for gap days
-  def naive_full_order
-    (expected_monthly_sales * cover_time).to_i
-  end
-
-  def no_shipping_blocks?
-    naive_next_reorder_date == actual_next_reorder_date
-  end
-
-  # Assumption: next reorder is happening around time this is calculated
-  def naive_months_from_next_reorder_to_reorder_after_next
-    (naive_months_from_reorder_till_arrival +
-      (cover_time - naive_months_from_reorder_till_arrival)).months
-  end
-  
-  # Very rough estimate of reorder after next yday
-  # Necessary to predict if a product being ordered now will have it's next
-  # reorder land in a cant order period and thus to compensate and order more
-  def naive_reorder_after_next_yday
-    (actual_next_reorder_date + naive_months_from_next_reorder_to_reorder_after_next).yday
-  end
-
-  # Also could change from recursion to while
-  def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
-    if travel_block_interval.include?(proposed_reorder_after_next_yday) 
-      adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
-    elsif produce_block_interval.include?(proposed_reorder_after_next_yday) 
-      adjusted_reorder_after_next_yday(yday_after_interval(produce_block_interval))
-    else
-      proposed_reorder_after_next_yday
-    end
-  end
-
   # Days between naive and acutal reorder after next dates
   def gap_days(proposed_reorder_after_next_yday)
     adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
       proposed_reorder_after_next_yday
   end
  
-  def expected_sales_till_date(future_date)
-    expected_daily_sales * days_till(future_date)
-  end
-
   def expected_quantity_on_date(future_date)
-    expected_quantity = self.current - expected_sales_till_date(future_date)  
+    expected_quantity = current - expected_sales_till_date(future_date)  
     expected_quantity <= 0 ? 0 : expected_quantity 
-  end
-
-  def next_shipment_arrives_date
-    actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
-  end
-
-  # Used in cases where a product is ordered sooner than expected because of
-  # shipping block and consequently a full order isn't appropriate 
-  def quantity_on_next_reorder_arrival
-    expected_quantity_on_date(next_shipment_arrives_date)
-  end
-
-  def naive_reorder_quantity
-    if no_shipping_blocks?
-      naive_full_order    
-    else
-      naive_full_order - quantity_on_next_reorder_arrival
-    end
-  end
-
-  def cover_gap_days_quantity
-    expected_daily_sales * gap_days(naive_reorder_after_next_yday)
   end
 
   def actual_reorder_quantity
@@ -203,7 +138,8 @@ class Product < ApplicationRecord
    
     # Adjusts for sales made in waiting period between product reorder and reorder's arrival
     def inventory_adjusted_for_naive_wait
-      current - naive_waiting_sales
+      adjusted = current - naive_waiting_sales
+      adjusted < 0 ? 0 : adjusted
     end
   
     def activities_in_range(start_date, final_date)
@@ -314,5 +250,66 @@ class Product < ApplicationRecord
 
     def actual_days_till_next_reorder
       naive_days_till_next_reorder_yday + years_in_future(naive_next_reorder_date)
+    end
+
+###################### Reorder Quantity ##########################
+    
+    # Naive because doesn't account for gap days
+    def naive_full_order
+      (expected_monthly_sales * cover_time).to_i
+    end
+  
+    def no_shipping_blocks?
+      naive_next_reorder_date == actual_next_reorder_date
+    end
+
+    # Assumption: next reorder is happening at/around time this is calculated
+    def naive_months_from_next_reorder_to_reorder_after_next
+      (naive_months_from_reorder_till_arrival +
+        (cover_time - naive_months_from_reorder_till_arrival)).months
+    end
+    
+    # Very rough estimate of reorder after next yday
+    # Necessary to predict if a product being ordered now will have it's next
+    # reorder land in a cant order period and thus to compensate and order more
+    def naive_reorder_after_next_yday
+      (actual_next_reorder_date + naive_months_from_next_reorder_to_reorder_after_next).yday
+    end
+  
+    # Also could change from recursion to while
+    def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
+      if travel_block_interval.include?(proposed_reorder_after_next_yday) 
+        adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
+      elsif produce_block_interval.include?(proposed_reorder_after_next_yday) 
+        adjusted_reorder_after_next_yday(yday_after_interval(produce_block_interval))
+      else
+        proposed_reorder_after_next_yday
+      end
+    end
+
+    def expected_sales_till_date(future_date)
+      expected_daily_sales * days_till(future_date)
+    end
+
+    def next_shipment_arrives_date
+      actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
+    end
+  
+    # Used in cases where a product is ordered sooner than expected because of
+    # shipping block and consequently a full order isn't appropriate 
+    def quantity_on_next_reorder_arrival
+      expected_quantity_on_date(next_shipment_arrives_date)
+    end
+
+    def naive_reorder_quantity
+      if no_shipping_blocks?
+        naive_full_order    
+      else
+        naive_full_order - quantity_on_next_reorder_arrival
+      end
+    end
+  
+    def cover_gap_days_quantity
+      expected_daily_sales * gap_days(naive_reorder_after_next_yday)
     end
 end

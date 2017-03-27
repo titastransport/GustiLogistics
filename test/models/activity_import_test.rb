@@ -13,7 +13,7 @@ describe ActivityImport, '.save' do
       Activity.delete_all 
     end
 
-    it "creates new activities" do
+    it "creates new activities for existing product" do
       assert_difference 'Activity.count', 2 do
         @activity_import.save 
       end

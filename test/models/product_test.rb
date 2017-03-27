@@ -47,7 +47,7 @@ describe Product, '#actual_next_reorder_date' do
 
   before do
     @product = products(:faella_spaghetti)
-    @product2 = products(:pianogrillo)
+    @blocked_product = products(:pianogrillo)
   end
 
   it "calculates reorder dates and accounts for different years" do
@@ -55,15 +55,23 @@ describe Product, '#actual_next_reorder_date' do
   end
 
   it "calculates next reorder date for before block interval" do
-    normal_wait_months = (@product2.lead_time + @product2.travel_time).months
+    normal_wait_months = (@blocked_product.lead_time + @blocked_product.travel_time).months
 
-    @product2.actual_next_reorder_date.must_equal @product2.cant_travel_start - normal_wait_months - 1.day
+    @blocked_product.actual_next_reorder_date.must_equal @blocked_product.cant_travel_start - normal_wait_months - 1.day
   end
 
   it "calculates next reorder date for product that just went out of inventory" do
-    @product2.current = 0
+    @blocked_product.current = 0
 
-    @product2.actual_next_reorder_date.must_equal Date.today 
+    @blocked_product.actual_next_reorder_date.must_equal Date.today 
+  end
+
+  it "calculates next reorder date for produce block interval" do
+    @blocked_product.cant_produce_start = Date.new(2017, 4, 28)
+    last_day_to_order = @blocked_product.cant_produce_start - @blocked_product.lead_time.months - 1.day 
+
+
+    @blocked_product.actual_next_reorder_date.must_equal last_day_to_order
   end
 end
 
@@ -71,9 +79,74 @@ describe Product, '#gap_days' do
 
   before do
     @product = products(:pianogrillo)
+    @hand_calculated_gap_days = 47
+    @proposed_reorder_after_next_yday = @product.send(:naive_reorder_after_next_yday)
+
   end
 
-  it 'finds dif for reorder after date in blocking interval and next possible reorder date' do
-    @product.gap_days(@product.naive_reorder_after_next_yday).must_equal 47
+  describe 'when reorder after next date in block interval' do
+    it 'finds number of days to cover inventory for travel block' do
+      @product.gap_days(@proposed_reorder_after_next_yday).must_equal @hand_calculated_gap_days
+    end
   end
+end
+
+describe Product, '#expected_quantity_on_date' do
+  before do
+    @product = products(:pianogrillo)
+    @tomorrow = Date.today + 1.day
+    @one_day_of_sales = 4
+  end
+
+  it 'calculated product quantity on future date' do
+    @product.expected_quantity_on_date(@tomorrow).must_equal(@product.current - @one_day_of_sales) 
+  end
+
+end
+
+describe Product, '#naive_reorder_quantity' do
+  before do
+    @product = products(:faella_spaghetti)
+    @blocked_product = products(:pianogrillo)
+    @naive_full_order = 480
+  end
+
+  it 'calculates a naive full order quantity for no shipping blocks' do
+    @product.current = 0 
+    d = Date.new(2017, 1, 1)
+
+    Timecop.travel(d) do
+      @product.send(:naive_reorder_quantity).must_equal @naive_full_order
+    end
+  end
+
+  it 'calculates a naive full order quantity of less than normal full order for products that have to order sooner than expected because of shipping block' do
+    @blocked_product.send(:naive_reorder_quantity).must_be :<, @naive_full_order
+  end
+end
+
+describe Product, '#actual_reorder_quantity' do
+  before do
+    @product = products(:pianogrillo)
+    naive_reorder_quantity = @product.send(:naive_reorder_quantity)
+    cover_gap_days_quantity = @product.send(:cover_gap_days_quantity)
+    @actual_reorder_quantity = naive_reorder_quantity + cover_gap_days_quantity
+  end
+
+  it 'calculates actual reorder date for blocked product with gap days' do
+    @product.actual_reorder_quantity.must_equal @actual_reorder_quantity 
+  end
+end
+
+describe Product, '#find_top_customers_in_range' do
+  before do
+    product = products(:pianogrillo)
+    start_date = Date.new(2016, 7, 1)
+    final_date = Date.new(2016, 12, 1)
+    @top = product.find_top_customers_in_range(start_date, final_date)
+  end
+
+  it 'finds top customers including retail in range' do
+  end
+
 end

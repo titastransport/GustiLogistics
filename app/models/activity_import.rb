@@ -91,6 +91,7 @@ class ActivityImport < ApplicationRecord
     # Returns activity just updated or created assuming we're in the most recent month
     def process_row(row)
       current_product = Product.find_or_create_by(gusti_id: row['Item ID'])
+      #return Activity.create(product_id: nil) if current_product.nil?
   
       processed_activity = process_activity(current_product, row)
       update_product(current_product, row)
