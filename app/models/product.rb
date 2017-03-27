@@ -72,8 +72,7 @@ class Product < ApplicationRecord
       lead_time + travel_time
     end
   
-    # Sales that occur in waiting period from time of order to receiving the order
-    # physically in warehouse
+    # Sales that occur in waiting period from time of order to receiving the order physically in warehouse
     def naive_waiting_sales
       naive_months_from_reorder_till_arrival * expected_monthly_sales 
     end
@@ -264,7 +263,7 @@ class Product < ApplicationRecord
     #######################  Customer Sales ##########################
   
     def wholesale_purchases_in_range(start_date, final_date)
-      customer_purchase_orders.where(date: start_date..final_date)
+      customer_purchase_orders.includes(:customer).where(date: start_date..final_date)
     end
   
     # Sums up number of purchases for a given customer in hash
