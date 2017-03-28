@@ -21,6 +21,7 @@ gem 'rails-controller-testing',       '~> 1.0', '>= 1.0.1'
 gem 'pg',                             '0.19.0'
 gem 'responders',                     '~> 2.3'
 gem 'pry-rails',                      '~> 0.3.5'
+gem 'newrelic_rpm',                   '~> 4.0', '>= 4.0.0.332'
 
 group :test do
   gem 'simplecov',                    '~> 0.14.1'
@@ -42,6 +43,7 @@ group :development do
   gem 'listen',                       '3.0.8'
   gem 'spring',                       '1.7.2'
   gem 'spring-watcher-listen',        '2.0.0'
+  gem 'brakeman',                     '~> 3.6', '>= 3.6.1', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
