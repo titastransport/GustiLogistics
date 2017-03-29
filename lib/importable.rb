@@ -50,4 +50,8 @@ module Importable
       end
     end
   end
+
+  def import_month
+    @import_month ||= date_from_file_name(filename)
+  end
 end

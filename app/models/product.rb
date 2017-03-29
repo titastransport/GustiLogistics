@@ -12,6 +12,12 @@ class Product < ApplicationRecord
                        uniqueness: { case_sensitive: false } 
   validates :current, presence: true
 
+  scope :setup, -> { where('producer IS NOT NULL') }
+
+  def activity_for_month?(date)
+    activities.find_by(date: date) 
+  end
+
   def update_reorder_status
     self.next_reorder_date = actual_next_reorder_date
   end
@@ -23,7 +29,7 @@ class Product < ApplicationRecord
   def setup?
     next_reorder_date
   end
- 
+
   # Actual date, not yday
   def actual_next_reorder_date
     calculated_date = Date.today + actual_days_till_next_reorder
@@ -80,6 +86,7 @@ class Product < ApplicationRecord
     # Adjusts for sales made in waiting period between product reorder and reorder's arrival
     def inventory_adjusted_for_naive_wait
       adjusted = current - naive_waiting_sales
+
       adjusted < 0 ? 0 : adjusted
     end
   

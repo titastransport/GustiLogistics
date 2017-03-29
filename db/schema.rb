@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170306234251) do
+ActiveRecord::Schema.define(version: 20170328183447) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20170306234251) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.integer  "purchased",  default: 0
+    t.index ["date"], name: "index_activities_on_date", using: :btree
     t.index ["product_id", "date"], name: "index_activities_on_product_id_and_date", unique: true, using: :btree
     t.index ["product_id"], name: "index_activities_on_product_id", using: :btree
   end
@@ -39,6 +40,7 @@ ActiveRecord::Schema.define(version: 20170306234251) do
     t.index ["customer_id", "date", "product_id"], name: "my_index", unique: true, using: :btree
     t.index ["customer_id"], name: "index_customer_purchase_orders_on_customer_id", using: :btree
     t.index ["date", "product_id"], name: "index_customer_purchase_orders_on_date_and_product_id", using: :btree
+    t.index ["date"], name: "index_customer_purchase_orders_on_date", using: :btree
     t.index ["product_id"], name: "index_customer_purchase_orders_on_product_id", using: :btree
   end
 
@@ -67,6 +69,7 @@ ActiveRecord::Schema.define(version: 20170306234251) do
     t.date     "next_reorder_date"
     t.boolean  "enroute",            default: false
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true, using: :btree
+    t.index ["producer"], name: "index_products_on_producer", using: :btree
   end
 
   create_table "purchase_imports", force: :cascade do |t|

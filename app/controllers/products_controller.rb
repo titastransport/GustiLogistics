@@ -4,8 +4,7 @@ class ProductsController < ApplicationController
   before_action :logged_in_user
 
   def index
-    @products = Product.select { |p| setup_product(p) }
-    # Currently updating reorder status on index page
+    @products = Product.setup
     @products.each { |product| product.update_reorder_status && product.save! }
   end
 

@@ -1,12 +1,10 @@
-require "dateable"
-
 class ActivityImport < ApplicationRecord
   include ActiveModel::Model
   include Dateable
   include Importable
 
   validates :file, presence: true
-  attr_accessor :file
+  attr_accessor :file, :current_row, :current_product, :current_activity
 
   def save
     activities = imported_activities
@@ -21,93 +19,55 @@ class ActivityImport < ApplicationRecord
 
   private
 
-  ################## Product Methods #############################
-  
     # If there's been a purchase arrival in UAR, enroute is probably false
-    def update_product(current_product, row)
-      if import_for_current_month?
-        current_product.enroute = false if row['Units Purc']
-        current_product.current = row['Qty on Hand'] 
-      end
-  
-      # Not updating reorder status if product enroute, for now
-      # Checking for next reorder date to make sure product set up
-      if current_product.next_reorder_date && !current_product.enroute
-        current_product.update_reorder_status 
-        # User for setting update product description for new products until all
-        # products loaded
-        current_product.description = row['Item Description']
-      end
+    def update_current_product
+      current_product.enroute = false if current_row['Units Purc'] && import_for_current_month?
+      current_product.current = current_row['Qty on Hand'] if import_for_current_month?
     end
     
-  ################## Validations #########################
-
-    def correct_value_presents(row) 
-      !!(row['Item ID'] && row['Units Sold'] && row['Beg Qty'] && row['Qty on Hand'])
+    def valid_current_row?
+      !!(current_row['Item ID'] && current_row['Units Sold'] && 
+          current_row['Beg Qty'] && current_row['Qty on Hand'])
     end
 
-    def valid_row?(row)
-      correct_value_presents(row) 
+    def current_activity_params
+      {
+        sold: current_row['Units Sold'].to_i,
+        date: import_month,
+        purchased: current_row['Units Purc'].to_i
+      }
+    end
+
+    def create_activity
+      current_product.activities.build(current_activity_params)
     end
   
-  ##################### Activity Processing ##########################
-  
-    # Create datetime creates datetime from current files title date
-    # This will compare against the activity date in database
-    def same_activity_month?(activity)
-      activity.date == date_from_file_name(filename)
-    end
-  
-    def find_existing_activity(product)
-      product.activities.find do |activity|
-        same_activity_month?(activity)
-      end
-    end
-  
-    def create_activity(product, row)
-      product.activities.build(sold: row['Units Sold'].to_i,
-                               date: date_from_file_name(filename),
-                               purchased: row['Units Purc'].to_i)
-    end
-  
-    def update_activity(found_activity, row)
-      found_activity.sold = row['Units Sold'].to_i
-      found_activity.purchased = row['Units Purc'].to_i
-  
-      found_activity
-    end
-    
-    def process_activity(product, row)
-      found_activity = find_existing_activity(product)
-  
-      if found_activity      
-        update_activity(found_activity, row)
+    def process_current_activity
+      if (self.current_activity = current_product.activity_for_month?(import_month))  
+        current_activity.update_for_import(current_row['Units Sold'], current_row['Units Purc'])
       else
-        create_activity(product, row)
+        self.current_activity = create_activity
       end
     end
   
-  #################### File Processing ###################################
-    # Returns activity just updated or created assuming we're in the most recent month
-    def process_row(row)
-      current_product = Product.find_or_create_by(gusti_id: row['Item ID'])
-      #return Activity.create(product_id: nil) if current_product.nil?
-  
-      processed_activity = process_activity(current_product, row)
-      update_product(current_product, row)
-    
-      processed_activity
+    def process_current_row
+      self.current_product = Product.find_or_create_by(gusti_id: current_row['Item ID'])
+
+      process_current_activity 
+      update_current_product
     end
   
-    # Hash[[]].transpose: transposes pairs header to 
-    # corresponding rows to create key value pairs in hash
+    # Hash[[]].transpose: pairs header to corresponding rows to create hash
     def load_imported_activities
       spreadsheet = open_spreadsheet
       header = spreadsheet.row(1)
   
       activities = (2..spreadsheet.last_row).map do |i|
-        current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        process_row(current_row) if valid_row?(current_row)
+        self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
+        next unless valid_current_row?
+
+        process_current_row
+        current_activity
       end
   
       activities.compact
