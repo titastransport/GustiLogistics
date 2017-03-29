@@ -24,7 +24,7 @@ gem 'pry-rails',                      '~> 0.3.5'
 gem 'newrelic_rpm',                   '~> 4.0', '>= 4.0.0.332'
 
 group :test do
-  gem 'simplecov',                    '~> 0.14.1'
+  gem 'simplecov',                    '~> 0.13.0'
   gem "codeclimate-test-reporter",    '~> 1.0.0'
   gem 'minitest', '~> 5.10',          '>= 5.10.1'
   gem 'minitest-reporters',           '~> 1.1', '>= 1.1.14'

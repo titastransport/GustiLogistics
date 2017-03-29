@@ -4,15 +4,17 @@ class Product < ApplicationRecord
 
   before_save { gusti_id.upcase! }
   default_scope { order(:gusti_id) }
+
   has_many :reorders, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :customer_purchase_orders, dependent: :destroy
   has_many :customers, through: :customer_purchase_orders
-  validates :gusti_id, presence: true,
-                       uniqueness: { case_sensitive: false } 
-  validates :current, presence: true
 
-  scope :setup, -> { where('producer IS NOT NULL') }
+  validates :gusti_id, presence: true, uniqueness: { case_sensitive: false } 
+  validates :current, numericality: { only_integer: true }
+  validates :cover_time, numericality: { only_integer: true }
+
+  scope :select_setup_products, -> { where('next_reorder_date IS NOT NULL') }
 
   def activity_for_month?(date)
     activities.find_by(date: date) 
@@ -24,10 +26,6 @@ class Product < ApplicationRecord
 
   def self.existing_gusti_id?(gusti_id)
     !!find_by(gusti_id: gusti_id)
-  end
-
-  def setup?
-    next_reorder_date
   end
 
   # Actual date, not yday
@@ -281,10 +279,6 @@ class Product < ApplicationRecord
         totals[purchase.customer.name] += purchase.quantity
       end
       totals
-    end
-  
-    def wholesale_purchases_total_in_range(start_date, final_date)
-      wholesale_customer_totals(wholesale_purchases(start_date, final_date))
     end
   
     def total_wholesale_units_sold(wholesale_totals)

@@ -4,8 +4,6 @@ module ProductsHelper
   def display_reorder_date
     if enroute
       "Ordered"
-    elsif next_reorder_date < Date.today 
-      "Overdue!"
     elsif next_reorder_date == Date.today 
       "Today!"
     else
@@ -15,10 +13,6 @@ module ProductsHelper
 
   def sales_this_month
     total_units_sold_in_range(this_month_date, this_month_date)
-  end
-
-  def percentage(quantity, total)
-    ((quantity.to_f / total) * 100).to_i + 1
   end
 
   def display_human_friendly_month_range(date1, date2)

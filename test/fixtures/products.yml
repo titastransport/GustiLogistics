@@ -31,3 +31,20 @@ faella_spaghetti:
   cant_produce_start: <%= Date.new(2017, 8, 1) %>
   next_reorder_date: <%= Date.new(2018, 4, 15) %>
   enroute: true
+
+not_setup:
+  id: 3
+  gusti_id: "PAS12005"
+  description: "Faella Penne 500g/20"
+  current: 2000
+  lead_time: 1
+  travel_time: 1
+  cover_time: 4
+  growth_factor: 1.2
+  producer: "Faella"
+  cant_travel_start: <%= Date.new(2017, 5, 15) %>
+  cant_travel_end: <%= Date.new(2017, 9, 30) %>
+  cant_produce_end: <%= Date.new(2017, 9, 15) %>
+  cant_produce_start: <%= Date.new(2017, 8, 1) %>
+  next_reorder_date: <%= nil %>
+  enroute: true

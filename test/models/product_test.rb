@@ -16,19 +16,22 @@ describe Product, 'gusti_id' do
   end
 end
 
-describe Product, '#setup?' do 
+describe Product, '.select_setup_products' do 
 
   before do 
-    @product = products(:faella_spaghetti) 
+    @setup_products = Product.select_setup_products 
   end
 
   it 'detects if a product is setup with a next reorder date' do
-    @product.must_be :setup?
-
-    @product.next_reorder_date = nil
-    
-    @product.wont_be :setup?
+    setup_product = products(:pianogrillo)
+    @setup_products.include?(setup_product).must_equal true
   end
+
+  it 'detects if a product is setup with a next reorder date' do
+    not_setup_product = products(:not_setup)
+    @setup_products.include?(not_setup_product).must_equal false
+  end
+
 end
 
 describe Product, '.existing_gusti_id?' do 
