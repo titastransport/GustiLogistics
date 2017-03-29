@@ -5,7 +5,6 @@ class ProductsController < ApplicationController
 
   def index
     @products = Product.select_setup_products
-    @products.each { |product| product.update_reorder_status && product.save! }
   end
 
   def show
@@ -19,7 +18,7 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       @product.update_attributes(product_params)
-      @product.update_attribute(:next_reorder_date, @product.actual_next_reorder_date) 
+      @product.update_reorder_date 
 
       format.js
       format.html { redirect_to @product, notice: 'Product was successfully updated.' }

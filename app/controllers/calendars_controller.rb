@@ -1,10 +1,10 @@
 class CalendarsController < ApplicationController
   def index
-    @products = Product.select { |product| !product.next_reorder_date.nil? }
+    @products = Product.select_setup_products 
 
     @products.each do |product| 
-      unless product.enroute
-        product.update_reorder_status && product.save 
+      unless product.enroute || product.next_reorder_date > Date.today
+        product.update_reorder_date 
       end
     end
 

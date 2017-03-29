@@ -20,8 +20,8 @@ class Product < ApplicationRecord
     activities.find_by(date: date) 
   end
 
-  def update_reorder_status
-    self.next_reorder_date = actual_next_reorder_date
+  def update_reorder_date
+    update_attribute(:next_reorder_date, actual_next_reorder_date)
   end
 
   def self.existing_gusti_id?(gusti_id)

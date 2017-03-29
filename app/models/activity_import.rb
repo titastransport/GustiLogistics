@@ -9,7 +9,7 @@ class ActivityImport < ApplicationRecord
   def save
     activities = imported_activities
     if activities.map(&:valid?).all?
-      activities.each { |a| a.save! && a.product.save! }
+      activities.each { |activity| save_all_data_from(activity) } 
       true
     else
       display_errors(activities)
@@ -18,6 +18,12 @@ class ActivityImport < ApplicationRecord
   end
 
   private
+
+    def save_all_data_from(activity)
+      activity.save!
+      activity.product.save! 
+      activity.product.update_reorder_date
+    end
 
     # If there's been a purchase arrival in UAR, enroute is probably false
     def update_current_product
