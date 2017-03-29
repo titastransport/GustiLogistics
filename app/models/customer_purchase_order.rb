@@ -7,11 +7,7 @@ class CustomerPurchaseOrder < ApplicationRecord
   validates :customer_id, presence: true
   validates :date, presence: true, uniqueness: { scope: [:customer_id, :product_id] }
 
-  def self.most_recent_purchase_date
-    CustomerPurchaseOrder.first.date
-  end
-
-  def update_quantity(new_quantity)
-    update_attribute(:quantity, new_quantity)
+  def update_for_import(new_quantity)
+    self.quantity = new_quantity
   end
 end

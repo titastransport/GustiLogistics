@@ -6,7 +6,7 @@ class PurchaseImport < ApplicationRecord
   include Importable
 
   validates :file, presence: true
-  attr_accessor :file
+  attr_accessor :file, :current_row, :current_purchase, :current_product, :current_customer
 
   def save
     purchases = imported_purchases
@@ -22,74 +22,39 @@ class PurchaseImport < ApplicationRecord
 
   private
 
-    ####################### Row Validations ######################## 
-    # Guard against them uploading Retail Customers individually
-    def wholesale_customer?(row)
-      !!(row['Customer ID'] =~ /^AAA/i)
+    # Guard against Retail
+    def wholesale_customer?
+      !!(current_row['Customer ID'] =~ /^AAA/i)
     end
 
-    def correct_values_present?(row)
-      row['Name'] && row['Item ID'] && row['Qty'] 
+    def correct_values_present?
+      current_row['Name'] && current_row['Item ID'] && current_row['Qty'] 
     end
 
-    def valid_row?(row)
-      correct_values_present?(row) && wholesale_customer?(row)  
+    def valid_current_row?
+      correct_values_present? && wholesale_customer?  
     end
 
-    ################# Purchase Processing ########################
-
-    def same_date?(purchase)
-      purchase.date == date_from_file_name(filename)
-    end
-
-    def same_product?(purchase, row)
-      purchase.product.gusti_id == row['Item ID']
-    end
-
-    def current_product_id(row)
-      product = Product.find_by(gusti_id: row['Item ID']) 
-
-      product ? product.id : nil
-    end
-
-    def purchase_attributes(row)
+    def current_purchase_attributes
       { 
-        quantity: row['Qty'], 
-        date: date_from_file_name(filename),
-        product_id: current_product_id(row)
+        quantity: current_row['Qty'], 
+        date: import_month,
+        product_id: current_product.id
       }
     end
 
-    def create_purchase(customer, row)
-      customer.customer_purchase_orders.build(purchase_attributes(row))
+    def create_purchase
+      current_customer.customer_purchase_orders.build(current_purchase_attributes)
     end
 
-    def find_existing_purchase(customer, row)
-      customer.customer_purchase_orders.find do |purchase|
-        same_date?(purchase) && same_product?(purchase, row)
-      end
-    end 
+    def process_current_row
+      self.current_customer = Customer.find_or_create_by(name: current_row['Name'])
+      self.current_product = Product.find_or_create_by(gusti_id: current_row['Item ID']) 
 
-###################### Main Processing #######################
-  
-    def current_customer(row)
-      Customer.find_or_create_by(name: row['Name'])
-    end
-
-    def update_purchase(found_purchase, row)
-      found_purchase.quantity = row['Qty']
-      
-      found_purchase
-    end
-
-    def process_row(row)
-      customer = current_customer(row)
-      found_purchase = find_existing_purchase(customer, row)
-
-      if found_purchase
-        update_purchase(found_purchase, row)
+      if (self.current_purchase = current_customer.purchase_for_month?(import_month, current_product.id))
+        current_purchase.update_for_import(current_row['Qty'])
       else
-        create_purchase(customer, row)
+        self.current_purchase = create_purchase
       end
     end
 
@@ -98,8 +63,11 @@ class PurchaseImport < ApplicationRecord
       header = spreadsheet.row(1)
 
       purchases = (2..spreadsheet.last_row).map do |i|
-        current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        process_row(current_row) if valid_row?(current_row)
+        self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
+        next unless valid_current_row?
+        
+        process_current_row 
+        current_purchase
       end
 
       purchases.compact
