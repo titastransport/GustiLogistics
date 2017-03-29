@@ -1,4 +1,5 @@
 [![Code Climate](https://codeclimate.com/github/EDalSanto/GustiLogistics/badges/gpa.svg)](https://codeclimate.com/github/EDalSanto/GustiLogistics)
+[![Test Coverage](https://codeclimate.com/github/EDalSanto/GustiLogistics/badges/coverage.svg)](https://codeclimate.com/github/EDalSanto/GustiLogistics/coverage)
 
 # GustiLogistics
 
