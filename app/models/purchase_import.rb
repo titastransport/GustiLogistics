@@ -6,7 +6,7 @@ class PurchaseImport < ApplicationRecord
   include Importable
 
   validates :file, presence: true
-  attr_accessor :file, :current_row, :current_purchase, :current_product, :current_customer
+  attr_accessor :file, :current_row, :current_purchase, :current_product, :current_customer, :list_of_valid_products
 
   def save
     purchases = imported_purchases
@@ -32,7 +32,8 @@ class PurchaseImport < ApplicationRecord
     end
 
     def valid_current_row?
-      correct_values_present? && wholesale_customer?  
+      correct_values_present? && wholesale_customer? && 
+        list_of_valid_products.include?(current_row['Item ID'])
     end
 
     def current_purchase_attributes
@@ -61,6 +62,7 @@ class PurchaseImport < ApplicationRecord
     def load_imported_purchases
       spreadsheet = open_spreadsheet
       header = spreadsheet.row(1)
+      self.list_of_valid_products = ParamParser.new.list_of_valid_products
 
       purchases = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]

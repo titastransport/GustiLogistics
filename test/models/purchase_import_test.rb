@@ -27,18 +27,4 @@ describe PurchaseImport, '.save' do
       end
     end
   end
-
-  describe "when given a an invalid file" do
-
-    before do
-      file = File.new(Rails.root.join('test/fixtures/files/ISTC_March_2017_nonexistent_product.xlsx'))
-      @purchase_import = PurchaseImport.new(file: file)
-    end
-
-    it "rejects purchases when a product doesn't exist" do
-      assert_no_difference 'CustomerPurchaseOrder.count' do
-        @purchase_import.save
-      end
-    end
-  end
 end

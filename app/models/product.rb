@@ -11,8 +11,8 @@ class Product < ApplicationRecord
   has_many :customers, through: :customer_purchase_orders
 
   validates :gusti_id, presence: true, uniqueness: { case_sensitive: false } 
-  validates :current, numericality: { only_integer: true }
-  validates :cover_time, numericality: { only_integer: true }
+  #validates :current, numericality: { only_integer: true }
+  #validates :cover_time, numericality: { only_integer: true }
 
   scope :select_setup_products, -> { where('next_reorder_date IS NOT NULL') }
 
@@ -52,7 +52,6 @@ class Product < ApplicationRecord
   end
 
   ##################### Used in Product Show View ##########################
-  #Checking for length of producer assures product is set up since producerstill set manually
 
   def previous_product
     Product.where(["gusti_id < ? AND LENGTH(producer) > 0", gusti_id]).last
@@ -66,7 +65,7 @@ class Product < ApplicationRecord
     
 #################### Reorder In/Date Helpers #####################
 
-    # growth stored in database as string, so needs to be converted to float
+    # stored as string, so needs to be converted to float
     def expected_growth_percentage
       growth_factor.to_f
     end
@@ -116,7 +115,7 @@ class Product < ApplicationRecord
       inventory_adjusted_for_naive_wait / expected_daily_sales 
     end
 
- ################### Blocking Intervals Setups and Helper Methods ######################
+ ################### Blocking Intervals Setups and Helper Methods #################
  
     # Ydays used because year is irrelevant 
     

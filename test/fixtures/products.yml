@@ -1,6 +1,6 @@
 pianogrillo:
   id: 1
-  gusti_id: "OLI1000"
+  gusti_id: "OLI00134"
   description: "Pianogrillo"
   current: 500
   lead_time: 1
@@ -17,7 +17,7 @@ pianogrillo:
 
 faella_spaghetti:
   id: 2
-  gusti_id: "PAS12003"
+  gusti_id: "PAS12000"
   description: "Faella Spaghetti 500g/20"
   current: 2000
   lead_time: 1
@@ -34,8 +34,8 @@ faella_spaghetti:
 
 not_setup:
   id: 3
-  gusti_id: "PAS12005"
-  description: "Faella Penne 500g/20"
+  gusti_id: "PAS12001"
+  description: "Faella Bucatini 500g/20"
   current: 2000
   lead_time: 1
   travel_time: 1

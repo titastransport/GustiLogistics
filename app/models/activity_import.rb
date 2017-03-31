@@ -4,7 +4,7 @@ class ActivityImport < ApplicationRecord
   include Importable
 
   validates :file, presence: true
-  attr_accessor :file, :current_row, :current_product, :current_activity
+  attr_accessor :file, :current_row, :current_product, :current_activity, :list_of_valid_products
 
   def save
     activities = imported_activities
@@ -22,7 +22,7 @@ class ActivityImport < ApplicationRecord
     def save_all_data_from(activity)
       activity.save!
       activity.product.save! 
-      activity.product.update_reorder_date
+  #    activity.product.update_reorder_date
     end
 
     # If there's been a purchase arrival in UAR, enroute is probably false
@@ -30,10 +30,14 @@ class ActivityImport < ApplicationRecord
       current_product.enroute = false if current_row['Units Purc'] && import_for_current_month?
       current_product.current = current_row['Qty on Hand'] if import_for_current_month?
     end
-    
-    def valid_current_row?
+
+    def correct_values_present?
       !!(current_row['Item ID'] && current_row['Units Sold'] && 
           current_row['Beg Qty'] && current_row['Qty on Hand'])
+    end
+    
+    def valid_current_row?
+      correct_values_present? && list_of_valid_products.include?(current_row['Item ID'])
     end
 
     def current_activity_params
@@ -67,6 +71,7 @@ class ActivityImport < ApplicationRecord
     def load_imported_activities
       spreadsheet = open_spreadsheet
       header = spreadsheet.row(1)
+      self.list_of_valid_products = ParamParser.new.list_of_valid_products
   
       activities = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]

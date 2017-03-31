@@ -10,6 +10,7 @@ module Gustibot
   class Application < Rails::Application
     # Include the authenticity token in remote forms.
     config.action_view.embed_authenticity_token_in_remote_forms = true
+
     # Loads modules in lib
     config.autoload_paths << "#{Rails.root}/lib"
   end

@@ -19,12 +19,14 @@ namespace :db do
     desc "Upload Unit Activity Reports"
     task :upload_uars => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
-      # Specify which producer by director that their UAR's are located
-      PATH_TO_DIR = "#{Rails.root}/db/seeds/uar/unit_activity_reports/santeustachio2015"
-      Dir.foreach(PATH_TO_DIR) do |file|
-        next if file.start_with? '.'
-        file = "#{PATH_TO_DIR}/#{file}"
-        ActivityImport.new(file: file).save
+      PATH_TO_DIR = Rails.root.join('db', 'seeds', 'uar', 'unit_activity_reports')
+      dirs = [ PATH_TO_DIR.join('uars2015'), PATH_TO_DIR.join('uars2016'), PATH_TO_DIR.join('uars2017') ]
+      dirs.each do |dir|
+        Dir.foreach(dir) do |file|
+          next if file.start_with? '.'
+          file = "#{dir}/#{file}"
+          ActivityImport.new(file: file).save
+        end
       end
     end
   end
