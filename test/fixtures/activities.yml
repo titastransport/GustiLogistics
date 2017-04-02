@@ -23,3 +23,10 @@ activity1_<%= i %>:
   sold: 100
   product_id: 1
 <% end %>
+
+<% (1..24).each do |i| %>
+activity4_<%= i %>:
+  date: <%= Date.today.beginning_of_month - i.months %>
+  sold: 75
+  product_id: 4
+<% end %>

@@ -51,6 +51,7 @@ describe Product, '#actual_next_reorder_date' do
   before do
     @product = products(:faella_spaghetti)
     @blocked_product = products(:pianogrillo)
+    @no_blocks_product = products(:no_blocks)
   end
 
   it "calculates reorder dates and accounts for different years" do
@@ -58,9 +59,7 @@ describe Product, '#actual_next_reorder_date' do
   end
 
   it "calculates next reorder date for before block interval" do
-    normal_wait_months = (@blocked_product.lead_time + @blocked_product.travel_time).months
-
-    @blocked_product.actual_next_reorder_date.must_equal @blocked_product.cant_travel_start - normal_wait_months - 1.day
+    @blocked_product.actual_next_reorder_date.yday.must_equal @blocked_product.send(:travel_block_start_yday) - 1
   end
 
   it "calculates next reorder date for product that just went out of inventory" do
@@ -71,27 +70,42 @@ describe Product, '#actual_next_reorder_date' do
 
   it "calculates next reorder date for produce block interval" do
     @blocked_product.cant_produce_start = Date.new(2017, 4, 28)
-    last_day_to_order = @blocked_product.cant_produce_start - @blocked_product.lead_time.months - 1.day 
-
+    last_day_to_order = @blocked_product.cant_produce_start - @blocked_product.lead_time.to_i.months 
 
     @blocked_product.actual_next_reorder_date.must_equal last_day_to_order
+  end
+
+  it 'calculates reorder date for product with no blocks' do
+    hand_calculated_date = Date.new(2017, 7, 9) 
+    @no_blocks_product.actual_next_reorder_date.must_be :===, hand_calculated_date
   end
 end
 
 describe Product, '#gap_days' do
 
-  before do
-    @product = products(:pianogrillo)
-    @hand_calculated_gap_days = 47
-    @proposed_reorder_after_next_yday = @product.send(:naive_reorder_after_next_yday)
-
-  end
-
   describe 'when reorder after next date in block interval' do
+    before do
+      @product = products(:pianogrillo)
+      @hand_calculated_gap_days = 46
+      @proposed_reorder_after_next_yday = @product.send(:naive_reorder_after_next_yday)
+    end
+
     it 'finds number of days to cover inventory for travel block' do
       @product.send(:gap_days, @proposed_reorder_after_next_yday).must_equal @hand_calculated_gap_days
     end
   end
+
+  describe "when a product doesn't have gap days" do
+    before do
+      @no_blocks_product = products(:no_blocks)   
+      @proposed_reorder_after_next_yday = @no_blocks_product.send(:naive_reorder_after_next_yday)
+    end
+
+    it "returns 0 for gap days" do
+      @no_blocks_product.send(:gap_days, @proposed_reorder_after_next_yday).must_equal 0 
+    end
+  end
+
 end
 
 describe Product, '#expected_quantity_on_date' do
@@ -129,15 +143,31 @@ describe Product, '#naive_reorder_quantity' do
 end
 
 describe Product, '#actual_reorder_quantity' do
-  before do
-    @product = products(:pianogrillo)
-    naive_reorder_quantity = @product.send(:naive_reorder_quantity)
-    cover_gap_days_quantity = @product.send(:cover_gap_days_quantity)
-    @actual_reorder_quantity = naive_reorder_quantity + cover_gap_days_quantity
+
+  describe 'when calculating a quantity for a blocked product' do
+
+    before do
+      @product = products(:pianogrillo)
+      naive_reorder_quantity = @product.send(:naive_reorder_quantity)
+      cover_gap_days_quantity = @product.send(:cover_gap_days_quantity)
+      @actual_reorder_quantity = naive_reorder_quantity + cover_gap_days_quantity
+    end
+
+    it 'finds correct quantity adjusting for gap days' do
+      @product.actual_reorder_quantity.must_equal @actual_reorder_quantity 
+    end
   end
 
-  it 'calculates actual reorder date for blocked product with gap days' do
-    @product.actual_reorder_quantity.must_equal @actual_reorder_quantity 
+  describe 'when calculating a quantity for a product without blocks' do
+    
+    before do
+      @no_blocks_product = products(:no_blocks)
+      @naive_reorder_quantity = @no_blocks_product.send(:naive_reorder_quantity)
+    end
+
+    it 'finds naive reorder quantiy' do
+      @no_blocks_product.actual_reorder_quantity.must_equal @naive_reorder_quantity
+    end
   end
 end
 

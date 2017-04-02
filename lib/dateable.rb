@@ -26,6 +26,11 @@ module Dateable
     month_names[date.month - 1]  
   end
 
+  def month_number_from(english_month)
+    month_names.index(english_month) + 1
+  end
+
+
   def date_from_file_name(file_name)
     month, year = parse_file_name(file_name)
 
@@ -79,16 +84,13 @@ module Dateable
       file_title_arr.find { |el| month_names.include?(el.capitalize) }
     end
 
-    def get_month_number(file_title_arr)
-      month_names.index(month_name(file_title_arr)) + 1
-    end
 
     def strip_out_year(str)
       str.match(YEAR).to_s
     end
 
     # Assumes valid year now..what about typos?
-    def get_year(file_title_arr)
+    def year_from(file_title_arr)
       year_string = file_title_arr.find { |el| el =~ YEAR }
       strip_out_year(year_string)
     end
@@ -96,6 +98,6 @@ module Dateable
     # File seperated by _ 
     def parse_file_name(file_name, delimiter='_')
       parts = file_name.split(/#{delimiter}/)
-      [ get_month_number(parts), get_year(parts) ]
+      [ month_number_from(month_name(parts)), year_from(parts) ]
     end
 end

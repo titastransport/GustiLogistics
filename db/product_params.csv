@@ -1,0 +1,153 @@
+gusti_id,description,lead_time,travel_time,cover_time,growth_factor,cant_travel_start,cant_travel_end,cant_produce_start,cant_produce_end
+ACE00150,Hazan Vinegar .5l / 6,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00160,Sirk Vinegar Spray 100ml/24,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00161,Sirk Vinegar Bottle 250ml/12,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00200,Demetria Bals EXTRA EXTRA Gold,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00201,Bals Gold Ca dal Non .1l / 1,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00202,Bals Ivory Ca dal Non .1l /1,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00203,Vittorio Bals EXTRA EXTRA Gold,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00204,Bals Saba Ca dal Non .2l/12,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00205,Bals Saba Ca dal Non .5l/6,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00302,San Gia Bals Vinegar Silver.1l,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00303,San Gia Balsamic Golden.1l,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00304,San Gia Balsamic Red.1l,0.5,1,4,1.2,nil,nil,August 1,August 31
+ACE00601,San Gia Balsamic Condiment.25l,0.5,1,4,1.2,nil,nil,August 1,August 31
+CAF01001,S'E - FILTRO 250g / 16,1,1,4,1.2,July 1,August 31,August 1,September 15
+CAF01002,S'E - Espresso 250g / 16,1,1,4,1.2,July 1,August 31,August 1,September 15
+CAF01003,S'E- Bean 250g / 16,1,1,4,1.2,July 1,August 31,August 1,September 15
+CAF01004,S'E DECAF Ground 250g/16,1,1,4,1.2,July 1,August 31,August 1,September 15
+CAF01005,S'E Moka 250g / 16,1,1,4,1.2,July 1,August 31,August 1,September 15
+CAF01100,ChocCoveredCoffeeBeans.250g/20,1,1,4,1.2,July 1,August 31,August 1,September 15
+CER00020,Orzo 500g/20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00021,Farro Perlato  500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00022,Fagioli Purgatorio 500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00023,Chickpeas 500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00024,Lentils Valletta 500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00025,Cicerchia Valletta 500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+CER00026,Borlotti Beans 500g / 20,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+COM00103,Grated Mullet Roe 70g/24,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+COM00105,Mullet Roe Whole 100g / 1,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+COM01704,Fior di Sale 1kg/5,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+COM01705,Salt - 1 Kg(Coarse) / 12,1,1,4,1.2,June 1,August 31,August 1,August 31
+COM01706,Salt - 1kg (Fino) / 12,1,1,4,1.2,June 1,August 31,August 1,August 31
+COM01707,Fiore Di Sale 200g / 24,1,1,4,1.2,June 1,August 31,August 1,August 31
+COM01708,Salt - 25kg (Fino),1,1,4,1.2,June 1,August 31,August 1,August 31
+COM01709,Salt - 25kg (Coarse),1,1,4,1.2,June 1,August 31,August 1,August 31
+COM01851,Salted Anchovies 420g / 8,1,1,4,1.2,June 1,September 15,August 1,August 31
+COM01861,Colatura 100ml / 15,1,1,4,1.2,June 1,September 15,August 1,August 31
+CON00349,Miracolo San Gennaro 530gr/12,1,1,4,1.2,nil,nil,August 1,August 31
+CON00350,San Gennaro Tomatoes 960 gr/6,1,1,4,1.2,nil,nil,August 1,August 31
+CON00353,Pomdorini San Gennaro 530gr/12,1,1,4,1.2,nil,nil,August 1,August 31
+CON00360,terra amore 800gr/12,1,1,4,1.2,nil,nil,August 1,August 31
+CON00361,terra amore 400gr/24,1,1,4,1.2,nil,nil,August 1,August 31
+CON00450,Dani DOP SAN MARZANO 400gr/12,0.5,1,4,1.2,nil,nil,August 1,August 31
+CON00460,Dani DOP SAN MARZANO 800gr/12,0.5,1,4,1.2,nil,nil,August 1,August 31
+CON00470,Dani DOP SAN MARZANO 2.5Kg/6,0.5,1,4,1.2,nil,nil,August 1,August 31
+CON00472,Dani ITALIAN 100% TOM 2.5kg/6,0.5,1,4,1.2,nil,nil,August 1,August 31
+CON00473,Dani ITALIAN 100% TOM 400g/24,0.5,1,4,1.2,nil,nil,August 1,August 31
+CON01900,Carciofini Piccoli 2900g/4,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01901,Small ArtichokeMaida190g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01902,Antipasto Maida 190g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01904,Olive Cilentane Maida190g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01905,Jam Fichi Bianchi Maida220g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01907,Jam Pere Noci Maida220g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01910,Peperoncini Maida 190g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01911,Yellow Tomato Maida680g/12,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01913,Pomodorini Maida 680gr / 12,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01914,Sun Dried Tom Maida190g/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01916,Broccoli Maida 190gr/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01917,Grilld ArtichokesMaida190gr/24,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01920,Broccoli Maida 2900g/4,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01921,Sun DriedTom BIG 2900g/4,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON01924,Olive CilentaneMaida2900g/4,0.75,1,12,1.2,June 1,August 31,August 1,August 31
+CON02001,Salted Capers Jar 90g / 24,1,1,6,1.2,June 1,August 31,August 1,August 31
+CON02401,Salted Capers in Bag 500g/10,1,1,6,1.2,June 1,August 31,August 1,August 31
+CON02405,SaltedCaperberriesBag 500g/10,1,1,6,1.2,June 1,August 31,August 1,August 31
+CON02501,Orange Marmalade by Sicilia/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON02601,Mandarin Marmalade bySicilia/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON02701,Citron Marmalade by Sicilia/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON02801,Bergamot Marmalade bySicilia/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON03101,Almonds Nougat Sicilia 200g/10,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON03501,Pistachio NougatSicilia200g/10,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON03502,Pistachio 250gr,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON03503,Almonds Peeled 250gr /20,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON03505,Almonds Unpeeled 250gr/20,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON03506,Almonds Unpeeled 1kg/10,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON03507,Almonds Peeled BIG 1Kg/10,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON03901,Pink Grapefruit by Sicilia/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON04101,Apricot Extra Jam bySicil/6,1,1,12,1.2,June 1,August 31,August 1,August 31
+CON08396,Yellow Piennolo 1kg/6,1,1,4,1.2,nil,nil,August 1,August 31
+CON08397,Yellow Piennolo 520g/6,1,1,4,1.2,nil,nil,August 1,August 31
+CON08398,Piennolo Vine Tomatoes 1kg/6,1,1,4,1.2,nil,nil,August 1,August 31
+CON08399,Piennolo Vine Tomatoes 520g/6,1,1,4,1.2,nil,nil,August 1,August 31
+CON09001,Stratto Pianogrillo 350g /12,1,1,6,1.2,nil,nil,August 1,August 31
+CON09002,Salsa Pianogrillo 330g/12,1,1,6,1.2,nil,nil,August 1,August 31
+CON09070,Dry Porcini- bag  50g,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON09073,Dry Porcini - bag 500g,1,1,4,1.2,June 1,August 31,August 1,August 31
+CON09100,Green Olives Frat 580ml/12,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+CON09101,Green Olives Frat 1700ml/4,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+CON09102,Green Olives Frate 4700ml/2,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+CON09110,Black Olives Frate 580ml/12,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+CON09111,Black Olives Frate 4700ml/2,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+DOL00032,C-Amaro Choc/HazSpread 280g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+DOL00033,C-Amaro PistachioSpread280g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+DOL00034,C-Amaro AlmondSpread 280g / 12,1,1,6,1.2,June 1,August 31,August 1,August 31
+MIE01301,Millefiori Honey Liccu 200g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+MIE01401,Asphodel Honey Liccu 200g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+MIE01501,Eucalyptus Honey Liccu 200g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+MIE01601,Corbezzolo Honey Liccu 200g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+MIE01602,Cardo Honey Liccu 200g/12,1,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00131,Pianogrillo .5l / 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00132,Pianogrillo - .25 lt tin / 24,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00134,Piano 5lt Tins for Gustiamo/4,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00135,Piano BYB .75 wine bottle,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00212,Il Tratturello .75l / 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00216,Il Tratturello 5ltTins for G/4,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI00217,Il Tratturello BYB .75 winebot,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01101,Antichi Uliveti - .5lt / 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01102,Antichi Uliveti - .25lt / 20,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01550,Cru di Cures 500ml/ 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01553,Cru di Cures 5lt tin $16.3/lt,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01926,Vicopisano  .5l / 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01932,Vicopisano 100ml / 12,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01935,RioGrifone 5lt tin- BIG,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01936,Rio Small Bottle .5lt/6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI01937,RIO GRIFO BYB .75 wine bottle,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI08101,Benza .5l / 6,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI08102,Benza - 5lt tin,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+OLI08105,Benza BYB .75l wine bottle,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+PAS00083,Semola Rimacinata Flour 25kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00084,Semola Rimacinata Flour 5kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00085,Semola Rimacinata Flour 1kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00086,Castelvetrano Flour 25kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00087,Castelvetrano Flour 5kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00088,Castelvetrano Flour 1kg,0.5,1,4,1.2,June 1,August 31,July 1,August 31
+PAS00089,Busiate 500gr/24,1.5,1,6,1.2,June 1,August 31,July 1,August 31
+PAS00090,Busiate 250gr/30,1.5,1,6,1.2,June 1,August 31,July 1,August 31
+PAS00701,Carnaroli Rice Gazzani 1kg/12,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+PAS00801,Vialone NanoRiceGazzani 1kg/12,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+PAS00902,Integrale Gazzani 1kg/12,0.75,1,4,1.2,June 1,August 31,August 1,August 31
+PAS07401,Spaghetti by Martelli 500g/20,1.5,1,6,1.2,June 1,August 31,September 1,September 30
+PAS07421,Spaghettini  by Martelli/20,1.5,1,6,1.2,June 1,August 31,September 1,September 30
+PAS07441,Maccheroni by Martelli/20,1.5,1,6,1.2,June 1,August 31,September 1,September 30
+PAS07442,Fusilli by Martelli 500g/20,1.5,1,6,1.2,June 1,August 31,September 1,September 30
+PAS07461,Penne by Martelli 500g/20,1.5,1,6,1.2,June 1,August 31,September 1,September 30
+PAS10003,Crespi Rice VENERE NERO500g/44,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+PAS10004,Crespi RiceROSSOIntegr500gr/44,0.75,1,6,1.2,June 1,August 31,August 1,August 31
+PAS11997,Faella Spaghettoni 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS11998,Faella Linguine 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS11999,Faella Penne 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12000,Faella Spaghetti 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12001,Faella Bucatini 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12002,Faella Caserecci 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12003,Faella Ziti Tagliati 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12004,Faella Sedani 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12006,Faella Mezzanelli 1kg/10,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12008,Faella Spaghettini 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12020,Faella Mezzi Paccheri 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12021,Faella Calamari 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12032,FaellaTofe 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12033,Faella Genovesine 500g/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12034,Faella CANDELE LUN 1Kg/10,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12035,Faella Gemelli 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15
+PAS12036,Faella Anelli Rigati 500gr/20,1,1,4,1.2,June 1,August 31,August 1,September 15

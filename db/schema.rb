@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170328183447) do
+ActiveRecord::Schema.define(version: 20170402183319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,11 +57,10 @@ ActiveRecord::Schema.define(version: 20170328183447) do
     t.integer  "current"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
-    t.integer  "lead_time"
-    t.integer  "travel_time"
+    t.float    "lead_time"
+    t.integer  "travel_time",        default: 1
     t.integer  "cover_time"
-    t.string   "growth_factor"
-    t.string   "producer"
+    t.string   "growth_factor",      default: "1.2"
     t.date     "cant_travel_start"
     t.date     "cant_travel_end"
     t.date     "cant_produce_end"
@@ -69,7 +68,6 @@ ActiveRecord::Schema.define(version: 20170328183447) do
     t.date     "next_reorder_date"
     t.boolean  "enroute",            default: false
     t.index ["gusti_id"], name: "index_products_on_gusti_id", unique: true, using: :btree
-    t.index ["producer"], name: "index_products_on_producer", using: :btree
   end
 
   create_table "purchase_imports", force: :cascade do |t|

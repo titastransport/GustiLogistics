@@ -28,9 +28,12 @@ class Product < ApplicationRecord
     !!find_by(gusti_id: gusti_id)
   end
 
-  # Actual date, not yday
   def actual_next_reorder_date
-    calculated_date = Date.today + actual_days_till_next_reorder
+    if cant_travel_start.nil?
+      calculated_date = Date.today + naive_days_till_next_reorder     
+    else
+      calculated_date = Date.today + actual_days_till_next_reorder
+    end
 
     # Overdue dates have a reorder date of today, as asked by Gustiamo 
     calculated_date < Date.today ? Date.today : calculated_date
@@ -54,11 +57,11 @@ class Product < ApplicationRecord
   ##################### Used in Product Show View ##########################
 
   def previous_product
-    Product.where(["gusti_id < ? AND LENGTH(producer) > 0", gusti_id]).last
+    Product.where(["gusti_id < ? AND next_reorder_date IS NOT NULL", gusti_id]).last
   end
 
   def next_product
-    Product.where(["gusti_id > ? AND LENGTH(producer) > 0", gusti_id]).first
+    Product.where(["gusti_id > ? AND next_reorder_date IS NOT NULL", gusti_id]).first
   end
 
   private
@@ -69,24 +72,21 @@ class Product < ApplicationRecord
     def expected_growth_percentage
       growth_factor.to_f
     end
+
+    def months_to_days(months)
+      (months * DAYS_IN_MONTH).to_i
+    end
   
     # naive time it takes for product to be ordered and then arrive at Gustiamo
-    def naive_months_from_reorder_till_arrival
-      lead_time + travel_time
+    def naive_days_from_reorder_till_arrival
+      months_to_days(lead_time) + months_to_days(travel_time)
     end
   
     # Sales that occur in waiting period from time of order to receiving the order physically in warehouse
     def naive_waiting_sales
-      naive_months_from_reorder_till_arrival * expected_monthly_sales 
+      naive_days_from_reorder_till_arrival * expected_daily_sales 
     end
    
-    # Adjusts for sales made in waiting period between product reorder and reorder's arrival
-    def inventory_adjusted_for_naive_wait
-      adjusted = current - naive_waiting_sales
-
-      adjusted < 0 ? 0 : adjusted
-    end
-  
     def activities_in_range(start_date, final_date)
       activities.where(date: start_date..final_date)
     end
@@ -98,7 +98,7 @@ class Product < ApplicationRecord
     end
   
     def average_monthly_sales_in_range(start_date, final_date)
-      total_units_sold_in_range(start_date, final_date) / difference_in_months(start_date, final_date)
+      total_units_sold_in_range(start_date, final_date).to_f / difference_in_months(start_date, final_date)
     end
   
     def expected_monthly_sales 
@@ -108,11 +108,18 @@ class Product < ApplicationRecord
     def expected_daily_sales
       expected_monthly_sales / DAYS_IN_MONTH
     end
+
+    # Adjusts for sales made in waiting period between product reorder and reorder's arrival
+    def inventory_adjusted_for_naive_wait
+      adjusted = current - naive_waiting_sales
+
+      adjusted < 0 ? 0 : adjusted
+    end
   
     # number of days till self's inventory will be at 2 months till depletion
     # naive, because does not account for shipping blocks
     def naive_days_till_next_reorder
-      inventory_adjusted_for_naive_wait / expected_daily_sales 
+      inventory_adjusted_for_naive_wait / expected_daily_sales
     end
 
  ################### Blocking Intervals Setups and Helper Methods #################
@@ -121,7 +128,7 @@ class Product < ApplicationRecord
     
     # Subtracts waiting time becuase any orders must be placed before waiting time would start
     def travel_block_start_yday
-      (cant_travel_start - naive_months_from_reorder_till_arrival.months).yday  
+      (cant_travel_start - naive_days_from_reorder_till_arrival.days).yday  
     end
   
     # Assumption: First day to reorder for can't travel block is last day of interval
@@ -135,7 +142,7 @@ class Product < ApplicationRecord
     
     # Subtract time needed to produce product
     def produce_block_start_yday
-      (cant_produce_start - lead_time.months).yday
+      (cant_produce_start - months_to_days(lead_time).days).yday
     end
   
     def produce_block_end_yday
@@ -209,16 +216,16 @@ class Product < ApplicationRecord
     end
 
     # Assumption: next reorder is happening at/around time this is calculated
-    def naive_months_from_next_reorder_to_reorder_after_next
-      (naive_months_from_reorder_till_arrival +
-        (cover_time - naive_months_from_reorder_till_arrival)).months
+    def naive_days_from_next_reorder_to_reorder_after_next
+      (naive_days_from_reorder_till_arrival +
+        (cover_time - naive_days_from_reorder_till_arrival)).months
     end
     
     # Very rough estimate of reorder after next yday
     # Necessary to predict if a product being ordered now will have it's next
     # reorder land in a cant order period and thus to compensate and order more
     def naive_reorder_after_next_yday
-      (actual_next_reorder_date + naive_months_from_next_reorder_to_reorder_after_next).yday
+      (actual_next_reorder_date + naive_days_from_next_reorder_to_reorder_after_next).yday
     end
   
     # Also could change from recursion to while
@@ -237,7 +244,7 @@ class Product < ApplicationRecord
     end
 
     def next_shipment_arrives_date
-      actual_next_reorder_date + naive_months_from_reorder_till_arrival.months
+      actual_next_reorder_date + naive_days_from_reorder_till_arrival.days
     end
   
     # Used in cases where a product is ordered sooner than expected because of
@@ -256,6 +263,8 @@ class Product < ApplicationRecord
 
     # Days between naive and acutal reorder after next dates
     def gap_days(proposed_reorder_after_next_yday)
+      return 0 if cant_travel_start.nil?
+
       adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
         proposed_reorder_after_next_yday
     end
