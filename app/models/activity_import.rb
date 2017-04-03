@@ -27,8 +27,8 @@ class ActivityImport < ApplicationRecord
 
     # If there's been a purchase arrival in UAR, enroute is probably false
     def update_current_product
-      current_product.enroute = false if current_row['Units Purc'] && import_for_current_month?
-      current_product.current = current_row['Qty on Hand'] if import_for_current_month?
+      current_product.enroute = false if current_row['Units Purc'] #&& import_for_current_month?
+      current_product.current = current_row['Qty on Hand'] #if import_for_current_month?
     end
 
     def correct_values_present?
