@@ -30,8 +30,8 @@ class ActivityImport < ApplicationRecord
       current_product.current = current_row['Qty on Hand'].to_i 
     end
 
-    def correct_values_present?
-      !!current_row['Item ID'] && !!current_row['Beg Qty'] && !!current_row['Qty on Hand']
+    def gusti_id_present?
+      !!current_row['Item ID']
     end
 
     def current_activity_params
@@ -48,7 +48,7 @@ class ActivityImport < ApplicationRecord
   
     def process_current_activity
       if (self.current_activity = current_product.activity_for_month?(import_month))  
-        current_activity.update_for_import(current_row['Units Sold'], current_row['Units Purc'])
+        current_activity.update_for_import(current_row['Units Sold'].to_i, current_row['Units Purc'].to_i)
       else
         self.current_activity = create_activity
       end
@@ -75,7 +75,7 @@ class ActivityImport < ApplicationRecord
   
       activities = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        next unless correct_values_present?
+        next unless gusti_id_present?
 
         process_current_row
         current_activity

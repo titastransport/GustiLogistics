@@ -28,7 +28,7 @@ class PurchaseImport < ApplicationRecord
     end
 
     def correct_values_present?
-      current_row['Name'] && current_row['Item ID'] && current_row['Qty'] 
+      !!current_row['Name'] && !!current_row['Item ID'] && !!current_row['Qty'] 
     end
 
     def valid_current_row?
@@ -37,7 +37,7 @@ class PurchaseImport < ApplicationRecord
 
     def current_purchase_attributes
       { 
-        quantity: current_row['Qty'], 
+        quantity: current_row['Qty'].to_i, 
         date: import_month,
         product_id: current_product.id
       }
@@ -58,7 +58,7 @@ class PurchaseImport < ApplicationRecord
       return nil if product_doesnt_exist?
 
       if (self.current_purchase = current_customer.purchase_for_month?(import_month, current_product.id))
-        current_purchase.update_for_import(current_row['Qty'])
+        current_purchase.update_for_import(current_row['Qty'].to_i)
       else
         self.current_purchase = create_purchase
       end
