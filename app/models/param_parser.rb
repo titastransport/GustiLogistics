@@ -1,22 +1,7 @@
 class ParamParser
-  PATH_TO_PARAMS = 'db/product_params.csv'
+  PATH_TO_PARAMS = Rails.root.join('db', 'product_params.csv').to_s 
   include Dateable
   attr_reader :parsed_csv, :params_for_products
-
-  # params_for_products = { 'Item ids' => [all ids] }
-  # params_for_products['Item ids'] => All ids
-
-  # params_to_set = [ 
-  #                   description => list_of_gusti_id
-  #                   lead_time, 
-  #                   travel_time, 
-  #                   cover_time, 
-  #                   growth factor, 
-  #                   cant_travel_start, 
-  #                   cant_travel_end, 
-  #                   cant_produce_start,
-  #                   cant_produce_end 
-  #                 ]
 
   def initialize
     @parsed_csv = CSVParser.new(PATH_TO_PARAMS).parsed

@@ -1,35 +1,40 @@
 <h1>Products</h1>
 
-<div class="center">
-  <table class="center" id="products-index-table">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Description</th>
-        <th>Current</th>
-        <th>Reorder By</th>
-      </tr>
-    </thead>
-  
-    <tbody id="products-index-body">
-      <% @products.each do |product| %>
+<main>
+  <section class="col-md-4">
+    <table class="center" id="products-index-table">
+      <thead>
         <tr>
-          <td><%= product.gusti_id %></td>
-          <td><%= link_to product.description , product %></td>
-          <td><%= product.current %></td>
-          <td><%= product.display_reorder_date %></td>
-          <!--  <td><%= link_to 'Edit', edit_product_path(product) %></td> -->
-          <!--  <td><%= link_to 'Delete', product, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
+          <th>Item</th>
+          <th>Description</th>
+          <th>Current</th>
+          <th>Reorder By</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+    
+      <tbody id="products-index-body">
+        <% @products.each do |product| %>
+          <tr>
+            <td><%= product.gusti_id %></td>
+            <td><%= link_to product.description , product %></td>
+            <td><%= product.current %></td>
+            <td><%= product.display_reorder_date %></td>
+            <!--  <td><%= link_to 'Edit', edit_product_path(product) %></td> -->
+            <!--  <td><%= link_to 'Delete', product, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   <%= will_paginate @products %>
-</div>
+  </section>
+  <section>
+    <h3><%= link_to 'Upload a Unit Activity Report', new_activity_import_path %></h3>
+    <h3><%= link_to 'Upload an Items Sold to Customers Report', new_purchase_import_path %></h3>   
+  </section>
+</main>
 <br>
 
 <!-- <h3 id="add product"><%= link_to 'Add a New Product', new_product_path %></h3> -->
 
 
-<h3><%= link_to 'Upload a Unit Activity Report', new_activity_import_path %></h3>
-<h3><%= link_to 'Upload an Items Sold to Customers Report', new_purchase_import_path %></h3>
+
