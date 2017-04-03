@@ -119,6 +119,8 @@ class Product < ApplicationRecord
     # number of days till self's inventory will be at 2 months till depletion
     # naive, because does not account for shipping blocks
     def naive_days_till_next_reorder
+      return 999999 if expected_daily_sales == 0.0
+
       inventory_adjusted_for_naive_wait / expected_daily_sales
     end
 
