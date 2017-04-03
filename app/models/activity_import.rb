@@ -25,18 +25,13 @@ class ActivityImport < ApplicationRecord
       activity.product.update_reorder_date
     end
 
-    # If there's been a purchase arrival in UAR, enroute is probably false
     def update_current_product
-      current_product.enroute = false if current_row['Units Purc'].to_i #&& import_for_current_month?
-      current_product.current = current_row['Qty on Hand'].to_i #if import_for_current_month?
+      current_product.enroute = false if current_row['Units Purc'].to_i 
+      current_product.current = current_row['Qty on Hand'].to_i 
     end
 
     def correct_values_present?
-      !!current_row['Item ID'] && !!current_row['Beg Qty'].to_i && !!current_row['Qty on Hand'].to_i
-    end
-    
-    def valid_current_row?
-      correct_values_present? 
+      !!current_row['Item ID'] && !!current_row['Beg Qty'] && !!current_row['Qty on Hand']
     end
 
     def current_activity_params
@@ -80,7 +75,7 @@ class ActivityImport < ApplicationRecord
   
       activities = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        next unless valid_current_row?
+        next unless correct_values_present?
 
         process_current_row
         current_activity

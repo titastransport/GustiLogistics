@@ -4,7 +4,6 @@ ruby   '2.4.0'
 
 gem 'activerecord-reset-pk-sequence', '~> 0.2.0'
 gem 'bcrypt',                         '~> 3.1.11'
-gem 'seedbank',                       '~> 0.4.0'
 gem 'chartkick',                      '~> 2.2.1'
 gem 'bootstrap-sass',                 '~>3.3.6'
 gem 'autoprefixer-rails',             '~> 6.7', '>= 6.7.2'
