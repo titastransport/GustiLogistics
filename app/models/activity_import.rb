@@ -22,7 +22,7 @@ class ActivityImport < ApplicationRecord
     def save_all_data_from(activity)
       activity.save!
       activity.product.save! 
-      #activity.product.update_reorder_date
+      activity.product.update_reorder_date
     end
 
     # If there's been a purchase arrival in UAR, enroute is probably false
@@ -32,8 +32,7 @@ class ActivityImport < ApplicationRecord
     end
 
     def correct_values_present?
-      !!(current_row['Item ID'] && current_row['Units Sold'] && 
-          current_row['Beg Qty'] && current_row['Qty on Hand'])
+      !!(current_row['Item ID'] && current_row['Beg Qty'] && current_row['Qty on Hand'])
     end
     
     def valid_current_row?
