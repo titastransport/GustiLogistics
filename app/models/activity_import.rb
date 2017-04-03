@@ -22,7 +22,7 @@ class ActivityImport < ApplicationRecord
     def save_all_data_from(activity)
       activity.save!
       activity.product.save! 
-      activity.product.update_reorder_date
+      #activity.product.update_reorder_date
     end
 
     # If there's been a purchase arrival in UAR, enroute is probably false

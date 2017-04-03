@@ -50,11 +50,7 @@ class ParamParser
       prod.cover_time = params_for_products['cover_times'][index].to_i
       prod.growth_factor = params_for_products['growth_factors'][index]
       set_blocking_periods(prod, index)
-      begin
-        prod.update_reorder_date
-      rescue FloatDomainError
-        binding.pry
-      end
+      prod.update_reorder_date
     end
   end
 

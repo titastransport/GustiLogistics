@@ -6,6 +6,8 @@ module ProductsHelper
       "Ordered"
     elsif next_reorder_date == Date.today 
       "Today!"
+    elsif in_cant_order_interval?(Date.today.yday) 
+      "In cant't order period. Next calculated reorder date: #{next_reorder_date}"
     else
       next_reorder_date
     end

@@ -22,6 +22,7 @@ gem 'pg',                             '~>0.19.0'
 gem 'responders',                     '~> 2.3'
 gem 'pry-rails',                      '~> 0.3.5'
 gem 'newrelic_rpm',                   '~> 4.0', '>= 4.0.0.332'
+gem 'will_paginate',                  '~> 3.1', '>= 3.1.5'
 
 group :test do
   gem 'simplecov',                    '~> 0.13.0'

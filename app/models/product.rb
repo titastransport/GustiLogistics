@@ -98,7 +98,7 @@ class Product < ApplicationRecord
     end
   
     def average_monthly_sales_in_range(start_date, final_date)
-      total_units_sold_in_range(start_date, final_date).to_f / difference_in_months(start_date, final_date)
+      total_units_sold_in_range(start_date, final_date) / difference_in_months(start_date, final_date)
     end
   
     def expected_monthly_sales 
@@ -128,12 +128,20 @@ class Product < ApplicationRecord
     
     # Subtracts waiting time becuase any orders must be placed before waiting time would start
     def travel_block_start_yday
-      (cant_travel_start - naive_days_from_reorder_till_arrival.days).yday  
+      unless cant_travel_start.nil? 
+        (cant_travel_start - naive_days_from_reorder_till_arrival.days).yday  
+      else
+        nil
+      end
     end
   
     # Assumption: First day to reorder for can't travel block is last day of interval
     def travel_block_end_yday
-      (cant_travel_end).yday
+      unless cant_travel_end.nil?
+        (cant_travel_end).yday
+      else
+        nil
+      end
     end
   
     def travel_block_interval
@@ -154,30 +162,27 @@ class Product < ApplicationRecord
     end
   
     def in_cant_order_interval?(proposed_yday)
-      travel_block_interval.include?(proposed_yday) ||
+      unless travel_block_interval.first.nil?
+        travel_block_interval.include?(proposed_yday) ||
         produce_block_interval.include?(proposed_yday)
-    end
-  
-    def before_blocking_interval?(blocking_interval, yday)
-      yday < blocking_interval.first
+      end
     end
 
 ##################### Calculate Reorder Date ##########################
 
-    # Blocking interval either cant_travel or cant_produce as defined above
-    def adjust_yday_for_block(blocking_interval)
-      if before_blocking_interval?(blocking_interval, current_yday_of_year)
-        yday_before_interval(blocking_interval)
-      else
-        yday_after_interval(blocking_interval)
-      end
+    def earliest_interval
+      [ travel_block_start_yday, produce_block_start_yday ].min
     end
-  
+
+    def latest_interval
+      [ travel_block_end_yday, produce_block_end_yday ].max
+    end
+
     def next_reorder_yday_adjusted_for_block(proposed_yday)
-      if travel_block_interval.include?(proposed_yday) 
-        adjust_yday_for_block(travel_block_interval)
-      else 
-        adjust_yday_for_block(produce_block_interval)
+      if current_yday_of_year < earliest_interval #before_blocking_interval?(blocking_interval, current_yday_of_year)
+        earliest_interval - 1
+      else
+        latest_interval + 1
       end
     end
   
@@ -185,8 +190,7 @@ class Product < ApplicationRecord
     # Can probably change to while loop
     def find_next_reorder_yday(proposed_yday)
       if in_cant_order_interval?(proposed_yday)
-        adjusted_proposed_yday = next_reorder_yday_adjusted_for_block(proposed_yday)
-        find_next_reorder_yday(adjusted_proposed_yday)
+        next_reorder_yday_adjusted_for_block(proposed_yday)
       else
         proposed_yday
       end
