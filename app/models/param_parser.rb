@@ -25,9 +25,6 @@ class ParamParser
     prod.cant_produce_end = date_object_for_period(params_for_products['cant_produce_ends'][index])
   end
 
-  # iterarate through each product 
-  # set each param 
-  # save
   def set_params
     Product.all.each_with_index do |prod, index|
       prod.gusti_id = valid_gusti_ids[index]
@@ -37,7 +34,11 @@ class ParamParser
       prod.cover_time = params_for_products['cover_times'][index].to_i
       prod.growth_factor = params_for_products['growth_factors'][index]
       set_blocking_periods(prod, index)
-      prod.update_reorder_date
+      begin
+        prod.update_reorder_date
+      rescue FloatDomainError
+        puts "error"
+      end
     end
   end
 

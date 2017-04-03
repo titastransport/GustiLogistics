@@ -66,6 +66,7 @@ class ActivityImport < ApplicationRecord
   
     def process_current_row
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
+      
       # Activities with products that don't exist don't get processed
       return nil if product_doesnt_exist? 
 
