@@ -1,3 +1,5 @@
+require 'csv_parser'
+
 class ParamParser
   PATH_TO_PARAMS = Rails.root.join('db', 'product_params.csv') 
   include Dateable
