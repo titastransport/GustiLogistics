@@ -19,7 +19,7 @@ namespace :db do
     desc "Upload Unit Activity Reports"
     task :upload_uars => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
-      PATH_TO_DIR = Rails.root.join('db', 'seeds', 'uar', 'unit_activity_reports')
+      PATH_TO_DIR = Rails.root.join('db', 'seeds', 'uar')
       dirs = [ PATH_TO_DIR.join('uars2015'), PATH_TO_DIR.join('uars2016'), PATH_TO_DIR.join('uars2017') ]
       dirs.each do |dir|
         Dir.foreach(dir) do |file|

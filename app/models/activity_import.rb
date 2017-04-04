@@ -20,8 +20,8 @@ class ActivityImport < ApplicationRecord
   private
 
     def save_all_data_from(activity)
-      activity.save!
-      activity.product.save! 
+      activity.save
+      activity.product.save 
       activity.product.update_reorder_date
     end
 
@@ -60,9 +60,8 @@ class ActivityImport < ApplicationRecord
   
     def process_current_row
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
-      
       # Activities with products that don't exist don't get processed
-      return nil if product_doesnt_exist? 
+      return Activity.create(product_id: nil) if product_doesnt_exist? 
 
       process_current_activity 
       update_current_product

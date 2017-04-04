@@ -53,7 +53,8 @@ class PurchaseImport < ApplicationRecord
 
     def process_current_row
       self.current_customer = Customer.find_or_create_by(name: current_row['Name'])
-      self.current_product = Product.find_or_create_by(gusti_id: current_row['Item ID']) 
+      self.current_product = Product.find_by(gusti_id: current_row['Item ID']) 
+
       # Purchases with products that don't exist don't get processed
       return nil if product_doesnt_exist?
 
