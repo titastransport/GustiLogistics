@@ -6,7 +6,7 @@ describe ActivityImport, '.save' do
 
     before do 
       file = File.new(Rails.root.join('test/fixtures/files/UAR_March_2017_basic_test.xlsx'))
-      @activity_import = ActivityImport.new(file: file)
+      @activity_import_new = ActivityImport.new(file: file)
     end
 
     after do
@@ -15,15 +15,29 @@ describe ActivityImport, '.save' do
 
     it "creates new activities for existing product" do
       assert_difference 'Activity.count', 2 do
-        @activity_import.save 
+        @activity_import_new.save 
       end
     end
 
-    it "doesn't create new activities that already exist" do
-      @activity_import.save 
+    describe "when activities already exist" do
 
-      assert_no_difference 'Activity.count' do 
-        @activity_import.save 
+      before do
+        file = File.new(Rails.root.join('test/fixtures/files/UAR_March_2017_update_test.xlsx'))
+        @activity_import_update = ActivityImport.new(file: file)
+      end
+
+      it "doesn't create new activities" do
+        @activity_import_new.save 
+
+        assert_no_difference 'Activity.count' do 
+          @activity_import_update.save 
+        end
+      end
+
+      it "updates activities that already exist for a given month and product" do
+        assert_difference 'Activity.first.sold', 100 do 
+          @activity_import_update.save 
+        end
       end
     end
   end

@@ -11,8 +11,8 @@ class Product < ApplicationRecord
   has_many :customers, through: :customer_purchase_orders
 
   validates :gusti_id, presence: true, uniqueness: { case_sensitive: false } 
-  #validates :current, numericality: { only_integer: true }
-  #validates :cover_time, numericality: { only_integer: true }
+  validates :current, numericality: { only_integer: true }
+  validates :cover_time, numericality: { only_integer: true }
 
   scope :select_setup_products, -> { where('next_reorder_date IS NOT NULL') }
 
