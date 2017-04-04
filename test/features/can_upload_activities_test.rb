@@ -40,11 +40,11 @@ feature "CanUploadActivities" do
   end
 
   scenario "Gustiamo attempts to upload a file with a non-existent product" do
-    file = Rails.root.join('test/fixtures/files/UAR_March_2017_update_test.xlsx')
+    file = Rails.root.join('test/fixtures/files/UAR_March_2017_nonexistent_product_test.xlsx')
     find('#activity_import_file').set(file)
 
     click_button "Import"
     
-    page.must_have_content "File didn't upload"
+    page.must_have_content "errors prohibited this import"
   end
 end

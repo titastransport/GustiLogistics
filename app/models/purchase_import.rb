@@ -51,18 +51,21 @@ class PurchaseImport < ApplicationRecord
       current_product.nil?
     end
 
-    def process_current_row
-      self.current_customer = Customer.find_or_create_by(name: current_row['Name'])
-      self.current_product = Product.find_by(gusti_id: current_row['Item ID']) 
-
-      # Purchases with products that don't exist don't get processed
-      return nil if product_doesnt_exist?
-
-      if (self.current_purchase = current_customer.purchase_for_month?(import_month, current_product.id))
+    def process_current_purchase
+      if product_doesnt_exist?
+        self.current_purchase = current_customer.customer_purchase_orders.build(product_id: nil, quantity: current_row['Qty'].to_i, date: import_month)
+      elsif (self.current_purchase = current_customer.purchase_for_month?(import_month, current_product.id))
         current_purchase.update_for_import(current_row['Qty'].to_i)
       else
         self.current_purchase = create_purchase
       end
+    end
+
+    def process_current_row
+      self.current_customer = Customer.find_or_create_by(name: current_row['Name'])
+      self.current_product = Product.find_by(gusti_id: current_row['Item ID']) 
+
+      process_current_purchase
     end
 
     def load_imported_purchases

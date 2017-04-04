@@ -38,4 +38,13 @@ feature "CanUploadPurchases" do
     
     page.must_have_content 'Please save file in the following format: Type_Month_Year.xlsx, i.e., UAR_July_2015.xlsx'
   end
+
+  scenario "Gustiamo attempts to upload a file with a non-existent product" do
+    file = Rails.root.join('test/fixtures/files/ISTC_March_2017_nonexistent_product_test.xlsx')
+    find('#purchase_import_file').set(file)
+
+    click_button "Import"
+    
+    page.must_have_content "errors prohibited this import"
+  end
 end

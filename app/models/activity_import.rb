@@ -31,7 +31,7 @@ class ActivityImport < ApplicationRecord
     end
 
     def gusti_id_present?
-      !!current_row['Item ID']
+      !current_row['Item ID'].to_s.empty?
     end
 
     def current_activity_params
@@ -45,26 +45,26 @@ class ActivityImport < ApplicationRecord
     def create_activity
       current_product.activities.build(current_activity_params)
     end
-  
-    def process_current_activity
-      if (self.current_activity = current_product.activity_for_month?(import_month))  
-        current_activity.update_for_import(current_row['Units Sold'].to_i, current_row['Units Purc'].to_i)
-      else
-        self.current_activity = create_activity
-      end
-    end
 
     def product_doesnt_exist?
       current_product.nil?
     end
   
+    def process_current_activity
+      if product_doesnt_exist?
+        self.current_activity = Activity.new(current_activity_params)
+      elsif (self.current_activity = current_product.activity_for_month?(import_month))  
+        current_activity.update_for_import(current_row['Units Sold'].to_i, current_row['Units Purc'].to_i)
+      else
+        self.current_activity = create_activity
+      end
+    end
+  
     def process_current_row
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
-      # Activities with products that don't exist don't get processed
-      return Activity.create(product_id: nil) if product_doesnt_exist? 
 
       process_current_activity 
-      update_current_product
+      update_current_product unless product_doesnt_exist?
     end
   
     # Hash[[]].transpose: pairs header to corresponding rows to create hash
