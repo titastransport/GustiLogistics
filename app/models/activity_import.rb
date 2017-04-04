@@ -20,8 +20,8 @@ class ActivityImport < ApplicationRecord
   private
 
     def save_all_data_from(activity)
-      activity.save!
-      activity.product.save! 
+      activity.save
+      activity.product.save 
       activity.product.update_reorder_date
     end
 
