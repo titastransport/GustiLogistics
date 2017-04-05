@@ -1,8 +1,8 @@
 <h1>Products</h1>
 
-<main>
-  <section class="center">
-    <table class="center" id="products-index-table">
+<main class="row">
+  <section>
+    <table id="products-list">
       <thead>
         <tr>
           <th>Item</th>
@@ -11,16 +11,8 @@
           <th>Reorder By</th>
         </tr>
       </thead>
-    
       <tbody id="products-index-body">
-        <% @products.each do |product| %>
-          <tr>
-            <td><%= product.gusti_id %></td>
-            <td><%= link_to product.description , product %></td>
-            <td><%= product.current %></td>
-            <td><%= product.display_reorder_date %></td>
-          </tr>
-        <% end %>
+        <%= render 'products', collection: @products %>
       </tbody>
     </table>
   <div class="apple_pagination">
@@ -28,6 +20,13 @@
   </div>
   </section>
   <section>
+    <%= form_for :product, url: products_path, method: :get, html: { id: "products_search" }, remote: true do |f| %>
+      <p>
+        Search Products
+        <%= f.text_field :term, name: :term, value: params[:term] %>
+        <%= f.submit :search, name: nil %>
+      </p>
+    <% end %>
   </section>
 </main>
 

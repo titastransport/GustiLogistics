@@ -15,6 +15,18 @@ class Product < ApplicationRecord
 
   scope :select_setup_products, -> { where('next_reorder_date IS NOT NULL') }
 
+  def self.search(term)
+    if term
+      where('LOWER(description) LIKE LOWER(:search_term)', search_term: "%#{term}%")
+    else
+      all
+    end
+  end
+
+  def self.existing_gusti_id?(gusti_id)
+    !!find_by(gusti_id: gusti_id)
+  end
+
   def activity_for_month?(date)
     activities.find_by(date: date) 
   end
@@ -23,9 +35,6 @@ class Product < ApplicationRecord
     update_attribute(:next_reorder_date, actual_next_reorder_date)
   end
 
-  def self.existing_gusti_id?(gusti_id)
-    !!find_by(gusti_id: gusti_id)
-  end
 
   def actual_next_reorder_date
     if cant_travel_start.nil?

@@ -4,7 +4,12 @@ class ProductsController < ApplicationController
   before_action :logged_in_user
 
   def index
-    @products = Product.select_setup_products.paginate(page: params[:page])
+    @products = Product.search(params[:term]).paginate(page: params[:page])
+
+    respond_to do |format|
+      format.js
+      format.html
+    end
   end
 
   def show
@@ -35,6 +40,6 @@ class ProductsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:description, :current, :cover_time, :growth_factor, :enroute)
+      params.require(:product).permit(:description, :current, :cover_time, :growth_factor, :enroute, :term)
     end
 end
