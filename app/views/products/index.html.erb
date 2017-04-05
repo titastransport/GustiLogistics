@@ -23,7 +23,9 @@
         <% end %>
       </tbody>
     </table>
-  <%= will_paginate @products %>
+  <div class="apple_pagination">
+    <%= will_paginate @posts, :container => false %>
+  </div>
   </section>
   <section>
   </section>
