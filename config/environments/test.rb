@@ -46,5 +46,3 @@ Rails.application.configure do
     Timecop.travel(d)
   end
 end
-
-

@@ -11,8 +11,7 @@ class Product < ApplicationRecord
   has_many :customers, through: :customer_purchase_orders
 
   validates :gusti_id, presence: true, uniqueness: { case_sensitive: false } 
-  validates :current, numericality: { only_integer: true }
-  validates :cover_time, numericality: { only_integer: true }
+  validates :description, presence: true
 
   scope :select_setup_products, -> { where('next_reorder_date IS NOT NULL') }
 
@@ -53,8 +52,6 @@ class Product < ApplicationRecord
     customer_totals['Retail'] = find_retail_total_in_range(start_date, final_date, customer_totals)
     sort_customers(customer_totals)
   end
-
-  ##################### Used in Product Show View ##########################
 
   def previous_product
     Product.where(["gusti_id < ? AND next_reorder_date IS NOT NULL", gusti_id]).last

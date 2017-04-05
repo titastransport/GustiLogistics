@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe ActivityImport, '.save' do
+describe ActivityImport, '#save' do
 
   describe 'when given a valid file' do
 

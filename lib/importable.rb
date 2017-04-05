@@ -1,7 +1,5 @@
-require 'roo'
-include Dateable
-
 module Importable
+  include Dateable
 
   # Before action
   def check_valid_file_present
