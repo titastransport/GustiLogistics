@@ -11,7 +11,7 @@
   <section class="col-md-3">
     <%= form_for :product, url: products_path, method: :get, html: { id: "products_search" }, remote: true do |f| %>
       <p>
-      <h3>Search Products</h3>
+        <%= f.label :term, 'Search Products' %>
         <%= f.text_field :term, name: :term, value: params[:term] %>
         <%= f.submit :search, name: nil %>
       </p>
