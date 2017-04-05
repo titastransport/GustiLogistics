@@ -5,7 +5,14 @@
 	    <ul class="nav navbar-nav navbar-right" id="header-tags">
         <% if logged_in? %>
           <li><%= link_to "Calendar", '/calendar' %></a></li>
-          <li><%= link_to "Products List", products_path %></li>
+          <li><%= link_to "Products", products_path %></li>
+          <li class="drowdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Uploads <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/activity_imports/new">Unit Activity Report</a></li>
+              <li><a href="/purchase_imports/new">Items Sold to Customer</a></li>
+            </ul>
+          </li>
         </ul>
         <% else %>
 	        <li><%= link_to "Home", root_path %></li>
