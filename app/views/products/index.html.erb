@@ -12,7 +12,7 @@
     <%= form_for :product, url: products_path, method: :get, html: { id: "products_search" }, remote: true do |f| %>
       <p>
         <%= f.label :term, 'Search Products' %>
-        <%= f.text_field :term, name: :term, value: params[:term] %>
+        <%= f.text_field :term, name: :term, value: params[:term], placeholder: 'Description' %>
         <%= f.submit :search, name: nil %>
       </p>
     <% end %>
