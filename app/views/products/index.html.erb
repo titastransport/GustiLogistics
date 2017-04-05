@@ -3,17 +3,7 @@
 <main class="row">
   <section>
     <table class="center index-table" id="products-list">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Description</th>
-          <th>Current</th>
-          <th>Reorder By</th>
-        </tr>
-      </thead>
-      <tbody id="products-index-body">
-        <%= render 'products', collection: @products %>
-      </tbody>
+      <%= render 'products', collection: @products %>
     </table>
   <div class="apple_pagination">
     <%= will_paginate @products, :container => false %>

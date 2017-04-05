@@ -1,8 +1,18 @@
-<% @products.each do |product| %>
+<thead
   <tr>
-    <td><%= product.gusti_id %></td>
-    <td><%= link_to product.description , product %></td>
-    <td><%= product.current %></td>
-    <td><%= product.display_reorder_date %></td>
+    <th>Item</th>
+    <th>Description</th>
+    <th>Current</th>
+    <th>Reorder By</th>
   </tr>
-<% end %>
+</thead>
+<tbody id="products-index-body">
+  <% @products.each do |product| %>
+    <tr>
+      <td><%= product.gusti_id %></td>
+      <td><%= link_to product.description , product %></td>
+      <td><%= product.current %></td>
+      <td><%= product.display_reorder_date %></td>
+    </tr>
+  <% end %>
+</tbody>
