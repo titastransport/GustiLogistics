@@ -25,7 +25,7 @@ Upon login the app displays:
 
 Note: Not all suppliers and products have been uploaded yet.
 
-![alt text](/sample_images/ProductsIndexPage.png "Products List")
+![alt text](/sample_images/ProductsIndex.png "Products List")
 
 Two **spreadsheet uploaders** can be seen at the bottom-left of the above page which:
 * Are parsed as an argument from the [params hash](https://gorails.com/episodes/the-params-hash). 
