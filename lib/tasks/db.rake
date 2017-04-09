@@ -16,8 +16,8 @@ namespace :db do
   end
 
   namespace :seed do
-    desc "Upload Unit Activity Reports"
-    task :upload_uars => :environment do
+    desc "Import Unit Activity Reports"
+    task :import_uars => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
       PATH_TO_DIR = Rails.root.join('db', 'seeds', 'uar')
       dirs = [ PATH_TO_DIR.join('uars2015'), PATH_TO_DIR.join('uars2016'), PATH_TO_DIR.join('uars2017') ]
@@ -30,8 +30,8 @@ namespace :db do
       end
     end
 
-    desc "Upload Items Sold to Customers reports" 
-    task :upload_istcs => :environment do
+    desc "Import Items Sold to Customers reports" 
+    task :import_istcs => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
       PATH_TO_DIR = Rails.root.join('db', 'seeds', 'items_sold')
       dirs = [ PATH_TO_DIR.join('purchases_2015'), PATH_TO_DIR.join('purchases_2016'), PATH_TO_DIR.join('purchases_2017') ]
@@ -42,6 +42,11 @@ namespace :db do
           PurchaseImport.new(file: file).save
         end
       end
+    end
+
+    desc "Import Products"
+    task :import_products => :environment do
+      Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
     end
   end
 end

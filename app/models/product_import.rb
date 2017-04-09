@@ -20,18 +20,16 @@ class ProductImport
 
   private
 
-    def display_errors(invalid_products)
-      invalid_products.each_with_index do |prod, index|
-        prod.errors.full_messages.each do |message|
-          puts "Row: #{index}, error: #{message}"
-        end
-      end
+    def find_params
+      parsed_csv.map { |row| row.to_h }
     end
 
-    def find_params
-      parsed_csv.map do |row|
-        row.to_h
-      end
+    def date_object_for_period(date_str)
+      return nil if date_str == 'nil'
+
+      month = date_str.match(/[a-z]+/i).to_s 
+      day = date_str.match(/\d+/).to_s.to_i
+      Date.new(Date.today.year, month_number_from(month), day)
     end
 
     def product_params_from(current_params)
@@ -49,14 +47,6 @@ class ProductImport
       }
     end
 
-    def date_object_for_period(date_str)
-      return nil if date_str == 'nil'
-
-      month = date_str.match(/[a-z]+/i).to_s 
-      day = date_str.match(/\d+/).to_s.to_i
-      Date.new(Date.today.year, month_number_from(month), day)
-    end
-
     def import_products
       products_params.map do |current_params|
         if (existing_product = Product.find_by(gusti_id: current_params['gusti_id'].upcase))
@@ -64,6 +54,14 @@ class ProductImport
           existing_product
         else
           Product.new(product_params_from(current_params))
+        end
+      end
+    end
+
+    def display_errors(invalid_products)
+      invalid_products.each_with_index do |prod, index|
+        prod.errors.full_messages.each do |message|
+          puts "Row: #{index}, error: #{message}"
         end
       end
     end

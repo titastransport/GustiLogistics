@@ -35,7 +35,6 @@ class Product < ApplicationRecord
     update_attribute(:next_reorder_date, actual_next_reorder_date)
   end
 
-
   def actual_next_reorder_date
     if cant_travel_start.nil?
       calculated_date = Date.today + naive_days_till_next_reorder     
