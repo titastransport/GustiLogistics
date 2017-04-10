@@ -17,7 +17,7 @@ namespace :db do
 
   namespace :seed do
     desc "Import Unit Activity Reports"
-    task :activities => :environment do
+    task :activity => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
 
       uars = Dir.glob("#{Rails.root}/db/seeds/uar/**/*.xlsx")
@@ -25,7 +25,7 @@ namespace :db do
     end
 
     desc "Import Items Sold to Customers reports" 
-    task :purchases => :environment do
+    task :purchase => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
 
       itscs = Dir.glob("#{Rails.root}/db/seeds/items_sold/**/*.xlsx")
@@ -33,7 +33,7 @@ namespace :db do
     end
 
     desc "Import Products along with parameters from csv"
-    task :products => :environment do
+    task :product => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
 
       path_to_products = Rails.root.join('db', 'seeds', 'products', 'products.csv') 
