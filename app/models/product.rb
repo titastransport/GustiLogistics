@@ -5,7 +5,6 @@ class Product < ApplicationRecord
   before_save { gusti_id.upcase! }
   default_scope { order(:gusti_id) }
 
-  has_many :reorders, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :customer_purchase_orders, dependent: :destroy
   has_many :customers, through: :customer_purchase_orders

@@ -17,36 +17,27 @@ namespace :db do
 
   namespace :seed do
     desc "Import Unit Activity Reports"
-    task :import_uars => :environment do
+    task :activities => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
-      PATH_TO_DIR = Rails.root.join('db', 'seeds', 'uar')
-      dirs = [ PATH_TO_DIR.join('uars2015'), PATH_TO_DIR.join('uars2016'), PATH_TO_DIR.join('uars2017') ]
-      dirs.each do |dir|
-        Dir.foreach(dir) do |file|
-          next if file.start_with? '.'
-          file = "#{dir}/#{file}"
-          ActivityImport.new(file: file).save
-        end
-      end
+
+      uars = Dir.glob("#{Rails.root}/db/seeds/uar/**/*.xlsx")
+      uars.each { |file| ActivityImport.new(file: file).save }
     end
 
     desc "Import Items Sold to Customers reports" 
-    task :import_istcs => :environment do
+    task :purchases => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
-      PATH_TO_DIR = Rails.root.join('db', 'seeds', 'items_sold')
-      dirs = [ PATH_TO_DIR.join('purchases_2015'), PATH_TO_DIR.join('purchases_2016'), PATH_TO_DIR.join('purchases_2017') ]
-      dirs.each do |dir|
-        Dir.foreach(dir) do |file|
-          next if file.start_with? '.'
-          file = "#{dir}/#{file}"
-          PurchaseImport.new(file: file).save
-        end
-      end
+
+      itscs = Dir.glob("#{Rails.root}/db/seeds/items_sold/**/*.xlsx")
+      itscs.each { |file| PurchaseImport.new(file: file).save }
     end
 
-    desc "Import Products"
-    task :import_products => :environment do
+    desc "Import Products along with parameters from csv"
+    task :products => :environment do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
+
+      path_to_products = Rails.root.join('db', 'seeds', 'products', 'products.csv') 
+      ProductImport.new(path_to_products).save
     end
   end
 end

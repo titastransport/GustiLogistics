@@ -1,10 +1,9 @@
 class ProductImport
-  PATH_TO_PRODUCTS_PARAMS = Rails.root.join('db', 'products.csv') 
   include Dateable
   attr_reader :parsed_csv, :products_params
 
-  def initialize(path_to_products_params = PATH_TO_PRODUCTS_PARAMS)
-    @parsed_csv = CSVParser.new(path_to_products_params).parsed
+  def initialize(file)
+    @parsed_csv = CSVParser.new(file).parsed
     @products_params = find_params
   end
 
