@@ -62,8 +62,8 @@ class ActivityImport < ApplicationRecord
   
     def process_current_row
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
-      
-       #used for initial upload of product 
+     
+       # Products not added through activity import
        return nil if current_product.nil?
 
       process_current_activity 
