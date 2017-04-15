@@ -1,1 +1,2 @@
-$('#products-list').html("<%= escape_javascript(render('products')) %>")
+$('.table').html("<%= escape_javascript(render('products')) %>");
+$('.apple_pagination').html("<%= escape_javascript(will_paginate @products, :container => false) %>");

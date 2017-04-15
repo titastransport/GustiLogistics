@@ -41,25 +41,7 @@ textarea {
 
 /* Products Index Page */
 
-.index-table {
-  border-spacing: 5px;
-  border-collapse: separate;
-  td, ul {
-    text-align: left;
-    padding-left: 0px;
-    padding-right: 0px;
-    a {
-      text-decoration: none;
-      color: black;
-    }
-    a:link, a:visited {
-      color: black;
-    }
-    a:hover {
-    color: white;
-    }
-  }
-}
+tbody tr, a { cursor: pointer; }
 
 /* typography */
 
