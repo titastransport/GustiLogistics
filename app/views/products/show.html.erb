@@ -1,9 +1,6 @@
-<div class="center" id="product-page-title">
+<header class="center" id="product-page-title">
   <h1 class="center" id="product-description"><strong><%= @product.description %></strong></h1>
   <%= render 'enroute_form' %>
-</div>
-
-<div class="center" id="product-header">
   <h4>
     <strong>Item ID:</strong>
     <%= @product.gusti_id %>
@@ -24,7 +21,7 @@
     <strong>Reorder Quantity:</strong>
     <%= "#{@product.actual_reorder_quantity} units" %>
   </h4>
-</div>
+</header>
 
 <h4 class="center"><strong>Customer Sales in Last 12 Full Months</strong></h4>
 

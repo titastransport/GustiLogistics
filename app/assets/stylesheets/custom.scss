@@ -86,17 +86,27 @@ p {
 
 /* Product Show Page */
 
-#product-top-table {
-  th {
+#product-page-title {
+  width: 100%;
+  padding-bottom: 30px;
+  #product-description {
+    padding: 20px 0 5px 0;
+    margin: 0;
+    width: 100%;
+  }  
+  #enroute-form {
+    margin: auto;
+    position: absolute;
+    right: 20px;
+    top: 100px;
+    .btn, .btn-primary { 
+      margin: 0;
+    } 
+  } 
+  h4 {
+    width: 38%;
     text-align: left;
   }
-  th, td {
-    padding: 0px;
-  }
-}
-
-#header-tags {
-  font-size: 20px
 }
 
 #product-header {
@@ -114,7 +124,18 @@ p {
   }
 }
 
- /* Product Show Tables */
+#product-top-table {
+  th {
+    text-align: left;
+  }
+  th, td {
+    padding: 0px;
+  }
+}
+
+#header-tags {
+  font-size: 20px
+}
 
 #top-customers-row {
   display: flex;
@@ -163,7 +184,6 @@ p {
     flex-direction: row;
   }
 }
-
 
 /* miscellaneous */
 
@@ -233,32 +253,6 @@ footer {
 	    margin-left: 15px;
 	  }
   }
-}
-
-/* Enroute Form */
-
-#product-page-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 100%;
-  #product-description {
-    margin: auto;
-    margin-left: 13%;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    width: 100%;
-  }  
-  #enroute-form {
-    margin: auto;
-    .btn, .btn-primary { 
-      width: 100%;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-    } 
-  } 
 }
 
 /* Search Form */
