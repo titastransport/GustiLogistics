@@ -41,7 +41,11 @@ textarea {
 
 /* Products Index Page */
 
-tbody tr, a { cursor: pointer; }
+#products-table { 
+  tbody, a {
+    cursor: pointer; 
+  }
+}
 
 /* typography */
 
@@ -88,7 +92,7 @@ p {
 
 #product-page-title {
   width: 100%;
-  padding-bottom: 30px;
+  padding-bottom: 15px;
   #product-description {
     padding: 20px 0 5px 0;
     margin: 0;
@@ -103,25 +107,11 @@ p {
       margin: 0;
     } 
   } 
-  h4 {
-    width: 38%;
-    text-align: left;
-  }
 }
 
-#product-header {
-  width: 15%;
-  padding: 0;
-  margin-bottom: 30px;
-  h4 {
-    text-align: left;
-    margin: auto;
-    padding-bottom: 3%;
-    width: 25em;
-  }
-  :last-child {
-    margin-bottom: 12px;
-  }
+#product-stats {
+  width: 100%;
+  margin: 0 42% 2% 42%;
 }
 
 #product-top-table {
