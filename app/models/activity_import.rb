@@ -30,7 +30,7 @@ class ActivityImport < ApplicationRecord
       current_product.current = current_row['Qty on Hand'].to_i 
     end
 
-    def gusti_id_present?
+    def valid_current_row?
       !current_row['Item ID'].to_s.empty?
     end
 
@@ -77,7 +77,7 @@ class ActivityImport < ApplicationRecord
   
       activities = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
-        next unless gusti_id_present?
+        next unless valid_current_row?
 
         process_current_row
         current_activity
