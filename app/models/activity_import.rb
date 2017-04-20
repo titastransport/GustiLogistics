@@ -64,7 +64,7 @@ class ActivityImport < ApplicationRecord
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
      
        # Products not added through activity import
-       return nil if current_product.nil?
+       #return nil if current_product.nil?
 
       process_current_activity 
       update_current_product unless product_doesnt_exist?
@@ -72,7 +72,7 @@ class ActivityImport < ApplicationRecord
   
     # Hash[[]].transpose: pairs header to corresponding rows to create hash
     def load_imported_activities
-      spreadsheet = open_spreadsheet
+      spreadsheet = open_spreadsheet(file)
       header = spreadsheet.row(1)
   
       activities = (2..spreadsheet.last_row).map do |i|

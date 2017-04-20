@@ -66,13 +66,13 @@ class PurchaseImport < ApplicationRecord
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])  
       
       # Products not added through purchase import
-      return nil if current_product.nil?
+      #return nil if current_product.nil?
 
       process_current_purchase
     end
 
     def load_imported_purchases
-      spreadsheet = open_spreadsheet
+      spreadsheet = open_spreadsheet(file)
       header = spreadsheet.row(1)
 
       purchases = (2..spreadsheet.last_row).map do |i|

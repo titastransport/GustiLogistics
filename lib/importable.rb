@@ -1,7 +1,7 @@
 module Importable
   include Dateable
 
-  # Before action
+  # Before import action
   def check_valid_file_present
     import_controller = params[:controller].singularize.to_sym
     
@@ -13,21 +13,18 @@ module Importable
   end
 
   def check_valid_filename
+    file = import_params[:file].original_filename
+
     begin
-      date_from_file_name(import_params[:file].original_filename) 
+      date_from_file_name(file) 
     rescue 
-      redirect_to "/#{params[:controller]}", alert: "Please save file in the following format: Type_Month_Year.xlsx, i.e., UAR_July_2015.xlsx"
+      redirect_to "/#{params[:controller]}", alert: "Please save file in the following format: Type_Month_Year.xlsx, i.e., UAR_July_2015.xlsx or ISTC_July_2015"
     end
   end
 
-  def file_extname
-    File.extname(import_params[:file].original_filename)
-  end
-
   # Filename method currently used for both Action Dispatch object for file
-  # upload and rake db:seed tasks, and test
-  # Ok checking for string since String and File are core Ruby class and most likely
-  # won't change too much
+  # upload and for simple file object in import model tests
+  # Relying String and File, core classes, probably ok since unlikely to change much
   def filename
     case file
     when String, File
@@ -37,7 +34,7 @@ module Importable
     end
   end
 
-  def open_spreadsheet
+  def open_spreadsheet(file)
     Roo::Spreadsheet.open(file)
   end
 
@@ -52,4 +49,10 @@ module Importable
   def import_month
     @import_month ||= date_from_file_name(filename)
   end
+
+  private
+
+    def file_extname
+      File.extname(import_params[:file].original_filename)
+    end
 end
