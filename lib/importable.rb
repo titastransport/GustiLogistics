@@ -16,7 +16,7 @@ module Importable
     file = import_params[:file].original_filename
 
     begin
-      date_from_file_name(file) 
+      date_from_filename(file) 
     rescue 
       redirect_to "/#{params[:controller]}", alert: "Please save file in the following format: Type_Month_Year.xlsx, i.e., UAR_July_2015.xlsx or ISTC_July_2015"
     end
@@ -47,7 +47,7 @@ module Importable
   end
 
   def import_month
-    @import_month ||= date_from_file_name(filename)
+    @import_month ||= date_from_filename(filename)
   end
 
   private

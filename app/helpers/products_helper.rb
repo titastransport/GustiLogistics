@@ -18,7 +18,7 @@ module ProductsHelper
   end
 
   def display_human_friendly_month_range(date1, date2)
-    "#{english_month_name(date1)} #{date1.year} - #{english_month_name(date2)} #{date2.year}"
+    "#{english_month_name_from(date1)} #{date1.year} - #{english_month_name_from(date2)} #{date2.year}"
   end
 
   def last_six_full_months

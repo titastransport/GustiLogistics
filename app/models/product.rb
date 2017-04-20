@@ -70,15 +70,11 @@ class Product < ApplicationRecord
 
   private
     
-#################### Reorder In/Date Helpers #####################
+    #################### Reorder In/Date Helpers #####################
 
     # stored as string, so needs to be converted to float
     def expected_growth_percentage
       growth_factor.to_f
-    end
-
-    def months_to_days(months)
-      (months * DAYS_IN_MONTH).to_i
     end
   
     # naive time it takes for product to be ordered and then arrive at Gustiamo
@@ -123,12 +119,13 @@ class Product < ApplicationRecord
     # number of days till self's inventory will be at 2 months till depletion
     # naive, because does not account for shipping blocks
     def naive_days_till_next_reorder
-      return 999999 if expected_daily_sales == 0.0
+      # For products with no predicability based on extremely low sales
+      return 99999 if expected_daily_sales == 0.0
 
       inventory_adjusted_for_naive_wait / expected_daily_sales
     end
 
- ################### Blocking Intervals Setups and Helper Methods #################
+    ################### Blocking Intervals Setups and Helper Methods #################
  
     # Ydays used because year is irrelevant 
     
@@ -141,7 +138,6 @@ class Product < ApplicationRecord
       end
     end
   
-    # Assumption: First day to reorder for can't travel block is last day of interval
     def travel_block_end_yday
       unless cant_travel_end.nil?
         (cant_travel_end).yday
@@ -169,7 +165,8 @@ class Product < ApplicationRecord
   
     def in_cant_order_interval?(proposed_yday)
       unless travel_block_interval.first.nil?
-        travel_block_interval.include?(proposed_yday) ||
+        travel_block_interval.include?(proposed_yday) || produce_block_interval.include?(proposed_yday)
+      else
         produce_block_interval.include?(proposed_yday)
       end
     end
@@ -184,19 +181,17 @@ class Product < ApplicationRecord
       [ travel_block_end_yday, produce_block_end_yday ].max
     end
 
-    def next_reorder_yday_adjusted_for_block(proposed_yday)
-      if current_yday_of_year < earliest_interval #before_blocking_interval?(blocking_interval, current_yday_of_year)
+    def next_reorder_yday_adjusted_for_block
+      if current_yday_of_year < earliest_interval
         earliest_interval - 1
       else
         latest_interval + 1
       end
     end
   
-    # Recurses until proposed_yday not cant order interval
-    # Can probably change to while loop
     def find_next_reorder_yday(proposed_yday)
       if in_cant_order_interval?(proposed_yday)
-        next_reorder_yday_adjusted_for_block(proposed_yday)
+        next_reorder_yday_adjusted_for_block
       else
         proposed_yday
       end
@@ -207,14 +202,15 @@ class Product < ApplicationRecord
     end
   
     def naive_days_till_next_reorder_yday 
-      find_next_reorder_yday(naive_next_reorder_date.yday) - current_yday_of_year 
+      (find_next_reorder_yday(naive_next_reorder_date.yday) - current_yday_of_year) % DAYS_IN_YEAR
     end
 
+    # Accounts for future year 
     def actual_days_till_next_reorder
       naive_days_till_next_reorder_yday + years_in_future(naive_next_reorder_date)
     end
 
-###################### Reorder Quantity ##########################
+    ###################### Reorder Quantity ##########################
     
     # Naive because doesn't account for gap days
     def naive_full_order
@@ -238,12 +234,9 @@ class Product < ApplicationRecord
       (actual_next_reorder_date + naive_days_from_next_reorder_to_reorder_after_next).yday
     end
   
-    # Also could change from recursion to while
     def adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday)
-      if travel_block_interval.include?(proposed_reorder_after_next_yday) 
-        adjusted_reorder_after_next_yday(yday_after_interval(travel_block_interval))
-      elsif produce_block_interval.include?(proposed_reorder_after_next_yday) 
-        adjusted_reorder_after_next_yday(yday_after_interval(produce_block_interval))
+      if in_cant_order_interval?(proposed_reorder_after_next_yday)
+        latest_interval + 1
       else
         proposed_reorder_after_next_yday
       end
@@ -275,8 +268,7 @@ class Product < ApplicationRecord
     def gap_days(proposed_reorder_after_next_yday)
       return 0 if cant_travel_start.nil?
 
-      adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) -
-        proposed_reorder_after_next_yday
+      adjusted_reorder_after_next_yday(proposed_reorder_after_next_yday) - proposed_reorder_after_next_yday
     end
   
     def cover_gap_days_quantity
