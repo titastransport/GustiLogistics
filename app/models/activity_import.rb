@@ -26,7 +26,7 @@ class ActivityImport < ApplicationRecord
     end
 
     def update_current_product
-      current_product.enroute = false if current_row['Units Purc'].to_i 
+      current_product.enroute = false if current_row['Units Purc'] 
       current_product.current = current_row['Qty on Hand'].to_i 
     end
 
@@ -63,8 +63,8 @@ class ActivityImport < ApplicationRecord
     def process_current_row
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
      
-       # Products not added through activity import
-       #return nil if current_product.nil?
+      # Products not added through activity import
+      return nil if current_product.nil?
 
       process_current_activity 
       update_current_product unless product_doesnt_exist?

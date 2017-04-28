@@ -66,7 +66,7 @@ class PurchaseImport < ApplicationRecord
       self.current_product = Product.find_by(gusti_id: current_row['Item ID'])  
       
       # Products not added through purchase import
-      #return nil if current_product.nil?
+      return nil if current_product.nil?
 
       process_current_purchase
     end
