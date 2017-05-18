@@ -13,6 +13,7 @@ class PurchaseImport < ApplicationRecord
 
     if purchases.map(&:valid?).all?
       purchases.each(&:save!)
+      purchases.each { |purchase| purchase.product.update_reorder_date }
       true
     else
       display_errors(purchases)
@@ -28,7 +29,7 @@ class PurchaseImport < ApplicationRecord
     end
 
     def correct_values_present?
-      !!current_row['Name'] && !!current_row['Item ID'] && !!current_row['Qty'] 
+      !!current_row['Name'] && !!current_row['Item ID'] && !!current_row['Qty']
     end
 
     def valid_current_row?
@@ -36,8 +37,8 @@ class PurchaseImport < ApplicationRecord
     end
 
     def current_purchase_attributes
-      { 
-        quantity: current_row['Qty'].to_i, 
+      {
+        quantity: current_row['Qty'].to_i,
         date: import_month,
         product_id: current_product.id
       }
@@ -63,8 +64,8 @@ class PurchaseImport < ApplicationRecord
 
     def process_current_row
       self.current_customer = Customer.find_or_create_by(name: current_row['Name'])
-      self.current_product = Product.find_by(gusti_id: current_row['Item ID'])  
-      
+      self.current_product = Product.find_by(gusti_id: current_row['Item ID'])
+
       # Products not added through purchase import
       return nil if current_product.nil?
 
@@ -78,8 +79,8 @@ class PurchaseImport < ApplicationRecord
       purchases = (2..spreadsheet.last_row).map do |i|
         self.current_row = Hash[[header, spreadsheet.row(i)].transpose]
         next unless valid_current_row?
-        
-        process_current_row 
+
+        process_current_row
         current_purchase
       end
 
