@@ -102,7 +102,8 @@ class Product < ApplicationRecord
     end
 
     def expected_monthly_sales
-      average_monthly_sales_in_range(month_back(12), month_back(1)) * expected_growth_percentage
+      res = average_monthly_sales_in_range(month_back(12), month_back(1)) * expected_growth_percentage
+      res == 0 ? 1.0 : res.to_f
     end
 
     def expected_daily_sales
@@ -119,9 +120,6 @@ class Product < ApplicationRecord
     # number of days till self's inventory will be at 2 months till depletion
     # naive, because does not account for shipping blocks
     def naive_days_till_next_reorder
-      # For products with no predicability based on extremely low sales
-      return 99999 if expected_daily_sales == 0.0
-
       inventory_adjusted_for_naive_wait / expected_daily_sales
     end
 
