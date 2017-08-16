@@ -150,11 +150,19 @@ class Product < ApplicationRecord
 
     # Subtract time needed to produce product
     def produce_block_start_yday
-      (cant_produce_start - months_to_days(lead_time).days).yday
+      unless cant_produce_start.nil?
+        (cant_produce_start - months_to_days(lead_time).days).yday
+      else
+        nil
+      end
     end
 
     def produce_block_end_yday
-      (cant_produce_end).yday
+      unless cant_produce_end.nil?
+        (cant_produce_end).yday
+      else
+        nil
+      end
     end
 
     def produce_block_interval
@@ -162,10 +170,12 @@ class Product < ApplicationRecord
     end
 
     def in_cant_order_interval?(proposed_yday)
-      unless travel_block_interval.first.nil?
+      if travel_block_interval.first.present?
         travel_block_interval.include?(proposed_yday) || produce_block_interval.include?(proposed_yday)
-      else
+      elsif produce_block_interval.first.present?
         produce_block_interval.include?(proposed_yday)
+      else
+        false
       end
     end
 
