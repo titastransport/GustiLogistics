@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module Gustibot
   class Application < Rails::Application
     # Include the authenticity token in remote forms.
-    config.action_view.embed_authenticity_token_in_remote_forms = false
+    config.action_view.embed_authenticity_token_in_remote_forms = ture 
 
     # Loads modules in lib
     config.autoload_paths << "#{Rails.root}/lib"
